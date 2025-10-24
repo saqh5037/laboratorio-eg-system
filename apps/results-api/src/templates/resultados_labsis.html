@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resultados - Laboratorio EG</title>
+  <style>
+    @page {
+      size: Letter;
+      margin: 0.4in 0.5in 0.3in 0.5in;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 9pt;
+      line-height: 1.3;
+      color: #000;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 7.5in;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .header-left {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      flex: 1;
+    }
+
+    .logo {
+      width: 80px;
+      height: auto;
+    }
+
+    .header-info {
+      flex: 1;
+    }
+
+    .header-right {
+      text-align: right;
+      min-width: 180px;
+    }
+
+    .lab-name {
+      font-size: 10pt;
+      font-weight: bold;
+      line-height: 1.2;
+      margin-bottom: 5px;
+    }
+
+    .lab-address {
+      font-size: 8pt;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    .fecha-label {
+      font-weight: bold;
+      font-size: 9pt;
+    }
+
+    .fecha-value {
+      font-size: 9pt;
+      margin-bottom: 8px;
+    }
+
+    .orden-label {
+      font-weight: bold;
+      font-size: 9pt;
+    }
+
+    .orden-value {
+      font-size: 9pt;
+    }
+
+    .separator {
+      border-top: 1px solid #000;
+      margin: 6px 0;
+    }
+
+    /* Patient Info */
+    .patient-info {
+      font-size: 8pt;
+      margin-bottom: 6px;
+    }
+
+    .patient-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3px;
+    }
+
+    .patient-item {
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+
+    .patient-label {
+      font-weight: bold;
+    }
+
+    /* Results Section */
+    .results-section {
+      margin-bottom: 8px;
+      page-break-inside: avoid;
+    }
+
+    .area-title {
+      font-size: 10pt;
+      font-weight: bold;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+
+    .study-header {
+      font-weight: bold;
+      margin-top: 5px;
+      margin-bottom: 3px;
+    }
+
+    /* Results Table */
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 5px;
+    }
+
+    .results-table thead {
+      background-color: #d3d3d3;
+    }
+
+    .results-table th {
+      font-size: 8pt;
+      font-weight: bold;
+      text-align: left;
+      padding: 3px 4px;
+      border-top: 1px solid #000;
+      border-bottom: 1px solid #000;
+    }
+
+    .results-table td {
+      font-size: 8pt;
+      padding: 2px 4px;
+      vertical-align: top;
+    }
+
+    /* Dotted lines for QUÍMICA */
+    .dotted-line {
+      display: inline-block;
+      width: 100%;
+      border-bottom: 1px dotted #000;
+      height: 1px;
+      vertical-align: middle;
+      margin: 0 5px;
+    }
+
+    .prueba-with-dots {
+      display: flex;
+      align-items: baseline;
+      width: 100%;
+    }
+
+    .prueba-name {
+      flex-shrink: 0;
+      margin-right: 5px;
+    }
+
+    .dots-container {
+      flex-grow: 1;
+      position: relative;
+      height: 10px;
+    }
+
+    .dots-line {
+      position: absolute;
+      bottom: 2px;
+      left: 0;
+      right: 0;
+      border-bottom: 1px dotted #000;
+    }
+
+    /* Observations */
+    .observations {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    .observations-title {
+      font-weight: bold;
+      font-size: 8pt;
+      margin-bottom: 5px;
+    }
+
+    .observations-content {
+      font-size: 8pt;
+      line-height: 1.4;
+    }
+
+    /* Signature */
+    .signature-section {
+      margin-top: 20px;
+      margin-bottom: 50px;
+      text-align: right;
+      page-break-inside: avoid;
+    }
+
+    .signature-image {
+      width: 100px;
+      height: auto;
+      margin-bottom: 3px;
+    }
+
+    .signature-name {
+      font-size: 8pt;
+      margin-bottom: 2px;
+      font-weight: normal;
+    }
+
+    .signature-numbers {
+      font-size: 7pt;
+      line-height: 1.3;
+    }
+
+    /* Footer */
+    .footer {
+      position: fixed;
+      bottom: 0.2in;
+      left: 0.5in;
+      right: 0.5in;
+      border-top: 1px solid #000;
+      padding-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 60px;
+    }
+
+    .footer-qr {
+      width: 50px;
+      height: 50px;
+    }
+
+    .footer-info {
+      flex: 1;
+      text-align: center;
+      font-size: 7pt;
+      line-height: 1.4;
+      padding: 0 15px;
+    }
+
+    .footer-page {
+      font-size: 8pt;
+      text-align: right;
+      min-width: 50px;
+    }
+
+    /* Verified indicator */
+    .verified {
+      color: #000;
+    }
+
+    /* Bacteriology special format */
+    .bacteriology-result {
+      padding-left: 0;
+    }
+
+    .bacteriology-result td {
+      padding: 2px 6px;
+    }
+
+    /* Multi-line values */
+    .multi-line-value {
+      white-space: pre-line;
+    }
+
+    /* Estado badges */
+    .estado-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 7pt;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .estado-normal {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #28a745;
+    }
+
+    .estado-alto {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #dc3545;
+    }
+
+    .estado-bajo {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffc107;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        {{#if logoBase64}}
+        <img src="{{logoBase64}}" alt="Logo" class="logo" />
+        {{/if}}
+        <div class="header-info">
+          <div class="lab-name">LABORATORIO CLINICO MICROBIOLÓGICO ELIZABETH<br>GUTIERREZ</div>
+          <div class="lab-address">
+            Av. Libertador Edf. Majestic Piso 1 Ofc. 18<br>
+            762.05.61 763.59.09 763.66.28<br>
+            Rif. J-40233378-1
+          </div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="fecha-label">Fecha:</div>
+        <div class="fecha-value">{{fechaActual}}<br>{{horaActual}}</div>
+        <div class="orden-label">Orden:</div>
+        <div class="orden-value">{{orden.numero}}</div>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Patient Info -->
+    <div class="patient-info">
+      <div class="patient-row">
+        <div class="patient-item">
+          <span class="patient-label">Paciente:</span> {{orden.nombre}} {{orden.apellido}}
+        </div>
+        <div class="patient-item">
+          <span class="patient-label">Sexo:</span> {{sexoTexto}}
+        </div>
+        <div class="patient-item">
+          <span class="patient-label">Edad:</span> {{edad}} años
+        </div>
+        {{#if orden.telefono}}
+        <div class="patient-item">
+          <span class="patient-label">Teléfono:</span> {{orden.telefono}}
+        </div>
+        {{/if}}
+      </div>
+      <div class="patient-row">
+        <div class="patient-item">
+          <span class="patient-label">Cédula:</span> {{orden.ci_paciente}}
+        </div>
+        <div class="patient-item">
+          <span class="patient-label">Fecha Registro:</span> {{fechaRegistro}}
+        </div>
+        {{#if orden.medico_nombre}}
+        <div class="patient-item">
+          <span class="patient-label">Méd. Remitente:</span> {{orden.medico_nombre}}
+        </div>
+        {{/if}}
+      </div>
+      <div class="patient-row">
+        <div class="patient-item">
+          <span class="patient-label">Procedencia:</span> {{orden.procedencia}}
+        </div>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Results by Area -->
+    {{#each areas}}
+    <div class="results-section">
+      <div class="area-title">{{nombre}}</div>
+
+      {{#each estudios}}
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th style="width: 40%;">{{#if ../esBacteriologia}}ESTUDIO{{else}}PRUEBA{{/if}}</th>
+              <th style="width: 17%;">RESULTADO</th>
+              <th style="width: 13%;">UNIDAD</th>
+              <th style="width: 30%;">VAL. REFERENCIA</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#if titulo}}
+            <tr>
+              <td colspan="4" style="font-weight: bold; background-color: transparent;">{{titulo}}</td>
+            </tr>
+            {{/if}}
+            {{#each pruebas}}
+            <tr{{#if ../esQuimica}} class="quimica-row"{{/if}}>
+              <td>
+                {{#if ../esQuimica}}
+                <div class="prueba-with-dots">
+                  <span class="prueba-name">{{prueba_nombre}}</span>
+                  <div class="dots-container">
+                    <div class="dots-line"></div>
+                  </div>
+                </div>
+                {{else}}
+                {{prueba_nombre}}
+                {{/if}}
+              </td>
+              <td class="{{#if multiLinea}}multi-line-value{{/if}}">{{resultado}}</td>
+              <td>{{unidad}}</td>
+              <td class="{{#if valorReferenciaMultiLinea}}multi-line-value{{/if}}">{{valorReferencia}}</td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      {{/each}}
+
+      {{#if observaciones}}
+      <div class="observations">
+        <div class="observations-title">Observaciones específicas de {{nombre}}</div>
+        <div class="observations-content">{{observaciones}}</div>
+      </div>
+      {{/if}}
+
+      {{#if notaVerificado}}
+      <div class="observations-content">{{notaVerificado}}</div>
+      {{/if}}
+
+      <!-- Signature for this area -->
+      {{#if bioanalista}}
+      <div class="signature-section">
+        {{#if bioanalista.firmaBase64}}
+        <img src="{{bioanalista.firmaBase64}}" alt="Firma" class="signature-image" />
+        {{/if}}
+        <div class="signature-name">{{bioanalista.titulo}} {{bioanalista.nombre}} {{bioanalista.apellido}}</div>
+        {{#if bioanalista.cdb}}
+        <div class="signature-numbers">N° {{bioanalista.cdb}}</div>
+        {{/if}}
+        {{#if bioanalista.mpps}}
+        <div class="signature-numbers">N° {{bioanalista.mpps}}</div>
+        {{/if}}
+      </div>
+      {{/if}}
+    </div>
+    {{/each}}
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-qr">
+      {{#if qrCodeDataUrl}}
+      <img src="{{qrCodeDataUrl}}" alt="QR Code" style="width: 50px; height: 50px;" />
+      {{/if}}
+    </div>
+    <div class="footer-info">
+      LABORATORIO CLINICO MICROBIOLÓGICO ELIZABETH GUTIERREZ Av. Libertador Edf. Majestic Piso 1 Ofc. 18<br>
+      762.05.61 763.59.09 763.66.28<br>
+      Rif. J-40233378-1
+    </div>
+    <div class="footer-page">
+      {{paginaActual}} de {{totalPaginas}}
+    </div>
+  </div>
+</body>
+</html>

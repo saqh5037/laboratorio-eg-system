@@ -1,0 +1,43 @@
+{
+  "name": "laboratorio-eg-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sistema completo de gestión para Laboratorio Elizabeth Gutiérrez",
+  "author": "Samuel Quiroz <samuel@example.com>",
+  "license": "MIT",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean",
+    "dev:web": "turbo run dev --filter=web",
+    "dev:api": "turbo run dev --filter=results-api",
+    "dev:sync": "turbo run dev --filter=sync-service"
+  },
+  "devDependencies": {
+    "turbo": "^1.10.0",
+    "prettier": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/saqh5037/laboratorio-eg-system.git"
+  },
+  "keywords": [
+    "laboratorio",
+    "pwa",
+    "react",
+    "nodejs",
+    "postgresql",
+    "monorepo",
+    "turborepo"
+  ]
+}
