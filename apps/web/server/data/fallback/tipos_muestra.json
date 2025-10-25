@@ -1,0 +1,131 @@
+{
+  "data": [
+    {
+      "id": 5,
+      "tipo": "Heces ",
+      "codigo": "HEF",
+      "instrucciones_transporte": null,
+      "codigo_interfaces": "false",
+      "codigo_impresion": null,
+      "nombre": "Heces "
+    },
+    {
+      "id": 6,
+      "tipo": "LCR",
+      "codigo": "CSF",
+      "instrucciones_transporte": null,
+      "codigo_interfaces": "false",
+      "codigo_impresion": null,
+      "nombre": "LCR"
+    },
+    {
+      "id": 14,
+      "tipo": "Liq Anm",
+      "codigo": "LAN",
+      "instrucciones_transporte": null,
+      "codigo_interfaces": "false",
+      "codigo_impresion": null,
+      "nombre": "Liq Anm"
+    },
+    {
+      "id": 12,
+      "tipo": "OTRO",
+      "codigo": "OTR",
+      "instrucciones_transporte": null,
+      "codigo_interfaces": "false",
+      "codigo_impresion": null,
+      "nombre": "OTRO"
+    },
+    {
+      "id": 4,
+      "tipo": "Orina",
+      "codigo": "URI",
+      "instrucciones_transporte": null,
+      "codigo_interfaces": "false",
+      "codigo_impresion": null,
+      "nombre": "Orina"
+    },
+    {
+      "id": 13,
+      "tipo": "Piedra",
+      "codigo": "PIE",
+      "instrucciones_transporte": null,
+      "codigo_interfaces": "false",
+      "codigo_impresion": null,
+      "nombre": "Piedra"
+    },
+    {
+      "id": 2,
+      "tipo": "Plasma",
+      "codigo": "PLM",
+      "instrucciones_transporte": null,
+      "codigo_interfaces": "false",
+      "codigo_impresion": null,
+      "nombre": "Plasma"
+    },
+    {
+      "id": 7,
+      "tipo": "Saliva",
+      "codigo": "SLV",
+      "instrucciones_transporte": null,
+      "codigo_interfaces": "false",
+      "codigo_impresion": null,
+      "nombre": "Saliva"
+    },
+    {
+      "id": 1,
+      "tipo": "Sangre",
+      "codigo": "WBL",
+      "instrucciones_transporte": null,
+      "codigo_interfaces": "false",
+      "codigo_impresion": null,
+      "nombre": "Sangre"
+    },
+    {
+      "id": 10,
+      "tipo": "Semen",
+      "codigo": "SEM",
+      "instrucciones_transporte": null,
+      "codigo_interfaces": "false",
+      "codigo_impresion": null,
+      "nombre": "Semen"
+    },
+    {
+      "id": 8,
+      "tipo": "Sudor",
+      "codigo": "SDR",
+      "instrucciones_transporte": null,
+      "codigo_interfaces": "false",
+      "codigo_impresion": null,
+      "nombre": "Sudor"
+    },
+    {
+      "id": 3,
+      "tipo": "Suero",
+      "codigo": "SER",
+      "instrucciones_transporte": null,
+      "codigo_interfaces": "false",
+      "codigo_impresion": null,
+      "nombre": "Suero"
+    },
+    {
+      "id": 11,
+      "tipo": "lIq",
+      "codigo": "LIQ",
+      "instrucciones_transporte": null,
+      "codigo_interfaces": "false",
+      "codigo_impresion": null,
+      "nombre": "lIq"
+    },
+    {
+      "id": 9,
+      "tipo": "moco",
+      "codigo": "MOC",
+      "instrucciones_transporte": null,
+      "codigo_interfaces": "false",
+      "codigo_impresion": null,
+      "nombre": "moco"
+    }
+  ],
+  "lastUpdated": "2025-10-23T15:14:40.909Z"
+}

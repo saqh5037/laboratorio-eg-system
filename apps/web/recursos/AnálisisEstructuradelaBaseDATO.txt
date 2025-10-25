@@ -1,0 +1,566 @@
+Análisis Detallado de la Estructura de la Base de Datos Labsis
+============================================================
+
+Este documento describe la estructura de la base de datos "Labsis", un Sistema de Información de Laboratorio (LIS). Las tablas se agrupan por módulos funcionales para facilitar su comprensión.
+
+---
+Índice de Módulos
+---
+1.  Núcleo del Laboratorio: Órdenes, Pacientes y Pruebas
+2.  Resultados y Validación
+3.  Módulo de Facturación y Finanzas
+4.  Gestión de Muestras y Trazabilidad
+5.  Control de Calidad (QC) e Instrumentación
+6.  Configuración del Sistema y Catálogos Generales
+7.  Gestión de Citas
+8.  Administración de Usuarios y Permisos
+9.  Módulo de Inventario
+10. Auditoría y Logs
+11. Módulos Específicos (Biobanco, etc.)
+
+------------------------------------------------------------
+1. Núcleo del Laboratorio: Órdenes, Pacientes y Pruebas
+------------------------------------------------------------
+
+Este es el corazón del sistema, donde se gestiona el flujo principal de trabajo.
+
+Tabla: orden_trabajo
+--------------------
+Propósito: Tabla central que representa una solicitud de análisis (orden de trabajo) para un paciente. Conecta a casi todas las demás entidades importantes del flujo.
+
+Columnas:
+  - id: integer (PK) - Identificador único de la orden.
+  - numero: varchar (UNIQUE) - Número de la orden, visible para el usuario.
+  - paciente_id: integer (FK) -> paciente(id) - El paciente al que pertenece la orden.
+  - medico_id: integer (FK) -> medico(id) - El médico que refiere la orden.
+  - status_id: integer (FK) -> status_orden(id) - El estado actual de la orden (ingresada, validada, etc.).
+  - servicio_id: integer (FK) -> servicio(id) - El convenio o servicio bajo el cual se realiza.
+  - factura_id: integer (FK) -> factura(id) - La factura asociada a esta orden.
+  - fecha: timestamp - Fecha y hora de creación de la orden.
+
+Relaciones Principales:
+  - Es la tabla padre de `prueba_orden`, `gprueba_orden`, y `muestra`.
+  - Se enlaza con `paciente` para obtener los datos demográficos.
+  - Se enlaza con `factura` para la gestión de cobros.
+
+Tabla: paciente
+---------------
+Propósito: Almacena la información demográfica y de contacto de los pacientes.
+
+Columnas:
+  - id: integer (PK) - Identificador único del paciente.
+  - nombre: varchar - Nombre del paciente.
+  - apellido: varchar - Apellido del paciente.
+  - ci_paciente: varchar - Documento de identidad del paciente.
+  - fecha_nacimiento: date - Fecha de nacimiento.
+  - sexo: char - Sexo del paciente ('M' o 'F').
+  - email: varchar - Correo electrónico.
+  - telefono: varchar - Teléfono de contacto.
+
+Relaciones Principales:
+  - Es referenciada por `orden_trabajo`, `cita`, y `presupuesto`.
+
+Tabla: prueba
+-------------
+Propósito: Define el catálogo de análisis individuales que el laboratorio puede realizar.
+
+Columnas:
+  - id: integer (PK) - Identificador único de la prueba.
+  - nombre: varchar - Nombre del análisis (ej. "Glucosa Basal").
+  - tipo_prueba_id: integer (FK) -> tipo_prueba(id) - Tipo de prueba (numérica, de texto, calculada).
+  - area_id: integer (FK) -> area(id) - Área del laboratorio que la procesa (ej. "Química").
+  - precio: numeric - Precio base del análisis.
+
+Relaciones Principales:
+  - Es referenciada por `prueba_orden` para ser incluida en una orden.
+  - Se agrupa en `grupo_prueba` a través de la tabla `gp_has_prueba`.
+  - Se vincula a `valor_referencial` para definir sus rangos de normalidad.
+
+Tabla: grupo_prueba
+-------------------
+Propósito: Define perfiles o paquetes de pruebas.
+
+Columnas:
+  - id: integer (PK) - Identificador único del grupo.
+  - nombre: varchar - Nombre del perfil (ej. "Perfil Lipídico").
+  - area_id: integer (FK) -> area(id) - Área principal del perfil.
+  - precio: numeric - Precio del perfil completo.
+
+Relaciones Principales:
+  - Contiene múltiples `prueba` a través de la tabla `gp_has_prueba`.
+  - Es referenciada por `gprueba_orden` para ser incluida en una orden.
+
+Tabla: prueba_orden
+-------------------
+Propósito: Tabla de unión que especifica qué pruebas individuales se solicitaron en una orden de trabajo.
+
+Columnas:
+  - id: integer (PK) - Identificador único de la línea de la orden.
+  - prueba_id: integer (FK) -> prueba(id) - La prueba solicitada.
+  - orden_id: integer (FK) -> orden_trabajo(id) - La orden a la que pertenece.
+  - status_id: integer (FK) -> status_orden(id) - Estado de esta prueba específica.
+  - gp_orden_id: integer (FK) -> gprueba_orden(id) - Si pertenece a un grupo, aquí se enlaza.
+
+Relaciones Principales:
+  - Es la tabla padre de `resultado_numer` y `resultado_alpha`.
+
+Tabla: gprueba_orden
+--------------------
+Propósito: Tabla de unión que especifica qué perfiles se solicitaron en una orden de trabajo.
+
+Columnas:
+  - id: integer (PK) - Identificador único del grupo en la orden.
+  - gp_id: integer (FK) -> grupo_prueba(id) - El perfil solicitado.
+  - orden_id: integer (FK) -> orden_trabajo(id) - La orden a la que pertenece.
+
+Relaciones Principales:
+  - Actúa como "padre" para las `prueba_orden` que componen el perfil en esa orden específica.
+
+  ----------------------------------
+2. Resultados y Validación
+----------------------------------
+
+Tablas que almacenan y gestionan los valores de los resultados.
+
+Tabla: resultado_numer
+----------------------
+Propósito: Almacena los resultados numéricos de las pruebas.
+
+Columnas:
+  - pruebao_id: integer (PK, FK) -> prueba_orden(id) - Vínculo 1 a 1 con la prueba en la orden.
+  - valor: numeric - El valor numérico del resultado.
+  - validado_por: integer (FK) -> bioanalista(id) - Bioanalista que validó el resultado.
+  - actualizado_timestamp: timestamp - Fecha y hora de la última modificación/validación.
+
+Tabla: resultado_alpha
+----------------------
+Propósito: Almacena los resultados alfanuméricos o de texto.
+
+Columnas:
+  - pruebao_id: integer (PK, FK) -> prueba_orden(id) - Vínculo 1 a 1 con la prueba en la orden.
+  - valor: text - El valor de texto del resultado (ej. "Positivo").
+  - validado_por: integer (FK) -> bioanalista(id) - Bioanalista que validó.
+
+Tabla: valor_referencial
+------------------------
+Propósito: Define los rangos de normalidad para las pruebas.
+
+Columnas:
+  - id: integer (PK)
+  - prueba_id: integer (FK) -> prueba(id) - La prueba a la que se aplica el rango.
+  - edad_desde / edad_hasta: integer - Rango de edad.
+  - valor_desde / valor_hasta: numeric - Rango de valores.
+  - sexo: char - Sexo para el que aplica ('M', 'F', o nulo para ambos).
+
+Tabla: bioanalista
+------------------
+Propósito: Catálogo de los profesionales del laboratorio autorizados para validar resultados.
+
+Columnas:
+  - id: integer (PK)
+  - nombre: varchar
+  - apellido: varchar
+  - cdb: varchar - Código o licencia profesional.
+  - usuario_id: integer (FK) -> usuario(id) - Vínculo a su cuenta de usuario en el sistema.
+
+-----------------------------------------
+3. Módulo de Facturación y Finanzas
+-----------------------------------------
+
+Tablas relacionadas con la gestión de clientes, servicios, facturas y pagos.
+
+Tabla: cliente
+--------------
+Propósito: Entidades (empresas, seguros) que pagan por los servicios.
+
+Columnas:
+  - id: integer (PK)
+  - ci_rif: varchar - Identificación fiscal.
+  - nombre: varchar - Nombre del cliente.
+
+Tabla: servicio
+---------------
+Propósito: Define los contratos o convenios con los clientes, incluyendo listas de precios y descuentos.
+
+Columnas:
+  - id: integer (PK)
+  - cliente_id: integer (FK) -> cliente(id) - El cliente del convenio.
+  - descripcion: text - Nombre o descripción del servicio/convenio.
+  - fecha_desde / fecha_hasta: date - Vigencia del convenio.
+
+Tabla: factura
+--------------
+Propósito: Contiene la información de las facturas emitidas.
+
+Columnas:
+  - id: integer (PK)
+  - numero: integer - Número de factura.
+  - control: integer - Número de control fiscal.
+  - cliente_id: integer (FK) -> cliente(id) - Cliente al que se le factura.
+  - total_factura: numeric - Monto total de la factura.
+  - status_id: integer (FK) -> status_factura(id) - Estado (Pagada, Anulada, Pendiente).
+
+Tabla: item_factura
+-------------------
+Propósito: Detalla los conceptos facturados en cada factura.
+
+Columnas:
+  - id: integer (PK)
+  - factura_id: integer (FK) -> factura(id) - La factura a la que pertenece.
+  - nombre_item: text - Descripción del ítem (ej. nombre de la prueba).
+  - monto: numeric - Precio del ítem.
+
+Tabla: factura_pago
+-------------------
+Propósito: Tabla intermedia que registra los pagos asociados a una factura.
+
+Columnas:
+  - id: integer (PK)
+  - factura_id: integer (FK) -> factura(id) - Factura que se está pagando.
+  - tipo_pago_id: integer (FK) -> tipo_pago(id) - Método de pago (efectivo, tarjeta).
+  - monto: numeric - Monto del pago.
+
+Tabla: pago
+-----------
+Propósito: Detalla los pagos que no son en efectivo (cheques, transferencias).
+
+Columnas:
+  - id: integer (PK)
+  - factura_pago_id: integer (FK) -> factura_pago(id) - Vínculo al registro de pago.
+  - banco: varchar - Banco emisor.
+  - num_documento: varchar - Número de cheque o referencia.
+
+  ----------------------------------------------
+4. Gestión de Muestras y Trazabilidad
+----------------------------------------------
+
+Tablas que se centran en el seguimiento de la muestra física.
+
+Tabla: muestra
+--------------
+Propósito: Representa un tubo o contenedor físico de una muestra biológica.
+
+Columnas:
+  - id: integer (PK)
+  - barcode: varchar (UNIQUE) - El código de barras que identifica unívocamente al tubo.
+  - orden_id: integer (FK) -> orden_trabajo(id) - La orden a la que pertenece.
+  - tipo_muestra_id: integer (FK) -> tipo_muestra(id) - Tipo de muestra (Sangre, Orina, etc.).
+  - tipo_contenedor_id: integer (FK) -> tipo_contenedor(id) - Tipo de tubo (Rojo, Lila, etc.).
+  - status_muestra_id: integer (FK) -> status_muestra(id) - Estado de la muestra (Recibida, En proceso, Descartada).
+
+Tabla: status_area
+------------------
+Propósito: Refleja el estado de una orden de trabajo dentro de una sección específica del laboratorio.
+
+Columnas:
+  - id: integer (PK)
+  - orden_id: integer (FK) -> orden_trabajo(id) - La orden de trabajo.
+  - area_id: integer (FK) -> area(id) - El área o departamento.
+  - status_orden_id: integer (FK) -> status_orden(id) - El estado de la orden en esa área (Pendiente, En Proceso, Validada).
+
+----------------------------------------------------
+5. Control de Calidad (QC) e Instrumentación
+----------------------------------------------------
+
+Tablas para la gestión de equipos y el aseguramiento de la calidad.
+
+Tabla: equipo
+-------------
+Propósito: Catálogo de los modelos de equipos analizadores.
+
+Columnas:
+  - id: integer (PK)
+  - nombre: varchar - Nombre del equipo (ej. "Cobas 6000").
+  - marca_equipo_id: integer (FK) -> marca_equipo(id) - Marca del equipo.
+
+Tabla: equipo_sistema
+---------------------
+Propósito: Representa una instancia física de un equipo en el laboratorio.
+
+Columnas:
+  - id: integer (PK)
+  - equipo_id: integer (FK) -> equipo(id) - El modelo del equipo.
+  - nombre_s: varchar - Nombre único para esta instancia (ej. "Quimica_Cobas_1").
+  - ip: varchar - Dirección IP del equipo.
+
+Tabla: parametro
+----------------
+Propósito: Es la tabla clave que mapea una `prueba` del LIS al código específico que un `equipo` utiliza para ella.
+
+Columnas:
+  - id: integer (PK)
+  - prueba_id: integer (FK) -> prueba(id) - La prueba del catálogo.
+  - equipo_id: integer (FK) -> equipo(id) - El equipo que la procesa.
+  - nombre: varchar - El código del test en el equipo (ej. "GLUC", "CHOL").
+
+Tabla: nivel_control
+--------------------
+Propósito: Define los materiales de control de calidad, incluyendo lotes y valores esperados.
+
+Columnas:
+  - id: integer (PK)
+  - parametro_id: integer (FK) -> parametro(id) - El analito que se está controlando.
+  - equipo_sistema_id: integer (FK) -> equipo_sistema(id) - El equipo donde se usa.
+  - lote: varchar - Número de lote del material de control.
+  - mean: numeric - Media esperada.
+  - std_deviation: numeric - Desviación estándar esperada.
+
+Tabla: resultado_control
+------------------------
+Propósito: Almacena los resultados obtenidos al procesar los materiales de control.
+
+Columnas:
+  - id: integer (PK)
+  - nivel_control_id: integer (FK) -> nivel_control(id) - El control que se procesó.
+  - valor: numeric - El valor obtenido.
+  - fecha: timestamp - Fecha del procesamiento.
+
+------------------------------------------------------
+6. Configuración del Sistema y Catálogos Generales
+------------------------------------------------------
+
+Tablas que contienen listas de opciones y configuraciones globales.
+
+Tabla: area
+-----------
+Propósito: Departamentos o secciones del laboratorio.
+Columnas: id (PK), area (varchar)
+
+Tabla: medico
+-------------
+Propósito: Catálogo de médicos referentes.
+Columnas: id (PK), nombre (varchar), id_profesional (varchar)
+
+Tabla: status_orden
+-------------------
+Propósito: Define los posibles estados de una orden de trabajo (Ingresada, Parcial, Validada, etc.).
+Columnas: id (PK), status (varchar)
+
+Tabla: tipo_muestra
+-------------------
+Propósito: Catálogo de tipos de muestra biológica (Suero, Plasma, Orina, etc.).
+Columnas: id (PK), tipo (varchar)
+
+Tabla: tipo_contenedor
+----------------------
+Propósito: Catálogo de los tipos de tubos y contenedores de muestras.
+Columnas: id (PK), tipo (varchar)
+
+Tabla: unidad
+-------------
+Propósito: Catálogo de unidades de medida para los resultados (mg/dL, UI/L, etc.).
+Columnas: id (PK), unidad (varchar), simbolo (varchar)
+
+-----------------------
+7. Gestión de Citas
+-----------------------
+
+Tablas para el agendamiento de pacientes.
+
+Tabla: cita
+-----------
+Propósito: Almacena la información de una cita programada.
+
+Columnas:
+  - id: integer (PK)
+  - paciente_id: integer (FK) -> paciente(id) - Paciente de la cita.
+  - fecha_cita: timestamp - Fecha y hora de la cita.
+  - turno_cita_id: integer (FK) -> turno_cita(id) - El bloque horario asignado.
+  - orden_id: integer (FK) -> orden_trabajo(id) - La orden de trabajo generada a partir de la cita (si aplica).
+
+Tabla: turno_cita
+-----------------
+Propósito: Define los bloques horarios disponibles para agendar citas (ej. 8:00 a 8:30).
+
+Columnas:
+  - id: integer (PK)
+  - nombre: varchar - Descripción del turno.
+  - hora_inicio, min_inicio, hora_fin, min_fin: integer - Horarios.
+  - cupo: integer - Cantidad de pacientes que pueden agendar en este turno.
+
+-------------------------------------------
+8. Administración de Usuarios y Permisos
+-------------------------------------------
+
+Tablas para la seguridad y el control de acceso.
+
+Tabla: usuario
+--------------
+Propósito: Contiene las cuentas de usuario para acceder al sistema.
+
+Columnas:
+  - id: integer (PK)
+  - username: varchar (UNIQUE) - Nombre de usuario para el login.
+  - nombre: varchar
+  - apellido: varchar
+  - activo: boolean - Si la cuenta está activa o no.
+
+Tabla: rol
+----------
+Propósito: Define los roles o perfiles de usuario (Administrador, Recepcionista, etc.).
+
+Columnas:
+  - id: integer (PK)
+  - rol: varchar
+
+Tabla: usuario_has_rol
+----------------------
+Propósito: Tabla de unión que asigna uno o más roles a cada usuario.
+
+Columnas:
+  - usuario_id: integer (FK) -> usuario(id)
+  - rol_id: integer (FK) -> rol(id)
+
+Tabla: permiso
+--------------
+Propósito: Define los permisos granulares sobre las acciones del sistema.
+
+Columnas:
+  - id: integer (PK)
+  - actividad_id: integer (FK) -> actividad(id) - La acción que se permite o deniega.
+  - roles_acceso: text - Lista de roles que tienen acceso.
+
+-------------------------
+9. Módulo de Inventario
+-------------------------
+
+Tablas para la gestión de reactivos y consumibles.
+
+Tabla: articulo
+---------------
+Propósito: Catálogo de todos los reactivos, controles y consumibles del laboratorio.
+
+Columnas:
+  - id: integer (PK)
+  - codigo: varchar
+  - nombre: varchar
+  - existencia: integer - Cantidad actual en stock.
+  - proveedor_id: integer (FK) -> proveedor(id) - Proveedor del artículo.
+
+Tabla: entrada
+--------------
+Propósito: Registra el ingreso de artículos al inventario.
+
+Columnas:
+  - id: integer (PK)
+  - numero: integer
+  - fecha: date
+
+Tabla: salida
+-------------
+Propósito: Registra el egreso (consumo) de artículos del inventario.
+
+Columnas:
+  - id: integer (PK)
+  - numero: integer
+  - fecha: date
+
+Tabla: entrada_has_articulo / salida_has_articulo
+-------------------------------------------------
+Propósito: Tablas de unión que detallan qué artículos y en qué cantidad se movieron en una entrada o salida.
+
+-----------------------
+10. Auditoría y Logs
+-----------------------
+
+Propósito General: Un gran número de tablas en el esquema tienen el sufijo `_log` (ej. `paciente_log`, `prueba_log`, `factura_log`). Estas tablas no participan en el flujo de trabajo diario, sino que actúan como un registro de auditoría. Cada vez que se crea, modifica o elimina un registro en una tabla principal, se inserta una nueva fila en su tabla `_log` correspondiente, guardando qué se hizo, quién lo hizo y cuándo.
+
+Tablas de ejemplo:
+  - accion_log
+  - accion_paciente_log
+  - accion_presupuesto_log
+  - cliente_log
+  - factura_log
+  - medico_log
+  - muestra_log
+  - prueba_log
+  - usuario_log
+  ...y muchas otras.
+
+---------------------------------------------------
+11. Módulos Específicos (Biobanco, etc.)
+---------------------------------------------------
+
+Tablas que parecen destinadas a flujos de trabajo muy especializados.
+
+Tabla: biobanco_bia, biobanco_dxa, biobanco_fp, biobanco_genotipo
+-----------------------------------------------------------------
+Propósito: Estas tablas almacenan una cantidad masiva de datos clínicos y de investigación muy específicos, probablemente para estudios o proyectos particulares.
+
+Relaciones:
+  - Todas se relacionan con `orden_trabajo`, indicando que estos datos detallados se capturan como parte de una orden de laboratorio específica, probablemente de un proyecto de investigación.
+
+----------------------------------------------------
+12. Gestión de Incidencias y No Conformidades
+----------------------------------------------------
+
+Este módulo gestiona el registro y seguimiento de problemas o eventos no deseados en el laboratorio.
+
+Tabla: incidencia
+-----------------
+Propósito: Registra una incidencia o no conformidad, como una muestra derramada o un resultado incorrecto.
+
+Columnas:
+  - id: integer (PK)
+  - orden_trabajo_id: integer (FK) -> orden_trabajo(id)
+  - tipo_incidencia_id: integer (FK) -> tipo_incidencia(id)
+  - status_incidencia_id: integer (FK) -> status_incidencia(id)
+  - usuario_id: integer (FK) -> usuario(id)
+  - descripcion: text
+
+Tabla: incidencia_accion
+------------------------
+Propósito: Registra las acciones tomadas para resolver una incidencia.
+
+Columnas:
+  - id: integer (PK)
+  - incidencia_id: integer (FK) -> incidencia(id)
+  - usuario_id: integer (FK) -> usuario(id)
+  - nota: text
+
+-------------------------------------------
+13. Listas de Trabajo y Automatización
+-------------------------------------------
+
+Este módulo se encarga de la creación y gestión de listas de trabajo para los analizadores.
+
+Tabla: lista_trabajo_automatizada
+---------------------------------
+Propósito: Gestiona el envío de muestras a los equipos de forma automática.
+
+Columnas:
+  - id: integer (PK)
+  - equipo_sistema_id: integer (FK) -> equipo_sistema(id)
+  - muestra_id: integer (FK) -> muestra(id)
+  - enviado: boolean
+
+------------------------------------
+14. Gestión de Rutas y Mensajería
+------------------------------------
+
+Módulo para la logística de recolección de muestras.
+
+Tabla: ruta_definicion
+----------------------
+Propósito: Define una ruta de recolección estándar.
+
+Columnas:
+  - id: integer (PK)
+  - nombre: varchar
+  - mensajero_id: integer (FK) -> ruta_mensajero(id)
+
+Tabla: muestra_manifiesto
+-------------------------
+Propósito: Manifiesto de envío que agrupa las muestras transportadas.
+
+Columnas:
+  - id: integer (PK)
+  - usuario_id: integer (FK) -> usuario(id)
+  - procedencia_id: integer (FK) -> procedencia(id)
+  - departamento_destino_id: integer (FK) -> departamento_laboratorio(id)
+
+---
+Conclusión del Documento
+---
+
+La base de datos "Labsis" está diseñada con una arquitectura robusta y modular. La `orden_trabajo` actúa como el eje central que integra la mayoría de los flujos de trabajo. La gran cantidad de tablas de catálogo y configuración le otorgan una alta capacidad de personalización, mientras que las tablas `_log` aseguran una completa trazabilidad. Los módulos de QC, Inventario y Citas complementan el núcleo del laboratorio para ofrecer una solución integral.

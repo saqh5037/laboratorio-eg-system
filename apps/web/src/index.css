@@ -1,0 +1,382 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ===== TIPOGRAFÍA CORPORATIVA: DIN PRO ÚNICAMENTE ===== */
+  /* NO usar otras fuentes. NO usar bold/semibold. Jerarquía solo por tamaño. */
+  @font-face {
+    font-family: 'DIN Pro';
+    src: url('/src/assets/fonts/635-font.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  /* ===== VARIABLES CSS CON COLORES PANTONE OFICIALES ===== */
+  :root {
+    /* Pantone 2665U - Purple principal */
+    --color-eg-purple: 123 104 166;
+    /* Pantone 250U - Pink secundario */
+    --color-eg-pink: 221 181 213;
+    /* CoolGray 9U - Gris frío oficial */
+    --color-eg-gray: 139 140 142;
+    /* Negro Pantone 231F20 */
+    --color-eg-dark: 35 31 32;
+    --color-eg-black: 35 31 32;
+    /* Blanco puro */
+    --color-eg-white: 255 255 255;
+
+    /* Alias para compatibilidad */
+    --color-primary: 123 104 166;
+    --color-secondary: 221 181 213;
+    --color-background: 255 255 255;
+    --color-text-primary: 35 31 32;
+    --color-text-secondary: 139 140 142;
+    --color-border: 221 181 213;
+
+    /* Margen del logo: 1cm = 37.8px según manual */
+    --logo-margin: 37.8px;
+
+    /* Design tokens */
+    --radius: 0.5rem;
+    --shadow-sm: 0 1px 2px 0 rgba(123, 104, 166, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(123, 104, 166, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(123, 104, 166, 0.1);
+
+    /* Transición suave para cambio de tema */
+    --transition-theme: 300ms ease-in-out;
+  }
+
+  /* ===== MODO OSCURO (TEMPERATURA FRÍA) ===== */
+  /* Usar azules oscuros fríos en lugar de grises cálidos */
+  .dark {
+    --color-background: 15 23 41;        /* #0F1729 - Background azul oscuro frío */
+    --color-surface: 26 34 56;           /* #1A2238 - Surface azul oscuro */
+    --color-elevated: 36 52 71;          /* #243447 - Cards elevados */
+    --color-text-primary: 232 240 255;   /* #E8F0FF - Texto azul claro frío */
+    --color-text-secondary: 139 159 199; /* #8B9FC7 - Texto secundario azul */
+    --color-border: 36 52 71;            /* #243447 - Border frío */
+  }
+
+  * {
+    border-color: theme('colors.gray.200');
+  }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  #root {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100%;
+  }
+
+  body {
+    @apply bg-white text-eg-gray antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* ===== JERARQUÍA TIPOGRÁFICA: SOLO POR TAMAÑO (NO BOLD) ===== */
+  /* Manual de imagen: H1=24pt, H2=20pt, H3=18pt, H4=16pt, H5=14pt, H6=12pt */
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-eg-dark;
+    font-weight: normal; /* NO usar bold ni semibold */
+  }
+
+  /* Custom scrollbar styles */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(123 104 166) rgb(243 244 246);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgb(243 244 246);
+    border-radius: 3px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgb(123 104 166);
+    border-radius: 3px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgb(107 88 150);
+  }
+
+  /* Card hover animations */
+  .study-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .study-card:hover {
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
+  }
+
+  /* Grid animations */
+  .study-grid {
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Loading skeleton */
+  .skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+  }
+
+  @keyframes skeleton-loading {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* ===== MEDICAL BADGE: SOLO COLORES PANTONE ===== */
+  /* NO usar colores cálidos (blue, red, green). Usar eg-purple y eg-pink únicamente */
+  .medical-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs;
+    font-weight: normal; /* NO usar font-medium */
+  }
+
+  /* Todas las categorías usan la paleta Pantone oficial */
+  .medical-badge.chemistry,
+  .medical-badge.hematology,
+  .medical-badge.microbiology,
+  .medical-badge.genetics {
+    @apply bg-eg-purple/10 text-eg-purple border border-eg-purple/20;
+  }
+
+  /* ===== BUTTON STYLES: NO USAR FONT-MEDIUM ===== */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200;
+    font-weight: normal; /* Manual de imagen: NO bold */
+    min-height: 44px; /* Accesibilidad: touch target mínimo */
+    min-width: 44px;
+  }
+
+  .btn-primary {
+    @apply bg-eg-purple text-white hover:bg-eg-purple/90 focus:ring-eg-purple;
+  }
+
+  .btn-secondary {
+    @apply bg-eg-pink text-eg-dark hover:bg-eg-pink/80 focus:ring-eg-pink;
+  }
+
+  .btn-outline {
+    @apply border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-eg-purple;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-white p-6 rounded-lg shadow-md border border-gray-200;
+  }
+
+  .card:hover {
+    @apply shadow-lg;
+  }
+
+  /* Container responsive */
+  .container-responsive {
+    @apply container mx-auto px-4;
+  }
+
+  /* Section padding */
+  .section-padding {
+    @apply py-16;
+  }
+
+  /* Line clamp utility */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  h4 {
+    @apply text-xl md:text-2xl;
+  }
+
+  h5 {
+    @apply text-lg md:text-xl;
+  }
+
+  h6 {
+    @apply text-base md:text-lg;
+  }
+}
+
+@layer components {
+  /* ===== COMPONENTS: NO USAR FONT-MEDIUM/BOLD ===== */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+    font-weight: normal;
+    min-height: 44px; /* WCAG AA touch target */
+    min-width: 44px;
+  }
+
+  .btn-primary {
+    @apply bg-eg-purple text-white hover:bg-eg-purple/90 focus-visible:ring-eg-purple;
+  }
+
+  .btn-secondary {
+    @apply bg-eg-pink text-eg-dark hover:bg-eg-pink/80 focus-visible:ring-eg-pink;
+  }
+
+  .btn-outline {
+    @apply border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus-visible:ring-gray-500;
+  }
+
+  .card {
+    @apply rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md;
+  }
+
+  .input {
+    @apply flex h-10 w-full rounded-md border border-eg-pink bg-white px-3 py-2 text-sm placeholder:text-eg-gray focus:outline-none focus:ring-2 focus:ring-eg-purple focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .label {
+    @apply text-sm text-gray-700;
+    font-weight: normal; /* NO usar font-medium */
+  }
+
+  .container-responsive {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-12 md:py-16 lg:py-20;
+  }
+
+  .glass-effect {
+    @apply backdrop-blur-sm bg-white/80 border border-white/20;
+  }
+
+  /* Glassmorphism para Hero Stats */
+  .glass-card {
+    @apply backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl;
+  }
+
+  .glass-card-dark {
+    @apply backdrop-blur-md bg-eg-purple/10 border border-eg-purple/20 rounded-2xl;
+  }
+
+  .gradient-eg {
+    @apply bg-gradient-to-br from-eg-pink/20 to-white;
+  }
+
+  .text-gradient {
+    @apply text-eg-purple;
+  }
+
+  /* Efectos de luz sutiles (NO blobs opacos) */
+  .light-effect {
+    filter: blur(100px);
+    pointer-events: none;
+  }
+}
+
+@layer utilities {
+  .animate-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .slide-in-left {
+    animation: slideInLeft 0.3s ease-out;
+  }
+
+  .slide-in-right {
+    animation: slideInRight 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

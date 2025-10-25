@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Isotipo EG - Laboratorio Elizabeth Gutiérrez -->
+  <!-- Basado en el manual de imagen oficial -->
+  
+  <g id="isotipo-laboratorio-eg">
+    <!-- Letra E estilizada -->
+    <g id="letra-e">
+      <path d="M30 50 L30 150 L70 150 M30 100 L60 100 M30 50 L70 50" 
+            stroke="#7B68A6" 
+            stroke-width="12" 
+            stroke-linecap="round" 
+            stroke-linejoin="round"
+            fill="none"/>
+    </g>
+    
+    <!-- Doble hélice de ADN central -->
+    <g id="adn-helix" transform="translate(100, 100)">
+      <!-- Primera hebra -->
+      <path d="M-15 -40 Q0 -20, 15 0 Q0 20, -15 40" 
+            stroke="#E8C4DD" 
+            stroke-width="6" 
+            fill="none"
+            opacity="0.9"/>
+      
+      <!-- Segunda hebra -->
+      <path d="M15 -40 Q0 -20, -15 0 Q0 20, 15 40" 
+            stroke="#D4B5D4" 
+            stroke-width="6" 
+            fill="none"
+            opacity="0.9"/>
+      
+      <!-- Enlaces entre hebras -->
+      <g stroke="#7B68A6" stroke-width="3" opacity="0.6">
+        <line x1="-12" y1="-30" x2="12" y2="-30"/>
+        <line x1="-8" y1="-15" x2="8" y2="-15"/>
+        <line x1="-4" y1="0" x2="4" y2="0"/>
+        <line x1="-8" y1="15" x2="8" y2="15"/>
+        <line x1="-12" y1="30" x2="12" y2="30"/>
+      </g>
+    </g>
+    
+    <!-- Letra G estilizada -->
+    <g id="letra-g">
+      <path d="M170 50 L130 50 Q115 50, 115 65 L115 135 Q115 150, 130 150 L170 150 L170 110 L150 110" 
+            stroke="#7B68A6" 
+            stroke-width="12" 
+            stroke-linecap="round" 
+            stroke-linejoin="round"
+            fill="none"/>
+    </g>
+    
+    <!-- Puntos decorativos (moléculas) -->
+    <g id="moleculas" opacity="0.3">
+      <circle cx="25" cy="30" r="3" fill="#E8C4DD"/>
+      <circle cx="175" cy="30" r="3" fill="#E8C4DD"/>
+      <circle cx="25" cy="170" r="3" fill="#D4B5D4"/>
+      <circle cx="175" cy="170" r="3" fill="#D4B5D4"/>
+    </g>
+  </g>
+  
+  <!-- Texto opcional (normalmente va separado) -->
+  <g id="texto-laboratorio" display="none">
+    <text x="100" y="185" 
+          font-family="Arial, sans-serif" 
+          font-size="10" 
+          font-weight="300" 
+          text-anchor="middle" 
+          fill="#76767A">
+      LABORATORIO ELIZABETH GUTIÉRREZ
+    </text>
+  </g>
+</svg>

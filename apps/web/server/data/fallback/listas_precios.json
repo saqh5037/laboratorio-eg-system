@@ -1,0 +1,85 @@
+{
+  "data": [
+    {
+      "id": 23,
+      "nombre": "Ambulatorio_2025",
+      "descripcion": "AmbulatorioEG_2025",
+      "activo": true,
+      "fecha_inicio": "2025-01-01T06:00:00.000Z",
+      "fecha_fin": null,
+      "bloqueado": false,
+      "moneda_id": null
+    },
+    {
+      "id": 27,
+      "nombre": "Ambulatorio_Abril_2025",
+      "descripcion": "Ambulatorio Precion en Dolares",
+      "activo": true,
+      "fecha_inicio": "2025-03-31T06:00:00.000Z",
+      "fecha_fin": null,
+      "bloqueado": false,
+      "moneda_id": 2
+    },
+    {
+      "id": 17,
+      "nombre": "Bolivariana de Seguros",
+      "descripcion": "BOLIVARIANA DE SEGUROS Y REASEGUROS, S.A",
+      "activo": true,
+      "fecha_inicio": "2024-04-01T06:00:00.000Z",
+      "fecha_fin": "2025-04-30T06:00:00.000Z",
+      "bloqueado": false,
+      "moneda_id": null
+    },
+    {
+      "id": 21,
+      "nombre": "CC. Rey de Reyes",
+      "descripcion": "CCRR",
+      "activo": true,
+      "fecha_inicio": "2024-11-01T06:00:00.000Z",
+      "fecha_fin": "2025-11-30T06:00:00.000Z",
+      "bloqueado": false,
+      "moneda_id": null
+    },
+    {
+      "id": 31,
+      "nombre": "Dra. Angela Quindisaca",
+      "descripcion": "Angela Fernanda Quindisaca",
+      "activo": true,
+      "fecha_inicio": "2025-04-02T06:00:00.000Z",
+      "fecha_fin": null,
+      "bloqueado": false,
+      "moneda_id": 2
+    },
+    {
+      "id": 30,
+      "nombre": "Grupito2025",
+      "descripcion": "Grupito",
+      "activo": true,
+      "fecha_inicio": "2025-03-31T06:00:00.000Z",
+      "fecha_fin": null,
+      "bloqueado": false,
+      "moneda_id": 2
+    },
+    {
+      "id": 32,
+      "nombre": "Seguros Caracas",
+      "descripcion": "Seguros Caracas",
+      "activo": true,
+      "fecha_inicio": "2025-04-07T06:00:00.000Z",
+      "fecha_fin": null,
+      "bloqueado": false,
+      "moneda_id": 2
+    },
+    {
+      "id": 26,
+      "nombre": "Superintendencia Seguros",
+      "descripcion": "Superintendencia Seguros",
+      "activo": true,
+      "fecha_inicio": "2025-01-01T06:00:00.000Z",
+      "fecha_fin": "2025-12-31T06:00:00.000Z",
+      "bloqueado": false,
+      "moneda_id": null
+    }
+  ],
+  "lastUpdated": "2025-10-23T15:14:40.911Z"
+}

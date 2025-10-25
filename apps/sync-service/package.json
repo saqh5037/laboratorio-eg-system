@@ -1,0 +1,47 @@
+{
+  "name": "laboratorio-eg-sync-service",
+  "version": "1.0.0",
+  "description": "Servicio de sincronización automática de precios desde labsisEG (PostgreSQL) a archivo JSON local",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "verify-db": "node scripts/verify-database.js",
+    "install-triggers": "psql -h localhost -U postgres -d labsisEG -f database/triggers-labsis.sql",
+    "create-admin": "node scripts/create-admin.js",
+    "dev": "node --watch src/index.js",
+    "start": "NODE_ENV=production node src/index.js",
+    "manual-sync": "node scripts/manual-sync.js",
+    "status": "bash scripts/status.sh",
+    "clean": "bash scripts/clean.sh",
+    "logs": "tail -f logs/combined.log",
+    "test": "echo \"Tests not implemented yet\" && exit 0"
+  },
+  "keywords": [
+    "sync",
+    "postgresql",
+    "labsis",
+    "laboratorio",
+    "automation",
+    "local",
+    "notify-listen"
+  ],
+  "author": "Laboratorio Elizabeth Gutiérrez",
+  "license": "MIT",
+  "dependencies": {
+    "pg": "^8.16.3",
+    "dotenv": "^17.2.1",
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "better-sqlite3": "^9.2.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
