@@ -360,6 +360,31 @@ router.get('/resultados/heatmap/:paciente_ci', requireAuth, async (req, res) => 
  * GET /api/health
  * Health check endpoint
  */
+/**
+ * GET /api/resultados/formatos
+ * Obtener todos los formatos de pruebas para cache en frontend
+ */
+router.get('/resultados/formatos', async (req, res) => {
+  try {
+    const formatos = await Resultado.findAllFormatos();
+
+    res.json({
+      success: true,
+      data: formatos,
+      cache: {
+        maxAge: 3600, // 1 hora en segundos
+        staleWhileRevalidate: 86400, // 24 horas
+      }
+    });
+  } catch (error) {
+    logger.error('Error al obtener formatos:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al obtener formatos de pruebas',
+    });
+  }
+});
+
 router.get('/health', (req, res) => {
   res.json({
     success: true,
