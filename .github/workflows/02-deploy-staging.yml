@@ -80,8 +80,12 @@ jobs:
             # Install dependencies
             npm install --production
 
-            # Restart PM2 service
-            pm2 restart ${{ matrix.service.pm2-name }} || pm2 start ecosystem.config.js --env staging --name ${{ matrix.service.pm2-name }}
+            # Restart PM2 service (use .cjs or .js depending on what exists)
+            if [ -f "ecosystem.config.cjs" ]; then
+              pm2 restart ${{ matrix.service.pm2-name }} || pm2 start ecosystem.config.cjs --env staging --name ${{ matrix.service.pm2-name }}
+            else
+              pm2 restart ${{ matrix.service.pm2-name }} || pm2 start ecosystem.config.js --env staging --name ${{ matrix.service.pm2-name }}
+            fi
             pm2 save
 
             # Wait for service to start
