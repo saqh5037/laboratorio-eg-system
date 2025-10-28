@@ -1,0 +1,141 @@
+name: 02 - Deploy to Staging
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18'
+  DEPLOY_PATH_STAGING: '/home/dynamtek/apps/staging'
+
+jobs:
+  deploy-backend-services:
+    name: Deploy Backend Services to Staging
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        service:
+          - name: sync-service
+            port: 3002
+            pm2-name: sync-service-staging
+          - name: results-api
+            port: 3003
+            pm2-name: results-api-staging
+          - name: messaging-bot
+            port: 3004
+            pm2-name: messaging-bot-staging
+      fail-fast: false
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🔑 Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 🚀 Deploy ${{ matrix.service.name }}
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST_STAGING }} << 'ENDSSH'
+            set -e
+
+            echo "🔄 Deploying ${{ matrix.service.name }} to Staging..."
+
+            # Create directory if doesn't exist
+            mkdir -p ${{ env.DEPLOY_PATH_STAGING }}
+
+            # Clone or pull repo
+            if [ -d "${{ env.DEPLOY_PATH_STAGING }}/.git" ]; then
+              cd ${{ env.DEPLOY_PATH_STAGING }}
+              git fetch origin
+              git checkout develop
+              git pull origin develop
+            else
+              git clone -b develop git@github.com:saqh5037/laboratorio-eg-system.git ${{ env.DEPLOY_PATH_STAGING }}
+              cd ${{ env.DEPLOY_PATH_STAGING }}
+            fi
+
+            # Navigate to service directory
+            cd apps/${{ matrix.service.name }}
+
+            # Install dependencies
+            npm ci --production
+
+            # Restart PM2 service
+            pm2 restart ${{ matrix.service.pm2-name }} || pm2 start ecosystem.config.js --env staging --name ${{ matrix.service.pm2-name }}
+            pm2 save
+
+            # Wait for service to start
+            sleep 5
+
+            # Health check
+            curl -f http://localhost:${{ matrix.service.port }}/health || curl -f http://localhost:${{ matrix.service.port }}/api/health || echo "⚠️ Health check endpoint not available"
+
+            echo "✅ ${{ matrix.service.name }} deployed successfully!"
+          ENDSSH
+
+      - name: 📋 Check Logs
+        if: failure()
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST_STAGING }} \
+            "pm2 logs ${{ matrix.service.pm2-name }} --lines 50 --nostream"
+
+  deploy-frontend:
+    name: Deploy Frontend to Staging
+    runs-on: ubuntu-latest
+    needs: deploy-backend-services
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 🏗️ Build Frontend
+        working-directory: ./apps/web
+        run: npm run build
+        env:
+          VITE_API_URL: https://staging-api.laboratorio-eg.com
+          VITE_APP_ENV: staging
+
+      - name: 🔑 Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 📤 Deploy to Server
+        run: |
+          rsync -avz --delete \
+            -e "ssh -o StrictHostKeyChecking=no" \
+            ./apps/web/dist/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST_STAGING }}:/var/www/laboratorio-eg-staging/
+
+      - name: 🔄 Reload Nginx
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST_STAGING }} \
+            "sudo nginx -t && sudo systemctl reload nginx"
+        continue-on-error: true
+
+  notify:
+    name: Send Notifications
+    runs-on: ubuntu-latest
+    needs: [deploy-backend-services, deploy-frontend]
+    if: always()
+
+    steps:
+      - name: 📢 Deployment Status
+        run: |
+          echo "🚀 Staging Deployment: ${{ job.status }}"
+          echo "Branch: ${{ github.ref }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"

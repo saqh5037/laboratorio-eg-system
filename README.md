@@ -9,7 +9,7 @@ Sistema completo de gestión para laboratorio clínico con PWA, portal de result
 
 ## 📦 Servicios
 
-Este monorepo contiene 3 servicios principales:
+Este monorepo contiene 4 servicios principales:
 
 ### 🌐 [apps/web](./apps/web) - Progressive Web App
 - **Stack:** React 19 + Vite + Tailwind CSS
@@ -40,6 +40,16 @@ Este monorepo contiene 3 servicios principales:
   - ✅ Debounce inteligente (2 segundos)
   - ✅ Triggers en PostgreSQL
   - ✅ Propagación en tiempo real
+
+### 🤖 [apps/messaging-bot](./apps/messaging-bot) - Bot Multi-Plataforma
+- **Stack:** Node.js + Telegram API + Gemini AI
+- **Puerto:** 3004
+- **Funcionalidades:**
+  - ✅ Bot de Telegram integrado
+  - ✅ IA conversacional con Gemini
+  - ✅ Gestión de presupuestos y citas
+  - ✅ Notificaciones automáticas
+  - ✅ Detección de cambios en órdenes
 
 ## 🚀 Inicio Rápido
 
@@ -75,12 +85,14 @@ npm run dev
 npm run dev:web         # Solo frontend
 npm run dev:api         # Solo API de resultados
 npm run dev:sync        # Solo servicio de sincronización
+npm run dev:bot         # Solo bot de mensajería
 ```
 
 Servicios disponibles en:
 - **Frontend:** http://localhost:5173
 - **Results API:** http://localhost:3003
 - **Sync Service:** Puerto 3002 (listener interno)
+- **Messaging Bot:** http://localhost:3004
 
 ### Build de Producción
 
@@ -103,7 +115,8 @@ laboratorio-eg-system/
 ├── apps/
 │   ├── web/              # Frontend PWA (React + Vite)
 │   ├── results-api/      # API de resultados (Node + Express)
-│   └── sync-service/     # Servicio de sincronización
+│   ├── sync-service/     # Servicio de sincronización
+│   └── messaging-bot/    # Bot de Telegram/WhatsApp con IA
 │
 ├── packages/
 │   ├── database/         # Esquemas y migraciones de PostgreSQL

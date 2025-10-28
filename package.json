@@ -17,7 +17,8 @@
     "clean": "turbo run clean",
     "dev:web": "turbo run dev --filter=web",
     "dev:api": "turbo run dev --filter=results-api",
-    "dev:sync": "turbo run dev --filter=sync-service"
+    "dev:sync": "turbo run dev --filter=sync-service",
+    "dev:bot": "turbo run dev --filter=messaging-bot"
   },
   "devDependencies": {
     "turbo": "^1.10.0",

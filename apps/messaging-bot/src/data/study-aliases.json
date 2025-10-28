@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "description": "Aliases de nombres comunes/coloquiales para estudios de laboratorio. Permite a los pacientes usar términos cotidianos venezolanos para solicitar estudios.",
+  "version": "1.0.0",
+  "lastUpdated": "2025-10-25",
+
+  "aliases": {
+    "hematologia": {
+      "sangre": ["Hematología Completa"],
+      "sangre completa": ["Hematología Completa"],
+      "hemograma": ["Hematología Completa"],
+      "hemograma completo": ["Hematología Completa"],
+      "biometria hematica": ["Hematología Completa"],
+      "biometria": ["Hematología Completa"],
+      "examen de sangre": ["Hematología Completa"],
+      "conteo sanguineo": ["Hematología Completa"]
+    },
+
+    "quimica_sanguinea": {
+      "azucar": ["Glucosa"],
+      "azucar en sangre": ["Glucosa"],
+      "azucar en ayunas": ["Glucosa"],
+      "glicemia": ["Glucosa"],
+      "glicemia en ayunas": ["Glucosa"],
+      "glucemia": ["Glucosa"],
+
+      "colesterol total": ["Colesterol"],
+      "colesterol bueno": ["Colesterol HDL"],
+      "hdl": ["Colesterol HDL"],
+      "colesterol malo": ["Colesterol LDL"],
+      "ldl": ["Colesterol LDL"],
+
+      "trigliceridos": ["Triglicéridos"],
+      "grasas en sangre": ["Colesterol", "Triglicéridos"],
+
+      "perfil lipidico": ["Colesterol", "Colesterol HDL", "Colesterol LDL", "Triglicéridos"],
+      "perfil de grasas": ["Colesterol", "Colesterol HDL", "Colesterol LDL", "Triglicéridos"],
+      "lipidos": ["Colesterol", "Colesterol HDL", "Colesterol LDL", "Triglicéridos"],
+
+      "urea": ["Urea"],
+      "nitrogeno ureico": ["Urea"],
+      "bun": ["Urea"],
+
+      "creatinina": ["Creatinina"],
+      "funcion renal": ["Urea", "Creatinina"],
+      "riñones": ["Urea", "Creatinina"],
+
+      "acido urico": ["Ácido Úrico"],
+      "urico": ["Ácido Úrico"],
+      "gota": ["Ácido Úrico"]
+    },
+
+    "hormonas": {
+      "tiroides": ["TSH", "T3 Libre ( eCL)", "T4 Libre (eCL)"],
+      "perfil tiroideo": ["TSH", "T3 Libre ( eCL)", "T4 Libre (eCL)"],
+      "tsh": ["TSH"],
+      "t3": ["T3 Libre ( eCL)", "T3 Total (eCL)"],
+      "t4": ["T4 Libre (eCL)", "T4 Total (eCL)"],
+
+      "prolactina": ["Prolactina (eCL)"],
+      "hormona de crecimiento": ["Hormona de Crecimiento (HGH) Basal"],
+      "testosterona": ["Testosterona Total (eCL)"],
+      "estrogeno": ["Estradiol (eCL)"],
+      "estradiol": ["Estradiol (eCL)"]
+    },
+
+    "orina": {
+      "examen de orina": ["Examen de Orina"],
+      "orina completa": ["Examen de Orina"],
+      "orina parcial": ["Examen de Orina"],
+      "uro": ["Examen de Orina"],
+      "uroanálisis": ["Examen de Orina"],
+      "urocultivo": ["Cultivo de Orina"]
+    },
+
+    "heces": {
+      "examen de heces": ["Examen de Heces"],
+      "heces completas": ["Examen de Heces"],
+      "coprologico": ["Examen de Heces"],
+      "parasitos": ["Examen de Heces"],
+      "amebas": ["Examen de Heces"]
+    },
+
+    "serologia": {
+      "vih": ["VIH 1/2 Cuarta Generación (eCL)", "VIH Ac+Ag (eCL)"],
+      "sida": ["VIH 1/2 Cuarta Generación (eCL)"],
+      "vdrl": ["VDRL"],
+      "sifilis": ["VDRL"],
+      "hepatitis a": ["Hepatitis A IgM"],
+      "hepatitis b": ["Antígeno de Superficie de Hepatitis B ("],
+      "hepatitis c": ["Anticuerpo Hepatitis C"],
+      "chagas": ["Chagas"],
+      "toxoplasma": ["Toxoplasma IgG", "Toxoplasma IgM"],
+      "dengue": ["Dengue IgG", "Dengue IgM"]
+    },
+
+    "embarazo": {
+      "prueba de embarazo": ["Sub Unidad Beta HCG Cuantitativa (eCL)"],
+      "beta": ["Sub Unidad Beta HCG Cuantitativa (eCL)"],
+      "beta hcg": ["Sub Unidad Beta HCG Cuantitativa (eCL)"],
+      "hcg": ["Sub Unidad Beta HCG Cuantitativa (eCL)"],
+      "embarazo": ["Sub Unidad Beta HCG Cuantitativa (eCL)"]
+    },
+
+    "otros": {
+      "tipo de sangre": ["Grupo Sanguíneo y Factor Rh"],
+      "grupo sanguineo": ["Grupo Sanguíneo y Factor Rh"],
+      "rh": ["Grupo Sanguíneo y Factor Rh"],
+
+      "psa": ["PSA Total (eCL)"],
+      "prostata": ["PSA Total (eCL)"],
+
+      "vitamina d": ["Vitamina D 25 OH (eCL)"],
+      "vitamina b12": ["Vitamina B12 (eCL)"],
+
+      "electrolitos": ["Sodio", "Potasio", "Cloro"],
+      "sodio": ["Sodio"],
+      "potasio": ["Potasio"],
+      "cloro": ["Cloro"]
+    },
+
+    "perfiles": {
+      "perfil 20": ["Hematología Completa", "Glucosa", "Urea", "Creatinina", "Ácido Úrico", "Colesterol", "Triglicéridos", "Examen de Orina"],
+      "perfil basico": ["Hematología Completa", "Glucosa", "Urea", "Creatinina"],
+      "perfil preoperatorio": ["Hematología Completa", "Grupo Sanguíneo y Factor Rh", "TP", "PTT"],
+      "perfil hepatico": ["TGO", "TGP", "Bilirrubina Total"],
+      "perfil renal": ["Urea", "Creatinina", "Ácido Úrico"],
+      "perfil cardiaco": ["CPK", "CPK MB", "Troponina I (eCL)"]
+    }
+  }
+}

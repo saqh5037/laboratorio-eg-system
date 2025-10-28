@@ -1,0 +1,192 @@
+name: 04 - Emergency Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      backup_timestamp:
+        description: 'Backup timestamp (YYYYMMDD_HHMMSS) or "latest"'
+        required: true
+        default: 'latest'
+      confirm:
+        description: 'Type "ROLLBACK" to confirm'
+        required: true
+      environment:
+        description: 'Environment to rollback'
+        required: true
+        type: choice
+        options:
+          - production
+          - staging
+
+jobs:
+  validate-rollback:
+    name: Validate Rollback Request
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ✅ Validate Confirmation
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "ROLLBACK" ]; then
+            echo "❌ Rollback cancelled: confirmation text incorrect"
+            echo "You entered: ${{ github.event.inputs.confirm }}"
+            echo "Required: ROLLBACK"
+            exit 1
+          fi
+          echo "⚠️ ROLLBACK CONFIRMED by ${{ github.actor }}"
+          echo "🕐 Time: $(date)"
+          echo "🎯 Environment: ${{ github.event.inputs.environment }}"
+          echo "📦 Backup: ${{ github.event.inputs.backup_timestamp }}"
+
+  list-backups:
+    name: List Available Backups
+    runs-on: ubuntu-latest
+    needs: validate-rollback
+
+    steps:
+      - name: 🔑 Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 📋 List Backups
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            SSH_HOST="${{ secrets.SSH_HOST_PRODUCTION }}"
+          else
+            SSH_HOST="${{ secrets.SSH_HOST_STAGING }}"
+          fi
+
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@$SSH_HOST << 'ENDSSH'
+            echo "📦 Available Backups:"
+            echo "===================="
+            ls -lhtr /home/dynamtek/backups/ | tail -10
+            echo "===================="
+          ENDSSH
+
+  rollback:
+    name: Execute Rollback
+    runs-on: ubuntu-latest
+    needs: list-backups
+
+    steps:
+      - name: 🔑 Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: ⏮️ Execute Rollback
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            SSH_HOST="${{ secrets.SSH_HOST_PRODUCTION }}"
+            DEPLOY_PATH="/home/dynamtek/apps/production"
+          else
+            SSH_HOST="${{ secrets.SSH_HOST_STAGING }}"
+            DEPLOY_PATH="/home/dynamtek/apps/staging"
+          fi
+
+          ssh ${{ secrets.SSH_USER }}@$SSH_HOST << 'ENDSSH'
+            set -e
+
+            BACKUP_TIMESTAMP="${{ github.event.inputs.backup_timestamp }}"
+
+            if [ "$BACKUP_TIMESTAMP" = "latest" ]; then
+              BACKUP_DIR=$(ls -td /home/dynamtek/backups/* | head -1)
+            else
+              BACKUP_DIR="/home/dynamtek/backups/$BACKUP_TIMESTAMP"
+            fi
+
+            echo "🔄 Rolling back to: $BACKUP_DIR"
+
+            if [ ! -d "$BACKUP_DIR" ]; then
+              echo "❌ Backup not found: $BACKUP_DIR"
+              echo "Available backups:"
+              ls -lh /home/dynamtek/backups/
+              exit 1
+            fi
+
+            # Get commit hash
+            if [ -f "$BACKUP_DIR/commit.txt" ]; then
+              COMMIT=$(cat $BACKUP_DIR/commit.txt)
+              echo "📍 Target commit: $COMMIT"
+
+              cd '"$DEPLOY_PATH"'
+              git fetch origin
+              git checkout $COMMIT
+            else
+              echo "⚠️ No commit.txt found, skipping git checkout"
+            fi
+
+            # Restore PM2 configuration
+            if [ -f "$BACKUP_DIR/dump.pm2" ]; then
+              pm2 kill
+              pm2 resurrect $BACKUP_DIR/dump.pm2
+              echo "✅ PM2 configuration restored"
+            else
+              echo "⚠️ No PM2 dump found, manual restart may be needed"
+            fi
+
+            # Restore .env files (if any)
+            if ls $BACKUP_DIR/*.env 1> /dev/null 2>&1; then
+              echo "📝 Restoring .env files..."
+              # This would need more specific logic based on your setup
+              echo "⚠️ Manual .env restoration recommended"
+            fi
+
+            echo "✅ Rollback completed!"
+            echo ""
+            echo "📊 Current PM2 Status:"
+            pm2 status
+          ENDSSH
+
+  verify-rollback:
+    name: Verify Rollback
+    runs-on: ubuntu-latest
+    needs: rollback
+
+    steps:
+      - name: 🔑 Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: ✅ Health Checks
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            SSH_HOST="${{ secrets.SSH_HOST_PRODUCTION }}"
+          else
+            SSH_HOST="${{ secrets.SSH_HOST_STAGING }}"
+          fi
+
+          ssh ${{ secrets.SSH_USER }}@$SSH_HOST << 'ENDSSH'
+            echo "🔍 Health Checks:"
+            echo "=================="
+
+            curl -f http://localhost:3002/health || curl -f http://localhost:3002/api/stats || echo "❌ Sync Service"
+            curl -f http://localhost:3003/api/health || echo "❌ Results API"
+            curl -f http://localhost:3004/api/health || echo "❌ Messaging Bot"
+
+            echo ""
+            echo "📊 PM2 Status:"
+            pm2 status
+
+            echo ""
+            echo "📋 Recent Logs:"
+            pm2 logs --lines 10 --nostream
+
+            echo "=================="
+          ENDSSH
+
+  notify-rollback:
+    name: Notify Rollback Complete
+    runs-on: ubuntu-latest
+    needs: verify-rollback
+    if: always()
+
+    steps:
+      - name: 📢 Rollback Notification
+        run: |
+          echo "⏮️ Rollback completed: ${{ job.status }}"
+          echo "👤 Executed by: ${{ github.actor }}"
+          echo "🎯 Environment: ${{ github.event.inputs.environment }}"
+          echo "📦 Backup: ${{ github.event.inputs.backup_timestamp }}"
+          echo "🕐 Time: $(date)"

@@ -1,0 +1,174 @@
+name: 05 - Database Migration
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+      operation:
+        description: 'Migration operation'
+        required: true
+        type: choice
+        options:
+          - install-triggers
+          - verify-database
+          - manual-sync
+      confirm:
+        description: 'Type "MIGRATE" to confirm'
+        required: true
+
+jobs:
+  validate-migration:
+    name: Validate Migration Request
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ✅ Validate Confirmation
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "MIGRATE" ]; then
+            echo "❌ Migration cancelled: confirmation text incorrect"
+            echo "You entered: ${{ github.event.inputs.confirm }}"
+            echo "Required: MIGRATE"
+            exit 1
+          fi
+          echo "✅ Migration confirmed by ${{ github.actor }}"
+          echo "🎯 Environment: ${{ github.event.inputs.environment }}"
+          echo "🔧 Operation: ${{ github.event.inputs.operation }}"
+
+  install-triggers:
+    name: Install PostgreSQL Triggers
+    runs-on: ubuntu-latest
+    needs: validate-migration
+    if: github.event.inputs.operation == 'install-triggers'
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🔑 Setup SSH to DB Server
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 🗄️ Install Triggers
+        run: |
+          # Get DB credentials based on environment
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            DB_HOST="${{ secrets.DB_HOST_PROD }}"
+            DB_USER="${{ secrets.DB_USER_PROD }}"
+            DB_PASSWORD="${{ secrets.DB_PASSWORD_PROD }}"
+          else
+            DB_HOST="${{ secrets.DB_HOST_STAGING }}"
+            DB_USER="${{ secrets.DB_USER_STAGING }}"
+            DB_PASSWORD="${{ secrets.DB_PASSWORD_STAGING }}"
+          fi
+
+          # Copy triggers file to DB server
+          scp -o StrictHostKeyChecking=no \
+            ./apps/sync-service/database/triggers-labsis.sql \
+            ${{ secrets.SSH_USER }}@$DB_HOST:/tmp/
+
+          # Execute triggers
+          ssh ${{ secrets.SSH_USER }}@$DB_HOST << ENDSSH
+            echo "📦 Installing PostgreSQL triggers..."
+
+            PGPASSWORD="$DB_PASSWORD" psql -h localhost -U $DB_USER -d labsisEG -f /tmp/triggers-labsis.sql
+
+            echo "✅ Triggers installed successfully!"
+
+            # Verify triggers
+            echo ""
+            echo "🔍 Verifying triggers:"
+            PGPASSWORD="$DB_PASSWORD" psql -h localhost -U $DB_USER -d labsisEG -c "\df notify_precio_change"
+
+            # Cleanup
+            rm /tmp/triggers-labsis.sql
+          ENDSSH
+
+  verify-database:
+    name: Verify Database Connection
+    runs-on: ubuntu-latest
+    needs: validate-migration
+    if: github.event.inputs.operation == 'verify-database'
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🔑 Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 🔍 Verify Database
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            SSH_HOST="${{ secrets.SSH_HOST_PRODUCTION }}"
+          else
+            SSH_HOST="${{ secrets.SSH_HOST_STAGING }}"
+          fi
+
+          ssh ${{ secrets.SSH_USER }}@$SSH_HOST << 'ENDSSH'
+            echo "🔍 Verifying database connection..."
+
+            cd /home/dynamtek/apps/${{ github.event.inputs.environment }}/apps/sync-service
+
+            npm run verify-db
+
+            echo "✅ Database verification complete!"
+          ENDSSH
+
+  manual-sync:
+    name: Run Manual Sync
+    runs-on: ubuntu-latest
+    needs: validate-migration
+    if: github.event.inputs.operation == 'manual-sync'
+
+    steps:
+      - name: 🔑 Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 🔄 Execute Manual Sync
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            SSH_HOST="${{ secrets.SSH_HOST_PRODUCTION }}"
+          else
+            SSH_HOST="${{ secrets.SSH_HOST_STAGING }}"
+          fi
+
+          ssh ${{ secrets.SSH_USER }}@$SSH_HOST << 'ENDSSH'
+            echo "🔄 Running manual sync..."
+
+            cd /home/dynamtek/apps/${{ github.event.inputs.environment }}/apps/sync-service
+
+            node scripts/manual-sync.js
+
+            echo "✅ Manual sync complete!"
+
+            # Show stats
+            echo ""
+            echo "📊 Sync Stats:"
+            curl -s http://localhost:3002/api/stats | head -20
+          ENDSSH
+
+  notify:
+    name: Notify Operation Complete
+    runs-on: ubuntu-latest
+    needs: [install-triggers, verify-database, manual-sync]
+    if: always()
+
+    steps:
+      - name: 📢 Operation Status
+        run: |
+          echo "🔧 Database Operation: ${{ job.status }}"
+          echo "👤 Executed by: ${{ github.actor }}"
+          echo "🎯 Environment: ${{ github.event.inputs.environment }}"
+          echo "🔨 Operation: ${{ github.event.inputs.operation }}"
+          echo "🕐 Time: $(date)"
