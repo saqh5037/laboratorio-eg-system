@@ -42,6 +42,10 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST_STAGING }} << 'ENDSSH'
             set -e
 
+            # Load NVM and Node.js
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
             echo "🔄 Deploying ${{ matrix.service.name }} to Staging..."
 
             # Create directory if doesn't exist
@@ -81,7 +85,7 @@ jobs:
         if: failure()
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST_STAGING }} \
-            "pm2 logs ${{ matrix.service.pm2-name }} --lines 50 --nostream"
+            "export NVM_DIR=\"\$HOME/.nvm\" && [ -s \"\$NVM_DIR/nvm.sh\" ] && \\. \"\$NVM_DIR/nvm.sh\" && pm2 logs ${{ matrix.service.pm2-name }} --lines 50 --nostream"
 
   deploy-frontend:
     name: Deploy Frontend to Staging
