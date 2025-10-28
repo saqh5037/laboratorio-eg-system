@@ -65,6 +65,11 @@ jobs:
       - name: 🔍 Check Server Status
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST_PRODUCTION }} << 'ENDSSH'
+            set -e
+
+            # Load NVM and Node.js
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             echo "📊 Current System Status:"
             echo "==================================="
             echo "🔧 PM2 Status:"
