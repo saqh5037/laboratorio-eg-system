@@ -3,6 +3,7 @@ const router = express.Router();
 const AuthService = require('../core/services/AuthService');
 const SessionService = require('../core/services/SessionService');
 const NotificationService = require('../core/services/NotificationService');
+const AuthorizationTokenService = require('../core/services/AuthorizationTokenService');
 const logger = require('../utils/logger');
 
 /**
@@ -42,6 +43,23 @@ router.post('/request-code', async (req, res) => {
       return res.status(404).json({
         success: false,
         error: 'No se encontró ningún paciente con este número de teléfono'
+      });
+    }
+
+    // VERIFICAR SI EL PACIENTE YA AUTORIZÓ LA COMUNICACIÓN POR TELEGRAM
+    const chatId = await NotificationService.findPatientChatId(
+      paciente.id,
+      phoneValidation.formatted
+    );
+
+    if (!chatId) {
+      // El paciente NO ha autorizado la comunicación
+      logger.warn(`⚠️  Paciente ${paciente.id} no ha autorizado Telegram`);
+      return res.status(403).json({
+        success: false,
+        requiresAuthorization: true,
+        error: 'Primero debe autorizar la comunicación por Telegram',
+        message: 'Para recibir códigos de autenticación por Telegram, primero debe autorizar la comunicación con el bot.'
       });
     }
 
@@ -406,6 +424,144 @@ router.get('/stats', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Error al obtener estadísticas'
+    });
+  }
+});
+
+/**
+ * POST /api/auth/telegram/generate-authorization-token
+ * Generar token de autorización para Telegram
+ *
+ * Body:
+ * {
+ *   "phone": "+525516867745"
+ * }
+ */
+router.post('/telegram/generate-authorization-token', async (req, res) => {
+  try {
+    const { phone } = req.body;
+
+    if (!phone) {
+      return res.status(400).json({
+        success: false,
+        error: 'El teléfono es requerido'
+      });
+    }
+
+    // Validar formato de teléfono
+    const phoneValidation = AuthService.validateVenezuelanPhone(phone);
+
+    if (!phoneValidation.valid) {
+      return res.status(400).json({
+        success: false,
+        error: phoneValidation.error
+      });
+    }
+
+    // Buscar paciente por teléfono
+    const paciente = await AuthService.findPatientByPhone(phoneValidation.formatted);
+
+    if (!paciente) {
+      return res.status(404).json({
+        success: false,
+        error: 'No se encontró ningún paciente con este número de teléfono'
+      });
+    }
+
+    // Verificar si ya tiene un token pendiente
+    const pendingToken = await AuthorizationTokenService.checkPendingToken(paciente.id);
+
+    if (pendingToken.hasToken) {
+      logger.info(`🔑 Token pendiente reutilizado para paciente ${paciente.id}`);
+      return res.json({
+        success: true,
+        requiresAuthorization: true,
+        telegramLink: pendingToken.deepLink,
+        token: pendingToken.token,
+        expiresAt: pendingToken.expiresAt,
+        expiresIn: Math.floor((new Date(pendingToken.expiresAt) - new Date()) / 1000)
+      });
+    }
+
+    // Generar nuevo token
+    const tokenData = await AuthorizationTokenService.generateToken(
+      paciente.id,
+      phoneValidation.formatted
+    );
+
+    res.json({
+      success: true,
+      requiresAuthorization: true,
+      telegramLink: tokenData.deepLink,
+      token: tokenData.token,
+      expiresIn: tokenData.expiresIn,
+      expiresAt: tokenData.expiresAt
+    });
+
+  } catch (error) {
+    logger.error('Error generando token de autorización:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al generar token de autorización'
+    });
+  }
+});
+
+/**
+ * GET /api/auth/telegram/check-authorization
+ * Verificar si un paciente ya autorizó la comunicación por Telegram
+ *
+ * Query params:
+ * - phone: +525516867745
+ */
+router.get('/telegram/check-authorization', async (req, res) => {
+  try {
+    const { phone } = req.query;
+
+    if (!phone) {
+      return res.status(400).json({
+        success: false,
+        error: 'El teléfono es requerido'
+      });
+    }
+
+    // Validar formato de teléfono
+    const phoneValidation = AuthService.validateVenezuelanPhone(phone);
+
+    if (!phoneValidation.valid) {
+      return res.status(400).json({
+        success: false,
+        error: phoneValidation.error
+      });
+    }
+
+    // Buscar paciente por teléfono
+    const paciente = await AuthService.findPatientByPhone(phoneValidation.formatted);
+
+    if (!paciente) {
+      return res.status(404).json({
+        success: false,
+        error: 'No se encontró ningún paciente con este número de teléfono'
+      });
+    }
+
+    // Verificar si tiene chat_id registrado
+    const chatId = await NotificationService.findPatientChatId(
+      paciente.id,
+      phoneValidation.formatted
+    );
+
+    res.json({
+      success: true,
+      isAuthorized: !!chatId,
+      chatId: chatId || null
+    });
+
+  } catch (error) {
+    logger.error('Error verificando autorización:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al verificar autorización'
     });
   }
 });

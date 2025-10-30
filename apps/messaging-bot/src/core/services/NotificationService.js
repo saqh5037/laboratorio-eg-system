@@ -1,4 +1,4 @@
-const { query } = require('../../db/pool');
+const { botPool, labsisPool } = require('../../db/pool');
 const logger = require('../../utils/logger');
 const SessionService = require('./SessionService');
 const MessageTemplateService = require('./MessageTemplateService');
@@ -209,7 +209,7 @@ class NotificationService {
    */
   async getPatientData(pacienteId) {
     try {
-      const result = await query(
+      const result = await labsisPool.query(
         `SELECT id, nombre, apellido, ci_paciente, telefono, email
          FROM paciente
          WHERE id = $1`,
@@ -232,23 +232,80 @@ class NotificationService {
    */
   async findPatientChatId(pacienteId, telefono) {
     try {
-      // Buscar en sesiones activas
-      let result = await query(
-        `SELECT telegram_chat_id
-         FROM patient_sessions
-         WHERE paciente_id = $1
-           AND telegram_chat_id IS NOT NULL
-         ORDER BY last_activity DESC
+      // PRIORIDAD 1: Buscar en telegram_user_registry (nuevo sistema)
+      let result = await botPool.query(
+        `SELECT telegram_chat_id::text
+         FROM telegram_user_registry
+         WHERE paciente_id = $1 AND is_active = TRUE
+         ORDER BY last_interaction DESC
          LIMIT 1`,
         [pacienteId]
       );
 
       if (result.rows.length > 0 && result.rows[0].telegram_chat_id) {
+        logger.info(`✅ Chat ID encontrado en telegram_user_registry: ${result.rows[0].telegram_chat_id}`);
         return result.rows[0].telegram_chat_id;
       }
 
-      // Buscar en códigos de autenticación
-      result = await query(
+      // PRIORIDAD 2: Buscar por teléfono si no se encontró por paciente_id
+      if (telefono) {
+        result = await botPool.query(
+          `SELECT telegram_chat_id::text
+           FROM telegram_user_registry
+           WHERE phone = $1 AND is_active = TRUE
+           ORDER BY last_interaction DESC
+           LIMIT 1`,
+          [telefono]
+        );
+
+        if (result.rows.length > 0 && result.rows[0].telegram_chat_id) {
+          logger.info(`✅ Chat ID encontrado por teléfono en telegram_user_registry: ${result.rows[0].telegram_chat_id}`);
+          return result.rows[0].telegram_chat_id;
+        }
+      }
+
+      // PRIORIDAD 2.5: Buscar en bot_conversations (sistema viejo en labsisEG)
+      // Esta tabla está en la base de datos vieja, entonces necesitamos usar labsisPool
+      try {
+        const { labsisPool } = require('../../db/pool');
+        result = await labsisPool.query(
+          `SELECT chat_id
+           FROM bot_conversations
+           WHERE platform = 'telegram'
+             AND state = 'active'
+             AND user_info->>'phone' = $1
+           ORDER BY last_message_at DESC
+           LIMIT 1`,
+          [telefono]
+        );
+
+        if (result.rows.length > 0 && result.rows[0].chat_id) {
+          logger.info(`✅ Chat ID encontrado en bot_conversations (labsisEG): ${result.rows[0].chat_id}`);
+          return result.rows[0].chat_id;
+        }
+      } catch (convError) {
+        // Si falla (por ejemplo, tabla no migrada aún), continuar con siguientes prioridades
+        logger.warn(`⚠️  Error buscando en bot_conversations: ${convError.message}`);
+      }
+
+      // PRIORIDAD 3: Buscar en sesiones activas (sistema legacy)
+      result = await botPool.query(
+        `SELECT telegram_chat_id
+         FROM patient_sessions
+         WHERE paciente_id = $1
+           AND telegram_chat_id IS NOT NULL
+         ORDER BY last_used_at DESC
+         LIMIT 1`,
+        [pacienteId]
+      );
+
+      if (result.rows.length > 0 && result.rows[0].telegram_chat_id) {
+        logger.info(`✅ Chat ID encontrado en patient_sessions (legacy): ${result.rows[0].telegram_chat_id}`);
+        return result.rows[0].telegram_chat_id;
+      }
+
+      // PRIORIDAD 4: Buscar en códigos de autenticación (sistema legacy)
+      result = await botPool.query(
         `SELECT telegram_chat_id
          FROM telegram_auth_codes
          WHERE paciente_id = $1
@@ -259,28 +316,58 @@ class NotificationService {
       );
 
       if (result.rows.length > 0 && result.rows[0].telegram_chat_id) {
+        logger.info(`✅ Chat ID encontrado en telegram_auth_codes (legacy): ${result.rows[0].telegram_chat_id}`);
         return result.rows[0].telegram_chat_id;
       }
 
-      // Buscar en presupuestos del bot
-      result = await query(
-        `SELECT conversation_id
-         FROM bot_presupuestos
-         WHERE labsis_patient_id = $1
-           AND platform = 'telegram'
-         ORDER BY created_at DESC
-         LIMIT 1`,
-        [pacienteId]
-      );
+      // PRIORIDAD 5: Buscar en presupuestos del bot (sistema legacy en labsisEG)
+      // Y migrar automáticamente a telegram_user_registry
+      try {
+        const { labsisPool } = require('../../db/pool');
+        result = await labsisPool.query(
+          `SELECT conversation_id, patient_phone
+           FROM bot_presupuestos
+           WHERE labsis_patient_id = $1
+             AND platform = 'telegram'
+           ORDER BY created_at DESC
+           LIMIT 1`,
+          [pacienteId]
+        );
 
-      if (result.rows.length > 0) {
-        // Extraer el chat_id del conversation_id (formato: telegram_CHATID)
-        const conversationId = result.rows[0].conversation_id;
-        const chatId = conversationId.replace('telegram_', '');
-        return chatId;
+        if (result.rows.length > 0) {
+          // Extraer el chat_id del conversation_id (formato: telegram_CHATID)
+          const conversationId = result.rows[0].conversation_id;
+          const chatId = conversationId.replace('telegram_', '');
+          const phone = result.rows[0].patient_phone || telefono;
+
+          logger.info(`✅ Chat ID encontrado en bot_presupuestos (labsisEG): ${chatId}`);
+
+          // MIGRACIÓN AUTOMÁTICA: Guardar en telegram_user_registry para próximas veces
+          try {
+            await botPool.query(
+              `INSERT INTO telegram_user_registry
+               (telegram_chat_id, phone, paciente_id, is_active, registered_at, last_interaction)
+               VALUES ($1, $2, $3, TRUE, NOW(), NOW())
+               ON CONFLICT (telegram_chat_id) DO UPDATE
+               SET paciente_id = EXCLUDED.paciente_id,
+                   phone = EXCLUDED.phone,
+                   is_active = TRUE,
+                   last_interaction = NOW()`,
+              [chatId, phone, pacienteId]
+            );
+            logger.info(`🔄 Chat ID migrado automáticamente a telegram_user_registry: ${chatId}`);
+          } catch (migrationError) {
+            logger.warn(`⚠️  Error migrando chat_id automáticamente: ${migrationError.message}`);
+            // Continuar incluso si falla la migración
+          }
+
+          return chatId;
+        }
+      } catch (presError) {
+        logger.warn(`⚠️  Error buscando en bot_presupuestos: ${presError.message}`);
       }
 
-      logger.warn(`No se encontró chat_id para paciente ${pacienteId}`);
+      logger.warn(`⚠️  No se encontró chat_id para paciente ${pacienteId} (teléfono: ${telefono})`);
       return null;
 
     } catch (error) {
@@ -296,7 +383,7 @@ class NotificationService {
    */
   async getOrdenEstudios(ordenTrabajoId) {
     try {
-      const result = await query(
+      const result = await botPool.query(
         `SELECT p.nombre
          FROM prueba_orden po
          JOIN prueba p ON po.prueba_id = p.id
@@ -360,7 +447,7 @@ class NotificationService {
         errorMessage
       } = data;
 
-      await query(
+      await botPool.query(
         `INSERT INTO telegram_notifications
          (orden_trabajo_id, paciente_id, notification_type, telegram_chat_id, message_text, status, error_message)
          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
@@ -380,7 +467,7 @@ class NotificationService {
    */
   async getPatientNotifications(pacienteId, limit = 10) {
     try {
-      const result = await query(
+      const result = await botPool.query(
         `SELECT tn.*, ot.numero as orden_numero
          FROM telegram_notifications tn
          LEFT JOIN orden_trabajo ot ON tn.orden_trabajo_id = ot.id
@@ -456,7 +543,7 @@ class NotificationService {
    */
   async getNotificationStats() {
     try {
-      const result = await query(`
+      const result = await botPool.query(`
         SELECT
           COUNT(*) as total_notifications,
           COUNT(*) FILTER (WHERE status = 'sent') as sent_count,
@@ -482,7 +569,7 @@ class NotificationService {
    */
   async retryFailedNotifications(maxRetries = 3) {
     try {
-      const result = await query(
+      const result = await botPool.query(
         `SELECT * FROM telegram_notifications
          WHERE status = 'failed' AND retry_count < $1
          ORDER BY sent_at DESC
@@ -494,7 +581,7 @@ class NotificationService {
 
       for (const notification of result.rows) {
         // Obtener datos de la orden
-        const ordenResult = await query(
+        const ordenResult = await botPool.query(
           'SELECT * FROM orden_trabajo WHERE id = $1',
           [notification.orden_trabajo_id]
         );
@@ -515,7 +602,7 @@ class NotificationService {
           retriedCount++;
         } else {
           // Incrementar contador de reintentos
-          await query(
+          await botPool.query(
             'UPDATE telegram_notifications SET retry_count = retry_count + 1 WHERE id = $1',
             [notification.id]
           );
