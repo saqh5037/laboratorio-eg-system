@@ -1,4 +1,4 @@
-const { query } = require('../../db/pool');
+const { botPool, labsisPool } = require('../../db/pool');
 const logger = require('../../utils/logger');
 const NotificationService = require('./NotificationService');
 
@@ -93,7 +93,7 @@ class ChangeDetectorService {
       // 2. Fueron creadas/actualizadas desde el último chequeo
       // 3. NO tienen notificación de "orden_pagada" enviada
 
-      const result = await query(
+      const result = await botPool.query(
         `SELECT DISTINCT ot.id, ot.numero, ot.paciente_id, ot.fecha, ot.factura_id
          FROM orden_trabajo ot
          WHERE ot.factura_id IS NOT NULL
@@ -142,7 +142,7 @@ class ChangeDetectorService {
       // 2. Fueron validadas recientemente (fecha_validado)
       // 3. NO tienen notificación de "resultados_listos" enviada
 
-      const result = await query(
+      const result = await botPool.query(
         `SELECT DISTINCT ot.id, ot.numero, ot.paciente_id, ot.fecha_validado, ot.factura_id
          FROM orden_trabajo ot
          WHERE ot.status_id = 4

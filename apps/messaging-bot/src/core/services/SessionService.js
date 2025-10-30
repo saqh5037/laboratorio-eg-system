@@ -1,4 +1,4 @@
-const { query } = require('../../db/pool');
+const { botPool, labsisPool } = require('../../db/pool');
 const logger = require('../../utils/logger');
 const jwt = require('jsonwebtoken');
 const config = require('../../config/config');
@@ -25,7 +25,7 @@ class SessionService {
       const { pacienteId, telegramChatId, deviceInfo, ipAddress, userAgent } = params;
 
       // Obtener ci_paciente de la base de datos
-      const pacienteResult = await query(
+      const pacienteResult = await botPool.query(
         'SELECT ci_paciente, nombre, apellido FROM paciente WHERE id = $1',
         [pacienteId]
       );
@@ -55,7 +55,7 @@ class SessionService {
       const expiresAt = new Date(Date.now() + this.SESSION_EXPIRATION_DAYS * 24 * 60 * 60 * 1000);
 
       // Guardar sesión en base de datos
-      const result = await query(
+      const result = await botPool.query(
         `INSERT INTO patient_sessions
          (paciente_id, token, telegram_chat_id, device_info, expires_at, ip_address, user_agent)
          VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -110,7 +110,7 @@ class SessionService {
       }
 
       // Verificar sesión en base de datos
-      const result = await query(
+      const result = await botPool.query(
         `SELECT id, paciente_id, expires_at, is_active, revoked_at
          FROM patient_sessions
          WHERE token = $1`,
@@ -156,7 +156,7 @@ class SessionService {
       }
 
       // Actualizar last_activity
-      await query(
+      await botPool.query(
         'UPDATE patient_sessions SET last_activity = NOW() WHERE id = $1',
         [session.id]
       );
@@ -189,7 +189,7 @@ class SessionService {
    */
   async revokeSession(sessionId, reason = 'Logout manual') {
     try {
-      await query(
+      await botPool.query(
         `UPDATE patient_sessions
          SET is_active = FALSE, revoked_at = NOW(), revoke_reason = $1
          WHERE id = $2`,
@@ -213,7 +213,7 @@ class SessionService {
    */
   async revokeAllPatientSessions(pacienteId, reason = 'Revocación masiva') {
     try {
-      const result = await query(
+      const result = await botPool.query(
         `UPDATE patient_sessions
          SET is_active = FALSE, revoked_at = NOW(), revoke_reason = $1
          WHERE paciente_id = $2 AND is_active = TRUE`,
@@ -239,11 +239,11 @@ class SessionService {
    */
   async getActiveSessions(pacienteId) {
     try {
-      const result = await query(
-        `SELECT id, token, telegram_chat_id, device_info, created_at, last_activity, expires_at, ip_address
+      const result = await botPool.query(
+        `SELECT id, token, telegram_chat_id, device_info, created_at, last_used_at, expires_at, ip_address
          FROM patient_sessions
          WHERE paciente_id = $1 AND is_active = TRUE AND expires_at > NOW()
-         ORDER BY last_activity DESC`,
+         ORDER BY last_used_at DESC`,
         [pacienteId]
       );
 
@@ -261,7 +261,7 @@ class SessionService {
    */
   async cleanupExpiredSessions() {
     try {
-      const result = await query('SELECT cleanup_expired_sessions() as cleaned_count');
+      const result = await botPool.query('SELECT cleanup_expired_sessions() as cleaned_count');
       const cleanedCount = result.rows[0].cleaned_count;
 
       if (cleanedCount > 0) {
@@ -285,7 +285,7 @@ class SessionService {
     try {
       const newExpiresAt = new Date(Date.now() + this.SESSION_EXPIRATION_DAYS * 24 * 60 * 60 * 1000);
 
-      await query(
+      await botPool.query(
         `UPDATE patient_sessions
          SET expires_at = $1, last_activity = NOW()
          WHERE id = $2 AND is_active = TRUE`,
@@ -314,7 +314,7 @@ class SessionService {
    */
   async getSessionStats() {
     try {
-      const result = await query(`
+      const result = await botPool.query(`
         SELECT
           COUNT(*) as total_sessions,
           COUNT(*) FILTER (WHERE is_active = TRUE AND expires_at > NOW()) as active_sessions,
@@ -339,7 +339,7 @@ class SessionService {
    */
   async hasActiveSession(pacienteId) {
     try {
-      const result = await query(
+      const result = await botPool.query(
         `SELECT COUNT(*) as count
          FROM patient_sessions
          WHERE paciente_id = $1 AND is_active = TRUE AND expires_at > NOW()`,
