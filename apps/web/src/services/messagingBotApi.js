@@ -256,3 +256,30 @@ export function formatPhone(phone) {
 
   return withZero;
 }
+
+/**
+ * Generar token de autorización de Telegram
+ * @param {string} phone - Número de teléfono
+ * @returns {Promise<{success: boolean, requiresAuthorization: boolean, telegramLink: string, token: string, expiresIn: number, expiresAt: string}>}
+ */
+export async function generateAuthorizationToken(phone) {
+  const data = await fetchApi('/auth/telegram/generate-authorization-token', {
+    method: 'POST',
+    body: JSON.stringify({ phone }),
+  });
+
+  return data;
+}
+
+/**
+ * Verificar si el usuario completó la autorización de Telegram
+ * @param {string} phone - Número de teléfono
+ * @returns {Promise<{success: boolean, isAuthorized: boolean, chatId: string | null}>}
+ */
+export async function checkAuthorization(phone) {
+  const data = await fetchApi(`/auth/telegram/check-authorization?phone=${encodeURIComponent(phone)}`, {
+    method: 'GET',
+  });
+
+  return data;
+}

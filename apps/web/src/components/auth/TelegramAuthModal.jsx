@@ -6,6 +6,8 @@ import {
   verifyAuthCode,
   validateVenezuelanPhone,
   formatPhone,
+  generateAuthorizationToken,
+  checkAuthorization,
 } from '../../services/messagingBotApi';
 
 export default function TelegramAuthModal({ isOpen, onClose, onSuccess }) {
@@ -43,6 +45,11 @@ export default function TelegramAuthModal({ isOpen, onClose, onSuccess }) {
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
+
+  // Estados para flujo de autorización
+  const [requiresAuthorization, setRequiresAuthorization] = useState(false);
+  const [authorizationLink, setAuthorizationLink] = useState('');
+  const [pollingForAuth, setPollingForAuth] = useState(false);
 
   const [expiryTimer, setExpiryTimer] = useState(() => {
     const saved = sessionStorage.getItem('telegram_auth_state');
@@ -109,6 +116,80 @@ export default function TelegramAuthModal({ isOpen, onClose, onSuccess }) {
     }
   }, [step, expiryTimer]);
 
+  // Efecto para polling de autorización
+  useEffect(() => {
+    if (!pollingForAuth || step !== 3) {
+      return;
+    }
+
+    let intervalId;
+    let attempts = 0;
+    const maxAttempts = 60; // 5 minutos (cada 5 segundos)
+
+    const checkAuth = async () => {
+      attempts++;
+
+      try {
+        const formattedPhone = formatPhone(phone);
+        const result = await checkAuthorization(formattedPhone);
+
+        if (result.isAuthorized) {
+          // Autorización exitosa!
+          setPollingForAuth(false);
+          clearInterval(intervalId);
+
+          toast.success('¡Autorización exitosa! Ahora puedes recibir códigos');
+
+          // Esperar un momento y reintentar solicitar código
+          setTimeout(async () => {
+            try {
+              await requestAuthCode(formattedPhone);
+              toast.success('Código enviado por Telegram. Revise su chat.');
+              setStep(2);
+              setResendTimer(60);
+              setExpiryTimer(600);
+              setRequiresAuthorization(false);
+
+              setTimeout(() => {
+                if (codeInputsRef.current[0]) {
+                  codeInputsRef.current[0].focus();
+                }
+              }, 100);
+            } catch (error) {
+              toast.error('Error al enviar código. Intente nuevamente.');
+              handleBackToPhone();
+            }
+          }, 1500);
+        } else if (attempts >= maxAttempts) {
+          // Timeout
+          setPollingForAuth(false);
+          clearInterval(intervalId);
+          toast.error('Tiempo de espera agotado. Intente nuevamente.');
+          handleBackToPhone();
+        }
+      } catch (error) {
+        console.error('Error verificando autorización:', error);
+        // Continuar polling a menos que sea un error crítico
+        if (attempts >= maxAttempts) {
+          setPollingForAuth(false);
+          clearInterval(intervalId);
+          toast.error('Error al verificar autorización. Intente nuevamente.');
+          handleBackToPhone();
+        }
+      }
+    };
+
+    // Iniciar polling cada 5 segundos
+    intervalId = setInterval(checkAuth, 5000);
+
+    // Cleanup
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [pollingForAuth, step, phone]);
+
   // Formatear tiempo en MM:SS
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -151,19 +232,35 @@ export default function TelegramAuthModal({ isOpen, onClose, onSuccess }) {
 
     try {
       const formattedPhone = formatPhone(phone);
-      await requestAuthCode(formattedPhone);
+      const result = await requestAuthCode(formattedPhone);
 
-      toast.success('Código enviado por Telegram. Revise su chat.');
-      setStep(2);
-      setResendTimer(60); // 60 segundos antes de permitir reenvío
-      setExpiryTimer(600); // Reset expiry timer
+      // Verificar si requiere autorización
+      if (result.requiresAuthorization) {
+        // Generar token de autorización
+        const authData = await generateAuthorizationToken(formattedPhone);
 
-      // Auto-focus en primer input del código
-      setTimeout(() => {
-        if (codeInputsRef.current[0]) {
-          codeInputsRef.current[0].focus();
-        }
-      }, 100);
+        setRequiresAuthorization(true);
+        setAuthorizationLink(authData.telegramLink);
+        setStep(3); // Nuevo paso para autorización
+
+        // Iniciar polling para verificar autorización
+        setPollingForAuth(true);
+
+        toast.success('Por favor, autoriza la comunicación en Telegram', { duration: 5000 });
+      } else {
+        // Flujo normal: código enviado
+        toast.success('Código enviado por Telegram. Revise su chat.');
+        setStep(2);
+        setResendTimer(60); // 60 segundos antes de permitir reenvío
+        setExpiryTimer(600); // Reset expiry timer
+
+        // Auto-focus en primer input del código
+        setTimeout(() => {
+          if (codeInputsRef.current[0]) {
+            codeInputsRef.current[0].focus();
+          }
+        }, 100);
+      }
     } catch (error) {
       console.error('Error al solicitar código:', error);
 
@@ -460,7 +557,9 @@ export default function TelegramAuthModal({ isOpen, onClose, onSuccess }) {
                 </button>
               </div>
               <p className="text-white/90">
-                {step === 1 ? 'Ingrese su número de teléfono' : 'Ingrese el código enviado por Telegram'}
+                {step === 1 && 'Ingrese su número de teléfono'}
+                {step === 2 && 'Ingrese el código enviado por Telegram'}
+                {step === 3 && 'Autoriza la comunicación con el bot'}
               </p>
             </div>
 
@@ -597,6 +696,94 @@ export default function TelegramAuthModal({ isOpen, onClose, onSuccess }) {
                       </button>
                     </div>
                   </div>
+                </motion.div>
+              )}
+
+              {/* Paso 3: Autorización requerida */}
+              {step === 3 && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="space-y-6"
+                >
+                  {/* Mensaje de autorización */}
+                  <div className="text-center">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-[#0088cc]/10 rounded-full mb-4">
+                      <svg className="w-12 h-12 text-[#0088cc]" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                      Autorización Requerida
+                    </h3>
+                    <p className="text-gray-600 mb-4">
+                      Para recibir códigos de autenticación por Telegram, primero debes autorizar la comunicación con nuestro bot.
+                    </p>
+                  </div>
+
+                  {/* Instrucciones */}
+                  <div className="bg-eg-purple/10 border-2 border-eg-purple/20 rounded-lg p-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-eg-purple text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        1
+                      </div>
+                      <p className="text-sm text-gray-700 flex-1">
+                        Haz clic en el botón "Abrir Telegram" abajo
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-eg-purple text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        2
+                      </div>
+                      <p className="text-sm text-gray-700 flex-1">
+                        Presiona el botón <span className="font-semibold">INICIAR</span> en el bot de Telegram
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 w-6 h-6 bg-eg-purple text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        3
+                      </div>
+                      <p className="text-sm text-gray-700 flex-1">
+                        Espera unos segundos, detectaremos la autorización automáticamente
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Botón de abrir Telegram */}
+                  <a
+                    href={authorizationLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-[#0088cc] to-[#0077b3] text-white py-4 px-6 rounded-lg font-medium shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-[#0088cc]/50 transition-all duration-200"
+                  >
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z" />
+                    </svg>
+                    Abrir Telegram
+                  </a>
+
+                  {/* Estado de polling */}
+                  {pollingForAuth && (
+                    <div className="flex items-center justify-center gap-3 p-4 bg-blue-50 rounded-lg">
+                      <svg className="animate-spin h-5 w-5 text-eg-purple" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span className="text-sm font-medium text-gray-700">
+                        Esperando autorización...
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Botón para cancelar */}
+                  <button
+                    onClick={handleBackToPhone}
+                    disabled={loading}
+                    className="w-full text-sm text-eg-purple hover:text-eg-purple/80 font-medium transition-colors disabled:opacity-50"
+                  >
+                    ← Cancelar
+                  </button>
                 </motion.div>
               )}
             </div>
