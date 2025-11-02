@@ -13,6 +13,7 @@ const MainLayout = ({ children }) => {
   const isContactPage = location.pathname === '/contacto';
   const isNosotrosPage = location.pathname === '/nosotros';
   const isEstudiosPage = location.pathname.startsWith('/estudios');
+  const isResultadosPage = location.pathname.startsWith('/resultados');
 
   // Cerrar sidebar al cambiar de ruta en móvil
   useEffect(() => {
@@ -53,7 +54,7 @@ const MainLayout = ({ children }) => {
         <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
         {/* Main Content Area - Centrado correcto */}
-        <main className={`flex-1 min-h-screen ${!isContactPage && !isHomePage && !isNosotrosPage && !isEstudiosPage ? 'lg:ml-64' : ''}`}>
+        <main className={`flex-1 min-h-screen ${!isContactPage && !isHomePage && !isNosotrosPage && !isEstudiosPage && !isResultadosPage ? 'lg:ml-64' : ''}`}>
           {/* Espaciado del header */}
           <div className="h-16" />
           
@@ -66,7 +67,7 @@ const MainLayout = ({ children }) => {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/50 sticky top-16 z-30"
               >
-                <div className={isContactPage || isNosotrosPage || isEstudiosPage ? "w-full px-6 md:px-12 lg:px-24" : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"}>
+                <div className={isContactPage || isNosotrosPage || isEstudiosPage || isResultadosPage ? "w-full px-6 md:px-12 lg:px-24" : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"}>
                   <div className="py-3">
                     <Breadcrumb />
                   </div>
@@ -87,9 +88,9 @@ const MainLayout = ({ children }) => {
                 }}
                 className="w-full"
               >
-                {/* Renderizado condicional: HomePage, Contacto, Nosotros y Estudios sin wrapper, otras páginas con wrapper */}
-                {isHomePage || isContactPage || isNosotrosPage || isEstudiosPage ? (
-                  // Página Principal, Contacto, Nosotros y Estudios: Sin wrapper, ancho completo
+                {/* Renderizado condicional: HomePage, Contacto, Nosotros, Estudios y Resultados sin wrapper, otras páginas con wrapper */}
+                {isHomePage || isContactPage || isNosotrosPage || isEstudiosPage || isResultadosPage ? (
+                  // Página Principal, Contacto, Nosotros, Estudios y Resultados: Sin wrapper, ancho completo
                   children
                 ) : (
                   // Otras páginas: Con wrapper y grid

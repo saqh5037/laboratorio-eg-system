@@ -42,30 +42,50 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST_STAGING }} << 'ENDSSH'
             set -e
 
+            # Load NVM and Node.js
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
             echo "🔄 Deploying ${{ matrix.service.name }} to Staging..."
 
             # Create directory if doesn't exist
             mkdir -p ${{ env.DEPLOY_PATH_STAGING }}
 
-            # Clone or pull repo
+            # Clone or pull repo (with retry logic for parallel runs)
             if [ -d "${{ env.DEPLOY_PATH_STAGING }}/.git" ]; then
               cd ${{ env.DEPLOY_PATH_STAGING }}
+              # Remove any stale git locks
+              rm -f .git/index.lock
               git fetch origin
               git checkout develop
               git pull origin develop
             else
-              git clone -b develop git@github.com:saqh5037/laboratorio-eg-system.git ${{ env.DEPLOY_PATH_STAGING }}
-              cd ${{ env.DEPLOY_PATH_STAGING }}
+              # Wait a random time to avoid parallel clone conflicts
+              sleep $((RANDOM % 5))
+              # Check again if another job already cloned
+              if [ -d "${{ env.DEPLOY_PATH_STAGING }}/.git" ]; then
+                cd ${{ env.DEPLOY_PATH_STAGING }}
+                git fetch origin
+                git checkout develop
+                git pull origin develop
+              else
+                git clone -b develop git@github.com:saqh5037/laboratorio-eg-system.git ${{ env.DEPLOY_PATH_STAGING }}
+                cd ${{ env.DEPLOY_PATH_STAGING }}
+              fi
             fi
 
             # Navigate to service directory
             cd apps/${{ matrix.service.name }}
 
             # Install dependencies
-            npm ci --production
+            npm install --production
 
             # Restart PM2 service
-            pm2 restart ${{ matrix.service.pm2-name }} || pm2 start ecosystem.config.js --env staging --name ${{ matrix.service.pm2-name }}
+            pm2 restart ${{ matrix.service.pm2-name }} || pm2 start ./src/index.js \
+              --name ${{ matrix.service.pm2-name }} \
+              --instances 1 \
+              --watch false \
+              -- --port=${{ matrix.service.port }}
             pm2 save
 
             # Wait for service to start
@@ -81,7 +101,7 @@ jobs:
         if: failure()
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST_STAGING }} \
-            "pm2 logs ${{ matrix.service.pm2-name }} --lines 50 --nostream"
+            "export NVM_DIR=\"\$HOME/.nvm\" && [ -s \"\$NVM_DIR/nvm.sh\" ] && \\. \"\$NVM_DIR/nvm.sh\" && pm2 logs ${{ matrix.service.pm2-name }} --lines 50 --nostream"
 
   deploy-frontend:
     name: Deploy Frontend to Staging

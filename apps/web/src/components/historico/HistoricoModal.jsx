@@ -14,6 +14,7 @@ import GraficaBarras from './GraficaBarras';
  * @param {number} props.pruebaId - ID de la prueba
  * @param {string} props.pruebaNombre - Nombre de la prueba
  * @param {string} props.pacienteCi - CI del paciente
+ * @param {string} props.numeroOrdenActual - Número de la orden actual para resaltarla
  */
 export function HistoricoModal({
   isOpen,
@@ -21,6 +22,7 @@ export function HistoricoModal({
   pruebaId,
   pruebaNombre,
   pacienteCi,
+  numeroOrdenActual,
 }) {
   const { historico, loading, error, fetchHistorico, clearHistorico } = useHistorico();
   const [tipoGrafica, setTipoGrafica] = useState('linea');
@@ -202,9 +204,17 @@ export function HistoricoModal({
 
                         {/* Gráfica */}
                         {tipoGrafica === 'linea' ? (
-                          <GraficaLinea data={historico.historico} prueba={historico.prueba} />
+                          <GraficaLinea
+                            data={historico.historico}
+                            prueba={historico.prueba}
+                            numeroOrdenActual={numeroOrdenActual}
+                          />
                         ) : (
-                          <GraficaBarras data={historico.historico} prueba={historico.prueba} />
+                          <GraficaBarras
+                            data={historico.historico}
+                            prueba={historico.prueba}
+                            numeroOrdenActual={numeroOrdenActual}
+                          />
                         )}
                       </>
                     )}

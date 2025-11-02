@@ -120,6 +120,136 @@ Este documento te ayuda a encontrar rápidamente la información que necesitas.
 
 ---
 
+### 9. **CHANGELOG.md** ⭐ NUEVO
+**Para:** Todo el equipo
+**Contenido:**
+- Historial de cambios del proyecto
+- Versiones y releases
+- Nuevas características implementadas
+- Correcciones de bugs
+
+**Tiempo de lectura:** 5 minutos
+
+---
+
+### 10. **DEPLOYMENT-TELEGRAM-AUTH-FIX.md** ⭐ NUEVO
+**Para:** DevOps, desarrolladores
+**Contenido:**
+- Fix específico para autenticación de Telegram
+- Pasos de deployment del fix
+- Problemas resueltos
+
+**Tiempo de lectura:** 10 minutos
+
+---
+
+### 11. **DOCUMENTACION-AUTENTICACION-TELEGRAM.md** ⭐⭐⭐ NUEVO
+**Para:** Desarrolladores, arquitectos
+**Contenido:**
+- Sistema completo de autenticación de Telegram
+- Flujo de autorización con tokens
+- Implementación técnica detallada
+- Servicios y endpoints relacionados
+- Migraciones de base de datos
+- Testing del flujo de autenticación
+
+**Tiempo de lectura:** 20-25 minutos
+
+---
+
+### 12. **RESUMEN-COMPLETO-PARA-OPUS.md** ⭐⭐ NUEVO
+**Para:** IA assistants, nuevos desarrolladores
+**Contenido:**
+- Resumen completo del proyecto para contexto de IA
+- Arquitectura general
+- Servicios principales
+- Flujos de trabajo
+
+**Tiempo de lectura:** 15 minutos
+
+---
+
+### 13. **AWS-INFRASTRUCTURE.md** ⭐⭐ NUEVO
+**Para:** DevOps, infraestructura
+**Contenido:**
+- Configuración de infraestructura AWS
+- Servicios utilizados
+- Arquitectura de servidores
+- Configuración de red y seguridad
+
+**Tiempo de lectura:** 15 minutos
+
+---
+
+### 14. **DEPLOYMENT-GUIDE.md** ⭐⭐⭐ NUEVO
+**Para:** DevOps, deployment
+**Contenido:**
+- Guía completa de deployment
+- Pasos detallados para cada servicio
+- Checklist de deployment
+- Verificación post-deployment
+
+**Tiempo de lectura:** 20 minutos
+
+---
+
+### 15. **ENVIRONMENT-SEPARATION.md** ⭐⭐ NUEVO
+**Para:** DevOps, desarrolladores
+**Contenido:**
+- Separación de ambientes (dev, staging, production)
+- Variables de entorno por ambiente
+- Configuración de bases de datos
+- Best practices
+
+**Tiempo de lectura:** 10 minutos
+
+---
+
+### 16. **TROUBLESHOOTING.md** ⭐⭐⭐ NUEVO
+**Para:** Todo el equipo
+**Contenido:**
+- Guía completa de resolución de problemas
+- Problemas comunes y soluciones
+- Debugging de servicios
+- Logs y monitoreo
+- Comandos útiles
+
+**Tiempo de lectura:** 15-20 minutos
+
+---
+
+### 17. **RESUMEN_SINCRONIZACION.md** ⭐ NUEVO
+**Para:** Desarrolladores
+**Contenido:**
+- Resumen del sistema de sincronización
+- Flujo simplificado
+- Componentes principales
+
+**Tiempo de lectura:** 10 minutos
+
+---
+
+### 18. **README-TEST-DIRECTORY.md** ⭐ NUEVO
+**Para:** Referencia del proyecto Test-Directory-EG
+**Contenido:**
+- Overview del proyecto legacy Test-Directory-EG
+- Estructura y organización
+- Diferencias con laboratorio-eg-system
+
+**Tiempo de lectura:** 8 minutos
+
+---
+
+### 19. **arquitectura-sincronizacion.excalidraw** NUEVO
+**Para:** Arquitectos, desarrolladores visuales
+**Contenido:**
+- Diagrama visual de arquitectura de sincronización
+- Se puede abrir en excalidraw.com
+
+**Uso:** Abrir en [excalidraw.com](https://excalidraw.com)
+
+---
+
 ## 🎯 Casos de Uso Comunes
 
 ### "Necesito iniciar el sistema"
@@ -146,6 +276,27 @@ Este documento te ayuda a encontrar rápidamente la información que necesitas.
 ### "¿Qué cambió desde la versión anterior?"
 ➡️ Lee: **[RESUMEN-EJECUTIVO.md](./RESUMEN-EJECUTIVO.md)** (sección: "Problema Resuelto")
 ➡️ Compara con: **[PROCESO_SINCRONIZACION.md](./PROCESO_SINCRONIZACION.md)**
+
+### "Necesito hacer deployment a producción"
+➡️ Lee: **[DEPLOYMENT-GUIDE.md](./DEPLOYMENT-GUIDE.md)**
+➡️ También: **[DEPLOYMENT_PRODUCTION.md](./DEPLOYMENT_PRODUCTION.md)**
+➡️ Y: **[ENVIRONMENT-SEPARATION.md](./ENVIRONMENT-SEPARATION.md)**
+
+### "Tengo un problema y no sé cómo resolverlo"
+➡️ Lee: **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)**
+➡️ También: **[README-INICIO-RAPIDO.md](./README-INICIO-RAPIDO.md)** (sección: "Troubleshooting Rápido")
+
+### "¿Cómo funciona la autenticación de Telegram?"
+➡️ Lee: **[DOCUMENTACION-AUTENTICACION-TELEGRAM.md](./DOCUMENTACION-AUTENTICACION-TELEGRAM.md)**
+
+### "Necesito configurar la infraestructura AWS"
+➡️ Lee: **[AWS-INFRASTRUCTURE.md](./AWS-INFRASTRUCTURE.md)**
+
+### "¿Qué cambios se han hecho recientemente?"
+➡️ Lee: **[CHANGELOG.md](./CHANGELOG.md)**
+
+### "Quiero entender el proyecto completo rápidamente"
+➡️ Lee: **[RESUMEN-COMPLETO-PARA-OPUS.md](./RESUMEN-COMPLETO-PARA-OPUS.md)**
 
 ---
 
@@ -194,6 +345,13 @@ Este documento te ayuda a encontrar rápidamente la información que necesitas.
 | **Testing** | SINCRONIZACION-AUTOMATICA.md | "Testing del Sistema" |
 | **Producción** | SINCRONIZACION-AUTOMATICA.md | "Configuración de Producción" |
 | **Métricas** | RESUMEN-EJECUTIVO.md | "Métricas del Sistema" |
+| **Autenticación Telegram** | DOCUMENTACION-AUTENTICACION-TELEGRAM.md | Todo el documento |
+| **Infraestructura AWS** | AWS-INFRASTRUCTURE.md | Todo el documento |
+| **Deployment completo** | DEPLOYMENT-GUIDE.md | Todo el documento |
+| **Ambientes separados** | ENVIRONMENT-SEPARATION.md | Todo el documento |
+| **Resolución de problemas** | TROUBLESHOOTING.md | Todo el documento |
+| **Historial de cambios** | CHANGELOG.md | Todo el documento |
+| **Resumen completo** | RESUMEN-COMPLETO-PARA-OPUS.md | Todo el documento |
 
 ---
 
@@ -289,5 +447,6 @@ Para debugging:
 
 ---
 
-**Última actualización:** 22 de Octubre, 2025
+**Última actualización:** 31 de Octubre, 2025
 **Sistema:** Sincronización Automática de Precios ✅ OPERATIVO
+**Migración de documentación:** Completada - 11 documentos nuevos agregados desde Test-Directory-EG

@@ -29,9 +29,10 @@ const config = {
     webhookUrl: process.env.TELEGRAM_WEBHOOK_URL || ''
   },
 
-  // WhatsApp (futuro)
+  // WhatsApp
   whatsapp: {
     enabled: process.env.WHATSAPP_ENABLED === 'true',
+    sandboxMode: process.env.WHATSAPP_SANDBOX_MODE === 'true',
     phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID || '',
     accessToken: process.env.WHATSAPP_ACCESS_TOKEN || '',
     verifyToken: process.env.WHATSAPP_VERIFY_TOKEN || '',

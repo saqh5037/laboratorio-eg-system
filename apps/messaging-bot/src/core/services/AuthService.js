@@ -1,4 +1,4 @@
-const { query } = require('../../db/pool');
+const { botPool, labsisPool } = require('../../db/pool');
 const logger = require('../../utils/logger');
 const crypto = require('crypto');
 const { parsePhoneNumber } = require('libphonenumber-js');
@@ -8,6 +8,10 @@ const { parsePhoneNumber } = require('libphonenumber-js');
  *
  * Maneja la generación de códigos de 6 dígitos, verificación,
  * y validación de teléfonos venezolanos
+ *
+ * NOTA: Usa 2 pools de conexión:
+ * - botPool: Para telegram_auth_codes (escritura)
+ * - labsisPool: Para paciente (lectura)
  */
 class AuthService {
   constructor() {
@@ -117,7 +121,7 @@ class AuthService {
    */
   async findPatientById(pacienteId) {
     try {
-      const result = await query(
+      const result = await labsisPool.query(
         `SELECT id, nombre, apellido, ci_paciente, telefono, email
          FROM paciente
          WHERE id = $1
@@ -148,7 +152,7 @@ class AuthService {
       // Buscar con diferentes formatos
       const cleanPhone = phone.replace(/[^0-9]/g, '');
 
-      const result = await query(
+      const result = await labsisPool.query(
         `SELECT id, nombre, apellido, ci_paciente, telefono, email
          FROM paciente
          WHERE REPLACE(REPLACE(REPLACE(telefono, '-', ''), ' ', ''), '+', '') LIKE $1
@@ -183,7 +187,7 @@ class AuthService {
       const code = this.generateCode();
       const expiresAt = new Date(Date.now() + this.CODE_EXPIRATION_MINUTES * 60 * 1000);
 
-      const result = await query(
+      const result = await botPool.query(
         `INSERT INTO telegram_auth_codes
          (paciente_id, phone, code, telegram_chat_id, expires_at, ip_address, user_agent)
          VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -214,7 +218,7 @@ class AuthService {
   async verifyCode(phone, code) {
     try {
       // Buscar código no verificado y no expirado
-      const result = await query(
+      const result = await botPool.query(
         `SELECT id, paciente_id, attempts, expires_at
          FROM telegram_auth_codes
          WHERE phone = $1
@@ -248,7 +252,7 @@ class AuthService {
       }
 
       // Marcar como verificado
-      await query(
+      await botPool.query(
         `UPDATE telegram_auth_codes
          SET verified = TRUE, verified_at = NOW()
          WHERE id = $1`,
@@ -276,7 +280,7 @@ class AuthService {
    */
   async incrementAttempt(phone, code) {
     try {
-      await query(
+      await botPool.query(
         `UPDATE telegram_auth_codes
          SET attempts = attempts + 1
          WHERE phone = $1 AND code = $2 AND verified = FALSE`,
@@ -296,7 +300,7 @@ class AuthService {
    */
   async cleanupExpiredCodes() {
     try {
-      const result = await query('SELECT cleanup_expired_auth_codes() as deleted_count');
+      const result = await botPool.query('SELECT cleanup_expired_auth_codes() as deleted_count');
       const deletedCount = result.rows[0].deleted_count;
 
       if (deletedCount > 0) {
@@ -318,7 +322,7 @@ class AuthService {
    */
   async getCodeStats(pacienteId) {
     try {
-      const result = await query(
+      const result = await botPool.query(
         `SELECT
            COUNT(*) as total_codes,
            COUNT(*) FILTER (WHERE verified = TRUE) as verified_codes,

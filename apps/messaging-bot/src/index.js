@@ -3,8 +3,9 @@ const cors = require('cors');
 const helmet = require('helmet');
 const config = require('./config/config');
 const logger = require('./utils/logger');
-const { testConnection, closePool } = require('./db/pool');
+const { testConnection, closePool, botPool } = require('./db/pool');
 const TelegramAdapter = require('./adapters/telegram/TelegramAdapter');
+const WhatsAppAdapter = require('./adapters/whatsapp/WhatsAppAdapter');
 const ConversationService = require('./core/services/ConversationService');
 const GeminiService = require('./core/services/GeminiService');
 const PresupuestoService = require('./core/services/PresupuestoService');
@@ -13,7 +14,10 @@ const PresupuestoWorkflow = require('./core/workflows/PresupuestoWorkflow');
 const StateManager = require('./utils/StateManager');
 const { formatLabInfo, formatPresupuestoInfo, formatCitaInfo } = require('./utils/formatters');
 const NotificationService = require('./core/services/NotificationService');
+const MultiChannelNotificationService = require('./core/services/MultiChannelNotificationService');
 const ChangeDetectorService = require('./core/services/ChangeDetectorService');
+const TelegramUserRegistryService = require('./core/services/TelegramUserRegistryService');
+const AuthService = require('./core/services/AuthService');
 
 /**
  * Messaging Bot Service - Entry Point
@@ -23,6 +27,8 @@ class MessagingBotService {
   constructor() {
     this.app = express();
     this.telegramAdapter = null;
+    this.whatsappAdapter = null;
+    this.cleanupIntervalId = null;
   }
 
   /**
@@ -72,6 +78,10 @@ class MessagingBotService {
     const authRoutes = require('./routes/auth');
     this.app.use('/api/auth', authRoutes);
 
+    // WhatsApp Authentication routes
+    const whatsappAuthRoutes = require('./api/routes/whatsapp-auth.routes');
+    this.app.use('/api/auth/whatsapp', whatsappAuthRoutes);
+
     // Notification preferences routes
     const preferencesRoutes = require('./api/routes/preferences.routes');
     this.app.use('/api/preferences', preferencesRoutes);
@@ -79,6 +89,22 @@ class MessagingBotService {
     // Notifications testing routes
     const notificationsRoutes = require('./routes/notifications.routes');
     this.app.use('/api/notifications', notificationsRoutes);
+
+    // WhatsApp webhook
+    this.app.post('/api/webhooks/whatsapp', async (req, res) => {
+      try {
+        if (this.whatsappAdapter) {
+          await this.whatsappAdapter.processWebhook(req);
+          res.sendStatus(200);
+        } else {
+          logger.warn('WhatsApp webhook received but adapter not initialized');
+          res.sendStatus(503);
+        }
+      } catch (error) {
+        logger.error('Error processing WhatsApp webhook:', error);
+        res.sendStatus(500);
+      }
+    });
 
     logger.info(`🌐 Express server configured on port ${config.port}`);
   }
@@ -113,15 +139,94 @@ class MessagingBotService {
   setupTelegramCommands() {
     const bot = this.telegramAdapter.bot;
 
-    // /start command
-    bot.onText(/\/start/, async (msg) => {
+    // /start command - Con o sin token de autorización
+    bot.onText(/\/start(.*)/, async (msg, match) => {
       const chatId = msg.chat.id;
+      const username = msg.from.username;
+      const firstName = msg.from.first_name;
+      const lastName = msg.from.last_name;
+      const token = match && match[1] ? match[1].trim() : null;
+
+      // Si viene con token, procesar autorización
+      if (token) {
+        try {
+          const AuthorizationTokenService = require('./core/services/AuthorizationTokenService');
+
+          // Validar token
+          const validation = await AuthorizationTokenService.validateToken(token);
+
+          if (!validation.valid) {
+            // Token inválido o expirado
+            let errorMessage = '';
+            if (validation.reason === 'TOKEN_EXPIRED') {
+              errorMessage = `❌ *Este enlace de autorización ha expirado.*\n\nPor favor solicita uno nuevo desde la aplicación web del laboratorio.`;
+            } else if (validation.reason === 'TOKEN_ALREADY_USED') {
+              errorMessage = `✅ *Ya estás registrado*\n\nYa has autorizado la comunicación anteriormente. Puedes recibir notificaciones en este chat.`;
+            } else {
+              errorMessage = `❌ *Enlace inválido*\n\nEste enlace de autorización no es válido. Por favor solicita uno nuevo desde la aplicación web del laboratorio.`;
+            }
+            await bot.sendMessage(chatId, errorMessage, { parse_mode: 'Markdown' });
+            return;
+          }
+
+          // Token válido - Registrar usuario con paciente_id
+          await TelegramUserRegistryService.registerUser({
+            telegramChatId: chatId.toString(),
+            username,
+            firstName,
+            lastName,
+            phone: validation.phone,
+            pacienteId: validation.pacienteId
+          });
+
+          // Marcar token como usado
+          await AuthorizationTokenService.markTokenAsUsed(token);
+
+          logger.info(`✅ Autorización exitosa: paciente ${validation.pacienteId} -> chat_id ${chatId}`);
+
+          // Mensaje de confirmación
+          const confirmMessage = `✅ *¡Perfecto! Has autorizado la comunicación con éxito.*
+
+Ahora podrás recibir:
+📱 Códigos de autenticación
+📋 Notificaciones de resultados
+💰 Presupuestos
+
+*Regresa a la aplicación web para continuar.*`;
+
+          await bot.sendMessage(chatId, confirmMessage, { parse_mode: 'Markdown' });
+          return;
+
+        } catch (error) {
+          logger.error('Error procesando autorización de Telegram:', error);
+          await bot.sendMessage(chatId, `❌ Hubo un error al procesar tu autorización. Por favor intenta nuevamente o contacta al laboratorio.`);
+          return;
+        }
+      }
+
+      // Comando /start sin token - Flujo normal de bienvenida
+      // Registrar o actualizar usuario automáticamente
+      try {
+        await TelegramUserRegistryService.registerUser({
+          telegramChatId: chatId.toString(),
+          username,
+          firstName,
+          lastName,
+          phone: null, // Se actualizará cuando usuario se registre
+          pacienteId: null
+        });
+
+        logger.info(`📱 Usuario registrado automáticamente: @${username} (chat_id: ${chatId})`);
+      } catch (error) {
+        logger.error('Error al registrar usuario en /start:', error);
+      }
 
       const welcomeMessage = `Buenos días, bienvenido al *${config.laboratory.fullName}*.
 
 Soy su asistente virtual. ¿En qué puedo ayudarle hoy?
 
-Puede usar los siguientes comandos:
+*Comandos disponibles:*
+/registrar - Vincular su teléfono para recibir notificaciones
 /menu - Ver menú principal
 /presupuesto - Solicitar presupuesto
 /cita - Agendar una cita
@@ -132,6 +237,86 @@ Puede usar los siguientes comandos:
 O simplemente escríbame su consulta y con gusto le atenderé.`;
 
       await bot.sendMessage(chatId, welcomeMessage, { parse_mode: 'Markdown' });
+    });
+
+    // /registrar command - Vincular teléfono del paciente
+    bot.onText(/\/registrar(?:\s+(.+))?/, async (msg, match) => {
+      const chatId = msg.chat.id;
+      const phone = match && match[1] ? match[1].trim() : null;
+
+      if (!phone) {
+        await bot.sendMessage(chatId, `📱 *Registro de Teléfono*
+
+Para recibir notificaciones de sus resultados de laboratorio, necesito vincular su número de teléfono.
+
+Por favor envíe:
+\`/registrar +52-555-123-4567\`
+
+O con el formato de su país, por ejemplo:
+\`/registrar +58-412-1234567\` (Venezuela)
+\`/registrar +52-555-1234567\` (México)
+
+⚠️ *Importante:* Use el mismo número que tiene registrado en el laboratorio.`, { parse_mode: 'Markdown' });
+        return;
+      }
+
+      try {
+        // Validar y formatear teléfono
+        const phoneValidation = AuthService.validateVenezuelanPhone(phone);
+
+        if (!phoneValidation.valid) {
+          await bot.sendMessage(chatId, `❌ El formato del teléfono no es válido.
+
+Por favor use formato internacional: +52-555-123-4567
+
+Error: ${phoneValidation.error}`, { parse_mode: 'Markdown' });
+          return;
+        }
+
+        // Buscar paciente por teléfono
+        const paciente = await AuthService.findPatientByPhone(phoneValidation.formatted);
+
+        if (!paciente) {
+          await bot.sendMessage(chatId, `❌ No se encontró ningún paciente con el teléfono ${phoneValidation.formatted}
+
+Por favor verifique:
+1. Que el número esté correcto
+2. Que esté registrado en nuestro sistema
+3. Use el formato internacional (+52-555...)
+
+Si el problema persiste, contacte al laboratorio.`, { parse_mode: 'Markdown' });
+          return;
+        }
+
+        // Registrar/actualizar usuario con paciente_id
+        await TelegramUserRegistryService.registerUser({
+          telegramChatId: chatId.toString(),
+          username: msg.from.username,
+          firstName: msg.from.first_name,
+          lastName: msg.from.last_name,
+          phone: phoneValidation.formatted,
+          pacienteId: paciente.id
+        });
+
+        logger.info(`✅ Usuario vinculado: ${paciente.nombre} ${paciente.apellido} (${phoneValidation.formatted}) -> chat_id: ${chatId}`);
+
+        await bot.sendMessage(chatId, `✅ *¡Registro Exitoso!*
+
+Su teléfono ha sido vinculado correctamente.
+
+*Paciente:* ${paciente.nombre} ${paciente.apellido}
+*Teléfono:* ${phoneValidation.formatted}
+
+Ahora recibirá notificaciones cuando:
+• Sus resultados estén listos
+• Su orden haya sido pagada
+
+También puede autenticarse en nuestro portal web usando su teléfono.`, { parse_mode: 'Markdown' });
+
+      } catch (error) {
+        logger.error('Error en /registrar:', error);
+        await bot.sendMessage(chatId, `❌ Hubo un error al procesar su registro. Por favor intente nuevamente o contacte al laboratorio.`);
+      }
     });
 
     // /menu command
@@ -216,6 +401,7 @@ ${config.laboratory.servicioDomicilio ? `🏠 ${config.laboratory.servicioDomici
 
 *Comandos disponibles:*
 /start - Iniciar conversación
+/registrar - Vincular su teléfono (recibir notificaciones)
 /menu - Menú principal
 /presupuesto - Solicitar presupuesto
 /cita - Agendar cita
@@ -227,6 +413,9 @@ ${config.laboratory.servicioDomicilio ? `🏠 ${config.laboratory.servicioDomici
 - Hacer preguntas directamente
 - Solicitar información sobre exámenes
 - Consultar sobre servicios
+
+*📱 Notificaciones:*
+Use \`/registrar +52-555-1234567\` para vincular su teléfono y recibir notificaciones cuando sus resultados estén listos.
 
 ¿En qué más puedo ayudarle?`;
 
@@ -356,6 +545,42 @@ ${config.laboratory.hoursSunday}`, { parse_mode: 'Markdown' });
   }
 
   /**
+   * Start queue cleanup job
+   * Runs every 24 hours to clean old notifications
+   */
+  startQueueCleanupJob() {
+    const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+    // Run cleanup immediately on startup
+    this.runQueueCleanup();
+
+    // Then run every 24 hours
+    this.cleanupIntervalId = setInterval(async () => {
+      await this.runQueueCleanup();
+    }, CLEANUP_INTERVAL_MS);
+
+    logger.info('🧹 Queue cleanup job scheduled (every 24 hours)');
+  }
+
+  /**
+   * Execute queue cleanup
+   */
+  async runQueueCleanup() {
+    try {
+      const result = await botPool.query('SELECT cleanup_old_queue_items()');
+      const cleaned = result.rows[0].cleanup_old_queue_items;
+
+      if (cleaned > 0) {
+        logger.info(`🧹 Limpiadas ${cleaned} notificaciones antiguas de la cola`);
+      } else {
+        logger.info('🧹 Limpieza de cola ejecutada - No hay items antiguos para limpiar');
+      }
+    } catch (error) {
+      logger.error('Error en limpieza de cola de notificaciones:', error);
+    }
+  }
+
+  /**
    * Start the service
    */
   async start() {
@@ -371,13 +596,25 @@ ${config.laboratory.hoursSunday}`, { parse_mode: 'Markdown' });
       // Setup Telegram bot
       await this.setupTelegramBot();
 
-      // Initialize NotificationService with Telegram adapter
-      if (this.telegramAdapter) {
+      // Setup WhatsApp bot
+      this.whatsappAdapter = new WhatsAppAdapter();
+      await this.whatsappAdapter.initialize();
+
+      // Initialize MultiChannelNotificationService with both adapters
+      if (this.telegramAdapter && this.whatsappAdapter) {
+        MultiChannelNotificationService.initialize(this.telegramAdapter, this.whatsappAdapter);
+        logger.info('✅ MultiChannelNotificationService initialized with Telegram + WhatsApp');
+      } else if (this.telegramAdapter) {
+        // Fallback to old NotificationService if WhatsApp is disabled
         NotificationService.initialize(this.telegramAdapter);
+        logger.info('✅ NotificationService initialized with Telegram only');
       }
 
       // Start ChangeDetector for automatic notifications
       ChangeDetectorService.start();
+
+      // Start queue cleanup job (every 24 hours)
+      this.startQueueCleanupJob();
 
       // Start Express server
       this.app.listen(config.port, () => {
@@ -400,8 +637,18 @@ ${config.laboratory.hoursSunday}`, { parse_mode: 'Markdown' });
     // Stop change detector
     ChangeDetectorService.stop();
 
+    // Stop cleanup job
+    if (this.cleanupIntervalId) {
+      clearInterval(this.cleanupIntervalId);
+      logger.info('🧹 Queue cleanup job stopped');
+    }
+
     if (this.telegramAdapter) {
       await this.telegramAdapter.stop();
+    }
+
+    if (this.whatsappAdapter) {
+      this.whatsappAdapter.stop();
     }
 
     await closePool();

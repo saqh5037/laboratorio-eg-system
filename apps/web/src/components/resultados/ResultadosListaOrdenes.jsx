@@ -1,12 +1,54 @@
+/**
+ * Vista de LISTA COMPACTA de Órdenes de Laboratorio
+ * Optimizado para adultos mayores con sistema de semáforo sutil
+ * Mantiene identidad visual EG (purple/pink)
+ */
+
 export default function ResultadosListaOrdenes({ ordenes, onSelectOrden }) {
-  // Función helper para formatear fecha
-  const formatearFecha = (fechaStr) => {
+  // Función helper para formatear fecha compacta
+  const formatearFechaCorta = (fechaStr) => {
     const fecha = new Date(fechaStr);
     return fecha.toLocaleDateString('es-ES', {
-      day: 'numeric',
-      month: 'long',
+      day: '2-digit',
+      month: 'short',
       year: 'numeric'
     });
+  };
+
+  // Clasificación de estado con sistema de semáforo
+  const getSemaforoEstado = (orden) => {
+    const total = parseInt(orden.total_pruebas);
+    const conResultado = parseInt(orden.pruebas_con_resultado);
+
+    if (conResultado === total && orden.estado === 'Validado') {
+      return 'completo'; // Verde - Todo listo
+    } else if (conResultado > 0) {
+      return 'proceso'; // Amarillo - En progreso
+    } else {
+      return 'pendiente'; // Gris - Sin resultados
+    }
+  };
+
+  // Configuración de colores por estado de semáforo (SUTIL)
+  const semaforoConfig = {
+    completo: {
+      borderClass: 'border-l-4 border-green-500',
+      bgClass: 'bg-green-50/20',
+      dotClass: 'bg-green-500',
+      mensaje: 'Listo para ver'
+    },
+    proceso: {
+      borderClass: 'border-l-4 border-yellow-500',
+      bgClass: 'bg-yellow-50/20',
+      dotClass: 'bg-yellow-500',
+      mensaje: 'En proceso'
+    },
+    pendiente: {
+      borderClass: 'border-l-4 border-gray-400',
+      bgClass: 'bg-white',
+      dotClass: 'bg-gray-400',
+      mensaje: 'Pendiente'
+    }
   };
 
   if (!ordenes || ordenes.length === 0) {
@@ -28,17 +70,29 @@ export default function ResultadosListaOrdenes({ ordenes, onSelectOrden }) {
   }
 
   return (
-    <div className="space-y-5">
-      <div className="grid gap-5">
+    <div className="bg-white rounded-xl border-2 border-eg-purple/20 shadow-lg overflow-hidden">
+      {/* Header estilo tabla con gradiente EG */}
+      <div className="bg-gradient-to-r from-eg-purple to-eg-pink text-white px-6 py-4 hidden md:block">
+        <div className="grid grid-cols-12 gap-4 items-center">
+          <div className="col-span-2 text-base font-medium">Orden #</div>
+          <div className="col-span-2 text-base font-medium">Estado</div>
+          <div className="col-span-3 text-base font-medium">Fecha</div>
+          <div className="col-span-4 text-base font-medium">Progreso</div>
+          <div className="col-span-1"></div>
+        </div>
+      </div>
+
+      {/* Lista de órdenes - Desktop */}
+      <div className="divide-y divide-gray-200 hidden md:block">
         {ordenes.map((orden) => {
-          const fechaFormateada = formatearFecha(orden.fecha);
-          const tieneResultados = parseInt(orden.pruebas_con_resultado) > 0;
-          const estanTodos = parseInt(orden.pruebas_con_resultado) === parseInt(orden.total_pruebas);
+          const semaforo = getSemaforoEstado(orden);
+          const config = semaforoConfig[semaforo];
+          const porcentaje = (parseInt(orden.pruebas_con_resultado) / parseInt(orden.total_pruebas)) * 100;
 
           return (
             <div
               key={orden.id}
-              className="bg-white border-2 border-eg-purple/20 rounded-xl overflow-hidden shadow-lg hover:border-eg-purple hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group"
+              className={`${config.borderClass} ${config.bgClass} px-6 py-4 hover:bg-eg-purple/5 transition-all duration-200 cursor-pointer group min-h-[52px]`}
               onClick={() => onSelectOrden(orden)}
               role="button"
               tabIndex={0}
@@ -49,95 +103,135 @@ export default function ResultadosListaOrdenes({ ordenes, onSelectOrden }) {
                 }
               }}
             >
-              {/* Barra superior de color según estado */}
-              <div className={`h-2 ${orden.estado === 'Validado' ? 'bg-gradient-to-r from-eg-purple to-eg-pink' : 'bg-eg-pink'}`}></div>
+              <div className="grid grid-cols-12 gap-4 items-center">
+                {/* Columna 1: Número de Orden */}
+                <div className="col-span-2">
+                  <span className="text-xl text-gray-900 group-hover:text-eg-purple transition-colors">
+                    #{orden.numero}
+                  </span>
+                </div>
 
-              <div className="p-4 md:p-6">
-                <div className="flex items-start gap-3 md:gap-6">
-                  {/* Icono grande de documento - Más pequeño en móvil */}
-                  <div className={`flex-shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 ${
+                {/* Columna 2: Estado con dot indicator */}
+                <div className="col-span-2">
+                  <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm border-2 ${
                     orden.estado === 'Validado'
-                      ? 'bg-gradient-to-br from-eg-purple/20 to-eg-pink/20 border-2 border-eg-purple/30'
-                      : 'bg-eg-pink/10 border-2 border-eg-pink/30'
+                      ? 'bg-eg-purple/10 text-eg-purple border-eg-purple/30'
+                      : 'bg-eg-pink/10 text-eg-purple border-eg-pink/30'
                   }`}>
-                    <svg className="w-6 h-6 md:w-8 md:h-8 text-eg-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    {/* Dot indicator del semáforo */}
+                    <span className={`w-2.5 h-2.5 rounded-full ${config.dotClass}`} aria-hidden="true"></span>
+                    {orden.estado}
+                  </span>
+                </div>
+
+                {/* Columna 3: Fecha con icono */}
+                <div className="col-span-3">
+                  <div className="flex items-center gap-2 text-base text-gray-700">
+                    <svg className="w-4 h-4 text-eg-purple flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
+                    <span>{formatearFechaCorta(orden.fecha)}</span>
                   </div>
+                </div>
 
-                  {/* Info Principal */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-2">
-                      <h4 className="text-lg md:text-2xl text-gray-900 group-hover:text-eg-purple transition-colors">
-                        Orden #{orden.numero}
-                      </h4>
-                      <span className={`inline-flex items-center px-2 py-1 md:px-4 md:py-1.5 rounded-full text-xs md:text-base font-medium border-2 ${
-                        orden.estado === 'Validado'
-                          ? 'bg-eg-purple text-white border-eg-purple'
-                          : 'bg-eg-pink text-white border-eg-pink'
-                      }`}>
-                        {orden.estado}
-                      </span>
-                    </div>
-
-                    <p className="text-sm md:text-lg text-gray-600 mb-3 md:mb-5 flex items-center gap-2">
-                      <svg className="w-4 h-4 md:w-5 md:h-5 text-eg-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      {fechaFormateada}
-                    </p>
-
-                    {/* Progreso de Resultados - Más compacto en móvil */}
-                    <div className="bg-gradient-to-r from-eg-purple/5 to-eg-pink/5 rounded-xl p-3 md:p-4 mb-3 md:mb-4 border border-eg-purple/10">
-                      <div className="flex items-center justify-between text-sm md:text-base text-gray-700 mb-2 md:mb-3">
-                        <span className="flex items-center gap-1 md:gap-2">
-                          <svg className="w-4 h-4 md:w-5 md:h-5 text-eg-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                          </svg>
-                          <span className="hidden sm:inline">Pruebas Realizadas</span>
-                          <span className="sm:hidden">Pruebas</span>
-                        </span>
-                        <span className="text-lg md:text-xl font-medium text-eg-purple">{orden.pruebas_con_resultado} / {orden.total_pruebas}</span>
-                      </div>
-                      <div className="w-full bg-white/50 rounded-full h-2 md:h-3 overflow-hidden border border-eg-purple/20">
+                {/* Columna 4: Progreso con barra y números */}
+                <div className="col-span-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1">
+                      <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden border border-gray-300">
                         <div
-                          className={`h-2 md:h-3 rounded-full transition-all duration-500 ${
-                            estanTodos ? 'bg-gradient-to-r from-eg-purple via-eg-pink to-eg-purple bg-[length:200%_100%] animate-pulse' : 'bg-eg-purple'
+                          className={`h-3 rounded-full transition-all duration-500 ${
+                            porcentaje === 100
+                              ? 'bg-gradient-to-r from-eg-purple to-eg-pink'
+                              : 'bg-eg-purple'
                           }`}
-                          style={{
-                            width: `${(parseInt(orden.pruebas_con_resultado) / parseInt(orden.total_pruebas)) * 100}%`
-                          }}
+                          style={{ width: `${porcentaje}%` }}
+                          role="progressbar"
+                          aria-valuenow={porcentaje}
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                          aria-label={`${orden.pruebas_con_resultado} de ${orden.total_pruebas} pruebas completadas`}
                         />
                       </div>
                     </div>
-
-                    {/* Estado de Disponibilidad - Más compacto en móvil */}
-                    {tieneResultados ? (
-                      <div className="flex items-center gap-2 md:gap-3 text-sm md:text-lg bg-eg-purple/10 text-eg-purple px-3 py-2 md:px-4 md:py-3 rounded-lg border-2 border-eg-purple/30">
-                        <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        <span className="font-medium">Resultados disponibles</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2 md:gap-3 text-sm md:text-lg bg-gray-100 text-gray-600 px-3 py-2 md:px-4 md:py-3 rounded-lg border-2 border-gray-300">
-                        <svg className="w-5 h-5 md:w-6 md:h-6 animate-spin" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                        </svg>
-                        <span className="font-medium">En proceso...</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Icono de Flecha - Más pequeño en móvil */}
-                  <div className="flex-shrink-0 hidden sm:flex">
-                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-eg-purple/10 flex items-center justify-center group-hover:bg-eg-purple group-hover:scale-110 transition-all">
-                      <svg className="w-5 h-5 md:w-6 md:h-6 text-eg-purple group-hover:text-white group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
+                    <span className="text-base text-gray-900 whitespace-nowrap font-medium min-w-[60px] text-right">
+                      {orden.pruebas_con_resultado}/{orden.total_pruebas}
+                    </span>
                   </div>
                 </div>
+
+                {/* Columna 5: Botón de acción */}
+                <div className="col-span-1 flex justify-end">
+                  <div className="w-10 h-10 rounded-full bg-eg-purple/10 flex items-center justify-center group-hover:bg-eg-purple group-hover:scale-110 transition-all duration-200">
+                    <svg className="w-5 h-5 text-eg-purple group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Lista de órdenes - Móvil (tarjetas apiladas) */}
+      <div className="md:hidden space-y-4 p-4">
+        {ordenes.map((orden) => {
+          const semaforo = getSemaforoEstado(orden);
+          const config = semaforoConfig[semaforo];
+          const porcentaje = (parseInt(orden.pruebas_con_resultado) / parseInt(orden.total_pruebas)) * 100;
+
+          return (
+            <div
+              key={orden.id}
+              className={`${config.borderClass} ${config.bgClass} rounded-r-xl shadow-md p-4 active:scale-98 transition-all cursor-pointer min-h-[72px]`}
+              onClick={() => onSelectOrden(orden)}
+              role="button"
+              tabIndex={0}
+            >
+              {/* Fila 1: Número de orden + Estado */}
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-2xl text-gray-900">#{orden.numero}</span>
+                <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-base border-2 ${
+                  orden.estado === 'Validado'
+                    ? 'bg-eg-purple/10 text-eg-purple border-eg-purple/30'
+                    : 'bg-eg-pink/10 text-eg-purple border-eg-pink/30'
+                }`}>
+                  <span className={`w-3 h-3 rounded-full ${config.dotClass}`}></span>
+                  {orden.estado}
+                </span>
+              </div>
+
+              {/* Fila 2: Fecha */}
+              <div className="flex items-center gap-2 text-base text-gray-700 mb-3">
+                <svg className="w-5 h-5 text-eg-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>{formatearFechaCorta(orden.fecha)}</span>
+              </div>
+
+              {/* Fila 3: Progreso grande */}
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden border border-gray-300">
+                    <div
+                      className={`h-4 rounded-full transition-all ${
+                        porcentaje === 100
+                          ? 'bg-gradient-to-r from-eg-purple to-eg-pink'
+                          : 'bg-eg-purple'
+                      }`}
+                      style={{ width: `${porcentaje}%` }}
+                    />
+                  </div>
+                </div>
+                <span className="text-lg text-gray-900 font-medium whitespace-nowrap min-w-[70px] text-right">
+                  {orden.pruebas_con_resultado}/{orden.total_pruebas}
+                </span>
+              </div>
+
+              {/* Indicador de mensaje */}
+              <div className="mt-3 text-sm text-gray-600">
+                {config.mensaje}
               </div>
             </div>
           );

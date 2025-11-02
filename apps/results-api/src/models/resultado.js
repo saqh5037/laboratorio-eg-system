@@ -9,6 +9,13 @@ export const Resultado = {
    * Obtener todos los resultados de una orden con valores referenciales
    */
   async findByOrden(numeroOrden) {
+    // Validación de parámetros
+    if (!numeroOrden) {
+      const error = new Error('Número de orden es requerido');
+      error.statusCode = 400;
+      throw error;
+    }
+
     try {
       const query = `
         SELECT
@@ -88,25 +95,32 @@ export const Resultado = {
 
         -- Valores referenciales (ajustados por edad y sexo del paciente)
         LEFT JOIN paciente p ON o.paciente_id = p.id
-        LEFT JOIN valor_referencial vr ON pr.id = vr.prueba_id
-          AND (vr.sexo IS NULL OR vr.sexo = p.sexo)
-          AND (
-            EXTRACT(YEAR FROM AGE(p.fecha_nacimiento)) * 12 + EXTRACT(MONTH FROM AGE(p.fecha_nacimiento))
-            BETWEEN
-            vr.edad_desde * CASE vr.unidad_tiempo_id
-              WHEN 1 THEN 12  -- Años a meses
-              WHEN 2 THEN 1   -- Meses
-              WHEN 3 THEN 0.033 -- Días a meses (aproximado)
-              ELSE 1
-            END
-            AND
-            vr.edad_hasta * CASE vr.unidad_tiempo_id
-              WHEN 1 THEN 12  -- Años a meses
-              WHEN 2 THEN 1   -- Meses
-              WHEN 3 THEN 0.033 -- Días a meses (aproximado)
-              ELSE 1
-            END
-          )
+        -- IMPORTANTE: Usar LATERAL para seleccionar un SOLO valor referencial (el más reciente que aplique)
+        LEFT JOIN LATERAL (
+          SELECT *
+          FROM valor_referencial vr_inner
+          WHERE vr_inner.prueba_id = pr.id
+            AND (vr_inner.sexo IS NULL OR vr_inner.sexo = p.sexo)
+            AND (
+              EXTRACT(YEAR FROM AGE(p.fecha_nacimiento)) * 12 + EXTRACT(MONTH FROM AGE(p.fecha_nacimiento))
+              BETWEEN
+              vr_inner.edad_desde * CASE vr_inner.unidad_tiempo_id
+                WHEN 1 THEN 12  -- Años a meses
+                WHEN 2 THEN 1   -- Meses
+                WHEN 3 THEN 0.033 -- Días a meses (aproximado)
+                ELSE 1
+              END
+              AND
+              vr_inner.edad_hasta * CASE vr_inner.unidad_tiempo_id
+                WHEN 1 THEN 12  -- Años a meses
+                WHEN 2 THEN 1   -- Meses
+                WHEN 3 THEN 0.033 -- Días a meses (aproximado)
+                ELSE 1
+              END
+            )
+          ORDER BY vr_inner.id DESC  -- Seleccionar el más reciente si hay duplicados
+          LIMIT 1
+        ) vr ON true
 
         WHERE o.numero = $1
           AND pr.reportable = true
@@ -150,6 +164,23 @@ export const Resultado = {
    * @param {number} limit - Número máximo de resultados (default: 10)
    */
   async findHistorico(pruebaId, pacienteCi, limit = 10) {
+    // Validación de parámetros
+    if (!pruebaId) {
+      const error = new Error('ID de prueba es requerido');
+      error.statusCode = 400;
+      throw error;
+    }
+    if (!pacienteCi) {
+      const error = new Error('Cédula de paciente es requerida');
+      error.statusCode = 400;
+      throw error;
+    }
+    if (limit && (limit < 1 || limit > 100)) {
+      const error = new Error('Límite debe estar entre 1 y 100');
+      error.statusCode = 400;
+      throw error;
+    }
+
     try {
       const query = `
         SELECT
@@ -158,6 +189,7 @@ export const Resultado = {
           pr.id as prueba_id,
           pr.nombre as prueba_nombre,
           pr.nomenclatura,
+          pr.formato,
           u.simbolo as unidad,
 
           -- Resultado (numérico o alfanumérico)
@@ -201,26 +233,33 @@ export const Resultado = {
         LEFT JOIN bioanalista b ON COALESCE(rn.validado_por, ra.validado_por) = b.id
 
         -- Valores referenciales (ajustados por edad y sexo del paciente en el momento de la orden)
-        LEFT JOIN valor_referencial vr ON pr.id = vr.prueba_id
-          AND (vr.sexo IS NULL OR vr.sexo = p.sexo)
-          AND (
-            EXTRACT(YEAR FROM AGE(o.fecha, p.fecha_nacimiento)) * 12 +
-            EXTRACT(MONTH FROM AGE(o.fecha, p.fecha_nacimiento))
-            BETWEEN
-            vr.edad_desde * CASE vr.unidad_tiempo_id
-              WHEN 1 THEN 12  -- Años a meses
-              WHEN 2 THEN 1   -- Meses
-              WHEN 3 THEN 0.033 -- Días a meses (aproximado)
-              ELSE 1
-            END
-            AND
-            vr.edad_hasta * CASE vr.unidad_tiempo_id
-              WHEN 1 THEN 12  -- Años a meses
-              WHEN 2 THEN 1   -- Meses
-              WHEN 3 THEN 0.033 -- Días a meses (aproximado)
-              ELSE 1
-            END
-          )
+        -- IMPORTANTE: Usar LATERAL para seleccionar un SOLO valor referencial (el más reciente que aplique)
+        LEFT JOIN LATERAL (
+          SELECT *
+          FROM valor_referencial vr_inner
+          WHERE vr_inner.prueba_id = pr.id
+            AND (vr_inner.sexo IS NULL OR vr_inner.sexo = p.sexo)
+            AND (
+              EXTRACT(YEAR FROM AGE(o.fecha, p.fecha_nacimiento)) * 12 +
+              EXTRACT(MONTH FROM AGE(o.fecha, p.fecha_nacimiento))
+              BETWEEN
+              vr_inner.edad_desde * CASE vr_inner.unidad_tiempo_id
+                WHEN 1 THEN 12  -- Años a meses
+                WHEN 2 THEN 1   -- Meses
+                WHEN 3 THEN 0.033 -- Días a meses (aproximado)
+                ELSE 1
+              END
+              AND
+              vr_inner.edad_hasta * CASE vr_inner.unidad_tiempo_id
+                WHEN 1 THEN 12  -- Años a meses
+                WHEN 2 THEN 1   -- Meses
+                WHEN 3 THEN 0.033 -- Días a meses (aproximado)
+                ELSE 1
+              END
+            )
+          ORDER BY vr_inner.id DESC  -- Seleccionar el más reciente si hay duplicados
+          LIMIT 1
+        ) vr ON true
 
         WHERE pr.id = $1
           AND p.ci_paciente = $2
@@ -240,6 +279,7 @@ export const Resultado = {
           id: result.rows[0].prueba_id,
           nombre: result.rows[0].prueba_nombre,
           nomenclatura: result.rows[0].nomenclatura,
+          formato: result.rows[0].formato,
           unidad: result.rows[0].unidad
         } : null,
         historico: result.rows.map(row => ({
@@ -248,6 +288,7 @@ export const Resultado = {
           valor: row.valor_numerico !== null ? row.valor_numerico : row.valor_texto,
           valorNumerico: row.valor_numerico,
           valorTexto: row.valor_texto,
+          formato: row.formato,
           unidad: row.unidad,
           valorDesde: row.valor_desde,
           valorHasta: row.valor_hasta,
@@ -321,10 +362,24 @@ export const Resultado = {
    * @param {string} fechaHasta - Fecha fin (opcional)
    */
   async findHistoricoMultiple(pruebaIds, pacienteCi, limit = 10, fechaDesde = null, fechaHasta = null) {
+    // Validación de parámetros
+    if (!Array.isArray(pruebaIds) || pruebaIds.length === 0) {
+      const error = new Error('pruebaIds debe ser un array no vacío');
+      error.statusCode = 400;
+      throw error;
+    }
+    if (!pacienteCi) {
+      const error = new Error('Cédula de paciente es requerida');
+      error.statusCode = 400;
+      throw error;
+    }
+    if (limit && (limit < 1 || limit > 100)) {
+      const error = new Error('Límite debe estar entre 1 y 100');
+      error.statusCode = 400;
+      throw error;
+    }
+
     try {
-      if (!Array.isArray(pruebaIds) || pruebaIds.length === 0) {
-        throw new Error('pruebaIds debe ser un array no vacío');
-      }
 
       // Construir condición de fechas dinámicamente
       let fechaCondition = '';
@@ -349,6 +404,7 @@ export const Resultado = {
           pr.id as prueba_id,
           pr.nombre as prueba_nombre,
           pr.nomenclatura,
+          pr.formato,
           u.simbolo as unidad,
           COALESCE(rn.valor::text, ra.valor) as valor,
           rn.valor as valor_numerico,
@@ -402,6 +458,7 @@ export const Resultado = {
               id: row.prueba_id,
               nombre: row.prueba_nombre,
               nomenclatura: row.nomenclatura,
+              formato: row.formato,
               unidad: row.unidad
             },
             historico: []
@@ -415,6 +472,7 @@ export const Resultado = {
             valor: row.valor_numerico !== null ? row.valor_numerico : row.valor_texto,
             valorNumerico: row.valor_numerico,
             valorTexto: row.valor_texto,
+            formato: row.formato,
             unidad: row.unidad,
             valorDesde: row.valor_desde,
             valorHasta: row.valor_hasta,
@@ -440,6 +498,18 @@ export const Resultado = {
    * @param {string} fechaHasta - Fecha fin (opcional)
    */
   async findHeatMapData(pacienteCi, limit = 10, fechaDesde = null, fechaHasta = null) {
+    // Validación de parámetros
+    if (!pacienteCi) {
+      const error = new Error('Cédula de paciente es requerida');
+      error.statusCode = 400;
+      throw error;
+    }
+    if (limit && (limit < 1 || limit > 100)) {
+      const error = new Error('Límite debe estar entre 1 y 100');
+      error.statusCode = 400;
+      throw error;
+    }
+
     try {
       // Construir condición de fechas dinámicamente
       let fechaCondition = '';
@@ -479,6 +549,7 @@ export const Resultado = {
           pr.id as prueba_id,
           pr.nombre as prueba_nombre,
           pr.nomenclatura,
+          pr.formato,
           COALESCE(rn.valor::text, ra.valor) as valor,
           rn.valor as valor_numerico,
           vr.valor_desde,
@@ -535,7 +606,8 @@ export const Resultado = {
           pruebas.push({
             id: row.prueba_id,
             nombre: row.prueba_nombre,
-            nomenclatura: row.nomenclatura
+            nomenclatura: row.nomenclatura,
+            formato: row.formato
           });
         }
 
@@ -544,6 +616,7 @@ export const Resultado = {
         matriz[key] = {
           valor: row.valor_numerico,
           valorTexto: row.valor,
+          formato: row.formato,
           estado: row.estado,
           esCritico: row.es_critico,
           valorDesde: row.valor_desde,
@@ -560,6 +633,163 @@ export const Resultado = {
       };
     } catch (error) {
       logger.error(`Error al obtener heat map data para paciente ${pacienteCi}:`, error);
+      throw error;
+    }
+  },
+
+  /**
+   * Obtener los últimos 3 resultados históricos para cada prueba de una orden
+   * @param {string} numeroOrden - Número de la orden actual
+   * @param {string} pacienteCi - Cédula del paciente
+   * @returns {Promise<Object>} Objeto con prueba_id como clave y array de últimos 3 resultados
+   */
+  async findUltimos3PorOrden(numeroOrden, pacienteCi) {
+    // Validación de parámetros
+    if (!numeroOrden) {
+      const error = new Error('Número de orden es requerido');
+      error.statusCode = 400;
+      throw error;
+    }
+    if (!pacienteCi) {
+      const error = new Error('Cédula de paciente es requerida');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    try {
+      const query = `
+        WITH pruebas_orden AS (
+          -- Obtener todas las pruebas de la orden actual
+          SELECT DISTINCT po.prueba_id
+          FROM prueba_orden po
+          INNER JOIN orden_trabajo o ON po.orden_id = o.id
+          WHERE o.numero = $1
+        ),
+        historico_por_prueba AS (
+          -- Obtener histórico de cada prueba con ROW_NUMBER para limitar a 3
+          SELECT
+            pr.id as prueba_id,
+            o.numero as numero_orden,
+            o.fecha as fecha_resultado,
+            COALESCE(rn.valor::text, ra.valor) as valor,
+            rn.valor as valor_numerico,
+            ra.valor as valor_texto,
+            pr.formato,
+            u.simbolo as unidad,
+            vr.valor_desde,
+            vr.valor_hasta,
+            CASE
+              WHEN rn.valor IS NOT NULL AND vr.valor_desde IS NOT NULL AND vr.valor_hasta IS NOT NULL THEN
+                CASE
+                  WHEN rn.valor < vr.valor_desde THEN 'bajo'
+                  WHEN rn.valor > vr.valor_hasta THEN 'alto'
+                  ELSE 'normal'
+                END
+              ELSE 'sin_rango'
+            END as estado,
+            vr.panico as es_critico,
+            ROW_NUMBER() OVER (PARTITION BY pr.id ORDER BY o.fecha DESC) as rn
+          FROM pruebas_orden pord
+          INNER JOIN prueba pr ON pord.prueba_id = pr.id
+          INNER JOIN prueba_orden po ON po.prueba_id = pr.id
+          INNER JOIN orden_trabajo o ON po.orden_id = o.id
+          INNER JOIN paciente p ON o.paciente_id = p.id
+          LEFT JOIN resultado_numer rn ON po.id = rn.pruebao_id
+          LEFT JOIN resultado_alpha ra ON po.id = ra.pruebao_id
+          LEFT JOIN unidad u ON pr.unidad_id = u.id
+          -- Valores referenciales ajustados por edad y sexo
+          LEFT JOIN LATERAL (
+            SELECT *
+            FROM valor_referencial vr_inner
+            WHERE vr_inner.prueba_id = pr.id
+              AND (vr_inner.sexo IS NULL OR vr_inner.sexo = p.sexo)
+              AND (
+                EXTRACT(YEAR FROM AGE(o.fecha, p.fecha_nacimiento)) * 12 +
+                EXTRACT(MONTH FROM AGE(o.fecha, p.fecha_nacimiento))
+                BETWEEN
+                vr_inner.edad_desde * CASE vr_inner.unidad_tiempo_id
+                  WHEN 1 THEN 12  -- Años a meses
+                  WHEN 2 THEN 1   -- Meses
+                  WHEN 3 THEN 0.033 -- Días a meses
+                  ELSE 1
+                END
+                AND
+                vr_inner.edad_hasta * CASE vr_inner.unidad_tiempo_id
+                  WHEN 1 THEN 12
+                  WHEN 2 THEN 1
+                  WHEN 3 THEN 0.033
+                  ELSE 1
+                END
+              )
+            ORDER BY vr_inner.id DESC
+            LIMIT 1
+          ) vr ON true
+          WHERE p.ci_paciente = $2
+            AND o.numero != $1  -- Excluir la orden actual
+            AND (rn.validado_por IS NOT NULL OR ra.validado_por IS NOT NULL)
+            AND (rn.valor IS NOT NULL OR ra.valor IS NOT NULL)
+            AND pr.reportable = true
+        )
+        SELECT * FROM historico_por_prueba
+        WHERE rn <= 3  -- Solo los últimos 3
+        ORDER BY prueba_id, fecha_resultado DESC
+      `;
+
+      const result = await pool.query(query, [numeroOrden, pacienteCi]);
+
+      logger.info(`Últimos 3 resultados obtenidos para orden ${numeroOrden}: ${result.rows.length} registros`);
+
+      // Agrupar por prueba_id
+      const grouped = result.rows.reduce((acc, row) => {
+        if (!acc[row.prueba_id]) {
+          acc[row.prueba_id] = [];
+        }
+        acc[row.prueba_id].push({
+          numeroOrden: row.numero_orden,
+          fecha: row.fecha_resultado,
+          valor: row.valor_numerico !== null ? row.valor_numerico : row.valor_texto,
+          valorNumerico: row.valor_numerico,
+          valorTexto: row.valor_texto,
+          formato: row.formato,
+          unidad: row.unidad,
+          valorDesde: row.valor_desde,
+          valorHasta: row.valor_hasta,
+          estado: row.estado,
+          esCritico: row.es_critico
+        });
+        return acc;
+      }, {});
+
+      return grouped;
+    } catch (error) {
+      logger.error(`Error al obtener últimos 3 para orden ${numeroOrden}, paciente ${pacienteCi}:`, error);
+      throw error;
+    }
+  },
+
+  /**
+   * Obtener todos los formatos de las pruebas para cache en frontend
+   * @returns {Promise<Array>} Array de objetos {id, nombre, formato}
+   */
+  async findAllFormatos() {
+    try {
+      const query = `
+        SELECT
+          id,
+          nombre,
+          formato
+        FROM prueba
+        WHERE formato IS NOT NULL
+        ORDER BY id ASC
+      `;
+
+      const result = await pool.query(query);
+
+      logger.info(`Formatos obtenidos: ${result.rows.length} pruebas`);
+
+      return result.rows;
+    } catch (error) {
+      logger.error('Error al obtener formatos:', error);
       throw error;
     }
   },
