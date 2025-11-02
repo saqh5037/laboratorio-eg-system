@@ -638,6 +638,136 @@ export const Resultado = {
   },
 
   /**
+   * Obtener los últimos 3 resultados históricos para cada prueba de una orden
+   * @param {string} numeroOrden - Número de la orden actual
+   * @param {string} pacienteCi - Cédula del paciente
+   * @returns {Promise<Object>} Objeto con prueba_id como clave y array de últimos 3 resultados
+   */
+  async findUltimos3PorOrden(numeroOrden, pacienteCi) {
+    // Validación de parámetros
+    if (!numeroOrden) {
+      const error = new Error('Número de orden es requerido');
+      error.statusCode = 400;
+      throw error;
+    }
+    if (!pacienteCi) {
+      const error = new Error('Cédula de paciente es requerida');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    try {
+      const query = `
+        WITH pruebas_orden AS (
+          -- Obtener todas las pruebas de la orden actual
+          SELECT DISTINCT po.prueba_id
+          FROM prueba_orden po
+          INNER JOIN orden_trabajo o ON po.orden_id = o.id
+          WHERE o.numero = $1
+        ),
+        historico_por_prueba AS (
+          -- Obtener histórico de cada prueba con ROW_NUMBER para limitar a 3
+          SELECT
+            pr.id as prueba_id,
+            o.numero as numero_orden,
+            o.fecha as fecha_resultado,
+            COALESCE(rn.valor::text, ra.valor) as valor,
+            rn.valor as valor_numerico,
+            ra.valor as valor_texto,
+            pr.formato,
+            u.simbolo as unidad,
+            vr.valor_desde,
+            vr.valor_hasta,
+            CASE
+              WHEN rn.valor IS NOT NULL AND vr.valor_desde IS NOT NULL AND vr.valor_hasta IS NOT NULL THEN
+                CASE
+                  WHEN rn.valor < vr.valor_desde THEN 'bajo'
+                  WHEN rn.valor > vr.valor_hasta THEN 'alto'
+                  ELSE 'normal'
+                END
+              ELSE 'sin_rango'
+            END as estado,
+            vr.panico as es_critico,
+            ROW_NUMBER() OVER (PARTITION BY pr.id ORDER BY o.fecha DESC) as rn
+          FROM pruebas_orden pord
+          INNER JOIN prueba pr ON pord.prueba_id = pr.id
+          INNER JOIN prueba_orden po ON po.prueba_id = pr.id
+          INNER JOIN orden_trabajo o ON po.orden_id = o.id
+          INNER JOIN paciente p ON o.paciente_id = p.id
+          LEFT JOIN resultado_numer rn ON po.id = rn.pruebao_id
+          LEFT JOIN resultado_alpha ra ON po.id = ra.pruebao_id
+          LEFT JOIN unidad u ON pr.unidad_id = u.id
+          -- Valores referenciales ajustados por edad y sexo
+          LEFT JOIN LATERAL (
+            SELECT *
+            FROM valor_referencial vr_inner
+            WHERE vr_inner.prueba_id = pr.id
+              AND (vr_inner.sexo IS NULL OR vr_inner.sexo = p.sexo)
+              AND (
+                EXTRACT(YEAR FROM AGE(o.fecha, p.fecha_nacimiento)) * 12 +
+                EXTRACT(MONTH FROM AGE(o.fecha, p.fecha_nacimiento))
+                BETWEEN
+                vr_inner.edad_desde * CASE vr_inner.unidad_tiempo_id
+                  WHEN 1 THEN 12  -- Años a meses
+                  WHEN 2 THEN 1   -- Meses
+                  WHEN 3 THEN 0.033 -- Días a meses
+                  ELSE 1
+                END
+                AND
+                vr_inner.edad_hasta * CASE vr_inner.unidad_tiempo_id
+                  WHEN 1 THEN 12
+                  WHEN 2 THEN 1
+                  WHEN 3 THEN 0.033
+                  ELSE 1
+                END
+              )
+            ORDER BY vr_inner.id DESC
+            LIMIT 1
+          ) vr ON true
+          WHERE p.ci_paciente = $2
+            AND o.numero != $1  -- Excluir la orden actual
+            AND (rn.validado_por IS NOT NULL OR ra.validado_por IS NOT NULL)
+            AND (rn.valor IS NOT NULL OR ra.valor IS NOT NULL)
+            AND pr.reportable = true
+        )
+        SELECT * FROM historico_por_prueba
+        WHERE rn <= 3  -- Solo los últimos 3
+        ORDER BY prueba_id, fecha_resultado DESC
+      `;
+
+      const result = await pool.query(query, [numeroOrden, pacienteCi]);
+
+      logger.info(`Últimos 3 resultados obtenidos para orden ${numeroOrden}: ${result.rows.length} registros`);
+
+      // Agrupar por prueba_id
+      const grouped = result.rows.reduce((acc, row) => {
+        if (!acc[row.prueba_id]) {
+          acc[row.prueba_id] = [];
+        }
+        acc[row.prueba_id].push({
+          numeroOrden: row.numero_orden,
+          fecha: row.fecha_resultado,
+          valor: row.valor_numerico !== null ? row.valor_numerico : row.valor_texto,
+          valorNumerico: row.valor_numerico,
+          valorTexto: row.valor_texto,
+          formato: row.formato,
+          unidad: row.unidad,
+          valorDesde: row.valor_desde,
+          valorHasta: row.valor_hasta,
+          estado: row.estado,
+          esCritico: row.es_critico
+        });
+        return acc;
+      }, {});
+
+      return grouped;
+    } catch (error) {
+      logger.error(`Error al obtener últimos 3 para orden ${numeroOrden}, paciente ${pacienteCi}:`, error);
+      throw error;
+    }
+  },
+
+  /**
    * Obtener todos los formatos de las pruebas para cache en frontend
    * @returns {Promise<Array>} Array de objetos {id, nombre, formato}
    */

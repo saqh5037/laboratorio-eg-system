@@ -140,23 +140,38 @@ export async function obtenerResultadosOrden(numeroOrden) {
 }
 
 /**
- * Descargar PDF de resultados de una orden específica
+ * Obtener resultados de una orden específica CON histórico de últimos 3
  */
-export async function descargarPDFResultados(numeroOrden) {
-  console.log('[PDF Download] Iniciando descarga para orden:', numeroOrden);
-
+export async function obtenerResultadosOrdenConHistorico(numeroOrden) {
   const token = getToken();
 
   if (!token) {
-    console.error('[PDF Download] No hay token de sesión');
+    throw new ResultsApiError('No hay sesión activa', 'NO_AUTH', 401);
+  }
+
+  const data = await fetchApi(`/resultados/orden/${numeroOrden}/con-historico`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return data.data;
+}
+
+/**
+ * Descargar PDF de resultados de una orden específica
+ */
+export async function descargarPDFResultados(numeroOrden) {
+  const token = getToken();
+
+  if (!token) {
     throw new ResultsApiError('No hay sesión activa', 'NO_AUTH', 401);
   }
 
   const url = `${RESULTS_API_URL}/resultados/orden/${numeroOrden}/pdf`;
-  console.log('[PDF Download] URL de descarga:', url);
 
   try {
-    console.log('[PDF Download] Realizando petición fetch...');
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -164,14 +179,7 @@ export async function descargarPDFResultados(numeroOrden) {
       },
     });
 
-    console.log('[PDF Download] Respuesta recibida:', {
-      status: response.status,
-      statusText: response.statusText,
-      contentType: response.headers.get('content-type'),
-    });
-
     if (!response.ok) {
-      console.error('[PDF Download] Respuesta no OK:', response.status);
       // Intentar leer como JSON, pero si falla, usar texto
       let errorMessage = 'Error al descargar PDF';
       let errorCode = 'PDF_ERROR';
@@ -187,19 +195,15 @@ export async function descargarPDFResultados(numeroOrden) {
           errorMessage = text || errorMessage;
         }
       } catch (e) {
-        // Si falla al leer la respuesta, usar mensaje genérico
-        console.error('[PDF Download] Error al leer respuesta de error:', e);
+        console.error('Error al leer respuesta de error PDF:', e);
       }
 
       throw new ResultsApiError(errorMessage, errorCode, response.status);
     }
 
-    console.log('[PDF Download] Obteniendo blob...');
     // Obtener el blob del PDF
     const blob = await response.blob();
-    console.log('[PDF Download] Blob obtenido:', blob.size, 'bytes');
 
-    console.log('[PDF Download] Creando enlace de descarga...');
     // Crear un enlace temporal para descargar
     const downloadUrl = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -207,20 +211,16 @@ export async function descargarPDFResultados(numeroOrden) {
     link.download = `Resultados_${numeroOrden}.pdf`;
     document.body.appendChild(link);
 
-    console.log('[PDF Download] Haciendo click en enlace...');
     link.click();
 
-    console.log('[PDF Download] Limpiando enlace...');
     document.body.removeChild(link);
 
     // Liberar el objeto URL
     window.URL.revokeObjectURL(downloadUrl);
 
-    console.log('[PDF Download] Descarga completada exitosamente');
     return true;
   } catch (error) {
-    console.error('[PDF Download] Error capturado:', error);
-    console.error('[PDF Download] Error stack:', error.stack);
+    console.error('Error al descargar PDF:', error);
     if (error instanceof ResultsApiError) {
       throw error;
     }
@@ -331,6 +331,7 @@ export default {
   autenticarPaciente,
   obtenerOrdenes,
   obtenerResultadosOrden,
+  obtenerResultadosOrdenConHistorico,
   descargarPDFResultados,
   getHistoricoResultados,
   getHistoricoMultiple,

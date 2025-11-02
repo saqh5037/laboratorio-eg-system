@@ -11,14 +11,16 @@ import {
   Cell,
   LabelList,
 } from 'recharts';
+import { formatearNumero } from '../../utils/formatters';
 
 /**
  * Componente de gráfica de barras con indicadores de estado
  * @param {Object} props
  * @param {Array} props.data - Array de datos históricos
  * @param {Object} props.prueba - Información de la prueba
+ * @param {string} props.numeroOrdenActual - Número de la orden actual para resaltarla
  */
-export function GraficaBarras({ data, prueba }) {
+export function GraficaBarras({ data, prueba, numeroOrdenActual }) {
   if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-64 bg-gray-50 rounded-lg">
@@ -27,12 +29,131 @@ export function GraficaBarras({ data, prueba }) {
     );
   }
 
-  // Preparar datos
+  // Verificar si es una prueba alfanumérica (texto)
+  const esAlfanumerica = data.every(item => item.valorNumerico === null && item.valorTexto !== null);
+
+  // Si es alfanumérica, mostrar tabla en lugar de gráfica
+  if (esAlfanumerica) {
+    const dataOrdenada = [...data].reverse(); // Cronológico (más antiguo primero)
+
+    return (
+      <div className="w-full">
+        {/* Header */}
+        <div className="mb-4 p-4 bg-gradient-to-r from-eg-purple/5 to-eg-pink/5 rounded-lg">
+          <h3 className="text-lg font-bold text-gray-900">{prueba.nombre}</h3>
+          <p className="text-sm text-gray-500 mt-1">
+            Histórico de resultados ({dataOrdenada.length} {dataOrdenada.length === 1 ? 'registro' : 'registros'})
+          </p>
+          {prueba.unidad && (
+            <p className="text-xs text-gray-600 mt-1">
+              Unidad: {prueba.unidad}
+            </p>
+          )}
+        </div>
+
+        {/* Tabla Desktop */}
+        <div className="hidden md:block overflow-x-auto">
+          <table className="w-full border-collapse bg-white rounded-lg shadow-md">
+            <thead>
+              <tr className="bg-gradient-to-r from-eg-purple to-eg-pink text-white">
+                <th className="px-4 py-3 text-left text-sm font-bold">Fecha</th>
+                <th className="px-4 py-3 text-left text-sm font-bold">Orden</th>
+                <th className="px-4 py-3 text-left text-sm font-bold">Resultado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dataOrdenada.map((item, index) => {
+                const esOrdenActual = item.numeroOrden === numeroOrdenActual;
+                return (
+                  <tr
+                    key={index}
+                    className={`border-b border-gray-200 transition-colors ${
+                      esOrdenActual
+                        ? 'bg-eg-purple/10 font-bold'
+                        : index % 2 === 0 ? 'bg-white hover:bg-gray-50' : 'bg-gray-50/50 hover:bg-gray-100'
+                    }`}
+                  >
+                    <td className="px-4 py-3 text-sm">
+                      {new Date(item.fecha).toLocaleDateString('es-ES', {
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric'
+                      })}
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      <span className={esOrdenActual ? 'text-eg-purple font-bold' : ''}>
+                        #{item.numeroOrden}
+                        {esOrdenActual && (
+                          <span className="ml-2 text-xs bg-eg-purple text-white px-2 py-0.5 rounded">
+                            Actual
+                          </span>
+                        )}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                      {item.valorTexto}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Cards Móvil */}
+        <div className="md:hidden space-y-3">
+          {dataOrdenada.map((item, index) => {
+            const esOrdenActual = item.numeroOrden === numeroOrdenActual;
+            return (
+              <div
+                key={index}
+                className={`rounded-lg border-2 p-4 ${
+                  esOrdenActual
+                    ? 'bg-eg-purple/10 border-eg-purple shadow-lg'
+                    : 'bg-white border-gray-200 shadow'
+                }`}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-xs text-gray-600">
+                    {new Date(item.fecha).toLocaleDateString('es-ES', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric'
+                    })}
+                  </span>
+                  <span className={`text-xs px-2 py-1 rounded font-medium ${
+                    esOrdenActual
+                      ? 'bg-eg-purple text-white'
+                      : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    #{item.numeroOrden}
+                    {esOrdenActual && ' (Actual)'}
+                  </span>
+                </div>
+                <p className="text-base font-semibold text-gray-900">{item.valorTexto}</p>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Nota informativa */}
+        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-sm text-blue-800">
+            <span className="font-semibold">ℹ️ Nota:</span> Esta prueba tiene resultados de tipo texto que no pueden ser graficados.
+            Se muestra un histórico cronológico de todos los resultados.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Preparar datos para la gráfica (solo para pruebas numéricas)
   const chartData = data
     .map((item, index) => ({
       nombre: `#${index + 1}`,
       fecha: new Date(item.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }),
       valor: item.valorNumerico,
+      valorTexto: item.valorTexto,
       valorDesde: item.valorDesde,
       valorHasta: item.valorHasta,
       estado: item.estado,
@@ -53,11 +174,11 @@ export function GraficaBarras({ data, prueba }) {
           <p className="font-bold text-gray-900 mb-1">{data.fecha}</p>
           <p className="text-sm text-gray-600 mb-2">Orden: {data.numeroOrden}</p>
           <p className={`font-semibold ${getColorTextByEstado(data.estado)}`}>
-            Valor: {data.valor} {prueba.unidad}
+            Valor: {formatearNumero(data.valor, prueba.formato)} {prueba.unidad}
           </p>
           {data.valorDesde && data.valorHasta && (
             <p className="text-xs text-gray-500 mt-1">
-              Rango: {data.valorDesde} - {data.valorHasta}
+              Rango: {formatearNumero(data.valorDesde, prueba.formato)} - {formatearNumero(data.valorHasta, prueba.formato)}
             </p>
           )}
           <p className={`text-xs font-medium mt-1 ${getEstadoBadgeClass(data.estado)}`}>
@@ -205,25 +326,25 @@ export function GraficaBarras({ data, prueba }) {
             animationDuration={800}
             animationBegin={0}
           >
-            {chartData.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={getGradientByEstado(entry.estado)}
-                stroke={entry.esCritico ? '#dc2626' : getColorByEstado(entry.estado)}
-                strokeWidth={entry.esCritico ? 4 : 1}
-              />
-            ))}
+            {chartData.map((entry, index) => {
+              const esOrdenActual = entry.numeroOrden === numeroOrdenActual;
+              return (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={getGradientByEstado(entry.estado)}
+                  stroke={esOrdenActual ? '#7B68A6' : (entry.esCritico ? '#dc2626' : getColorByEstado(entry.estado))}
+                  strokeWidth={esOrdenActual ? 5 : (entry.esCritico ? 4 : 1)}
+                  opacity={esOrdenActual ? 1 : 0.85}
+                />
+              );
+            })}
             {/* Etiquetas de valor en cada barra - Responsive: Más pequeño en móvil */}
             <LabelList
               dataKey="valor"
               position="top"
               style={{ fontSize: '9px', fontWeight: 'bold', fill: '#374151' }}
               className="md:!text-[11px]"
-              formatter={(value) => {
-                if (value === null || value === undefined) return '';
-                const numValue = typeof value === 'string' ? parseFloat(value) : value;
-                return !isNaN(numValue) ? numValue.toFixed(2) : value;
-              }}
+              formatter={(value) => formatearNumero(value, prueba.formato)}
             />
           </Bar>
         </BarChart>
