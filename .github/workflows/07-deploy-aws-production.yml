@@ -1,0 +1,146 @@
+name: 07 - Deploy to AWS Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type "DEPLOY" to confirm deployment to AWS production'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  validate-confirmation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate confirmation input
+        run: |
+          if [ "${{ github.event.inputs.confirmation }}" != "DEPLOY" ]; then
+            echo "❌ Deployment cancelled. You must type 'DEPLOY' to confirm."
+            exit 1
+          fi
+          echo "✅ Confirmation validated. Proceeding with deployment..."
+
+  deploy-to-aws:
+    needs: validate-confirmation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.AWS_EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to AWS EC2
+        env:
+          AWS_HOST: ${{ secrets.AWS_EC2_HOST }}
+          AWS_USER: ${{ secrets.AWS_EC2_USER }}
+        run: |
+          echo "🚀 Starting deployment to AWS Production..."
+          echo "📍 Server: $AWS_HOST"
+          echo "👤 User: $AWS_USER"
+
+          ssh ${AWS_USER}@${AWS_HOST} << 'ENDSSH'
+            set -e
+
+            echo "📂 Navigating to project directory..."
+            cd ~/laboratorio-eg-system || cd ~/proyectos/laboratorio-eg-system || {
+              echo "❌ Project directory not found!"
+              exit 1
+            }
+
+            echo "🔄 Pulling latest code from main branch..."
+            git fetch --all
+            git checkout main
+            git pull origin main
+
+            echo "📦 Installing dependencies..."
+            npm install
+
+            echo "🏗️  Building frontend (apps/web)..."
+            cd apps/web
+            npm install
+            npm run build
+            cd ../..
+
+            echo "🔧 Building other services if needed..."
+            # Results API
+            cd apps/results-api
+            npm install
+            cd ../..
+
+            # Sync Service
+            cd apps/sync-service
+            npm install
+            cd ../..
+
+            # Messaging Bot
+            cd apps/messaging-bot
+            npm install
+            cd ../..
+
+            echo "♻️  Restarting PM2 services..."
+            pm2 restart all || pm2 start ecosystem.config.js
+
+            echo "💾 Saving PM2 configuration..."
+            pm2 save
+
+            echo "⏳ Waiting for services to stabilize..."
+            sleep 10
+
+            echo "📊 PM2 Status:"
+            pm2 status
+
+            echo "✅ Deployment completed successfully!"
+          ENDSSH
+
+      - name: Health Check
+        env:
+          AWS_HOST: ${{ secrets.AWS_EC2_HOST }}
+        run: |
+          echo "🏥 Running health checks..."
+
+          # Wait a bit for services to fully start
+          sleep 5
+
+          # Check if server responds (port 8080 based on user info)
+          if curl -f -s --max-time 10 http://${AWS_HOST}:8080/labsis > /dev/null; then
+            echo "✅ Health check passed: Server is responding"
+          else
+            echo "⚠️  Warning: Server health check failed or timeout"
+            echo "Please verify manually: http://${AWS_HOST}:8080/labsis"
+          fi
+
+      - name: Deployment Summary
+        if: always()
+        run: |
+          echo "📋 Deployment Summary"
+          echo "===================="
+          echo "Branch: main"
+          echo "Commit: ${{ github.sha }}"
+          echo "Triggered by: ${{ github.actor }}"
+          echo "Timestamp: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          echo ""
+          echo "🔗 Verify deployment at: http://${{ secrets.AWS_EC2_HOST }}:8080/labsis"
+
+      - name: Notify on Failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed!"
+          echo "Check the logs above for error details."
+          echo "You may need to SSH to the server and investigate manually."
+          echo "SSH command: ssh -i labsisapp.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }}"

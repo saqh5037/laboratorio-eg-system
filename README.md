@@ -270,8 +270,31 @@ git push origin v1.2.0
 | **04-Rollback** | Manual | Rollback a versión anterior |
 | **05-Database Migration** | Manual | Ejecutar migraciones de DB |
 | **06-Create Release** | Push tag `v*.*.*` | Auto-crear GitHub Release |
+| **07-Deploy AWS Production** | Manual | Deploy a AWS EC2 (requiere confirmación "DEPLOY") |
 
-**📖 Documentación completa:** Ver [Deployment Summary](./docs/DEPLOYMENT-SUMMARY.md)
+### Deployment a AWS
+
+**Servidor:** AWS EC2 54.197.68.252
+**URL:** http://54.197.68.252:8080/labsis
+
+#### Opción 1: GitHub Actions (Recomendado)
+
+1. Ve a [GitHub Actions](https://github.com/saqh5037/laboratorio-eg-system/actions)
+2. Selecciona **"07 - Deploy to AWS Production"**
+3. Click **"Run workflow"**
+4. Branch: `main`
+5. Confirmation: Escribe `DEPLOY`
+6. Click **"Run workflow"**
+
+#### Opción 2: Script Manual
+
+```bash
+./scripts/deploy-aws.sh
+```
+
+**📖 Documentación completa:**
+- [AWS Deployment Guide](./docs/AWS-DEPLOYMENT-GUIDE.md) - Guía paso a paso
+- [Deployment Summary](./docs/DEPLOYMENT-SUMMARY.md) - Workflow profesional
 
 ## 🤝 Contribuir
 
