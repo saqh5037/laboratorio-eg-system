@@ -25,11 +25,12 @@ const getMessagingBotApiUrl = () => {
 const MESSAGING_BOT_API_URL = getMessagingBotApiUrl();
 
 class MessagingBotApiError extends Error {
-  constructor(message, code, status) {
+  constructor(message, code, status, data = {}) {
     super(message);
     this.name = 'MessagingBotApiError';
     this.code = code;
     this.status = status;
+    this.data = data; // Guardar datos adicionales del response
   }
 }
 
@@ -54,7 +55,8 @@ async function fetchApi(endpoint, options = {}) {
       throw new MessagingBotApiError(
         data.error || 'Error en la petición',
         data.code,
-        response.status
+        response.status,
+        data // Pasar el objeto completo para preservar requiresAuthorization
       );
     }
 
@@ -173,7 +175,8 @@ export function hasTelegramSession() {
  * @returns {Promise<object>} Datos del paciente
  */
 export async function getAuthenticatedPatient() {
-  const token = getTelegramToken();
+  // Intentar obtener token de cualquier canal disponible
+  const token = getTelegramToken() || getWhatsAppToken();
 
   if (!token) {
     throw new MessagingBotApiError('No hay token de autenticación', 'NO_TOKEN');
@@ -282,4 +285,103 @@ export async function checkAuthorization(phone) {
   });
 
   return data;
+}
+
+// ============================================
+// WHATSAPP AUTHENTICATION API
+// ============================================
+
+/**
+ * Solicitar código de autenticación via WhatsApp
+ * @param {string} phone - Número de teléfono
+ * @returns {Promise<{success: boolean, expiresInMinutes: number, requiresAuthorization?: boolean}>}
+ */
+export async function requestWhatsAppCode(phone) {
+  const data = await fetchApi('/auth/whatsapp/request-code', {
+    method: 'POST',
+    body: JSON.stringify({ phone }),
+  });
+
+  return data;
+}
+
+/**
+ * Verificar código de autenticación WhatsApp
+ * @param {string} phone - Número de teléfono
+ * @param {string} code - Código de 6 dígitos
+ * @returns {Promise<{token: string, expiresAt: string, pacienteId: number}>}
+ */
+export async function verifyWhatsAppCode(phone, code) {
+  const data = await fetchApi('/auth/whatsapp/verify-code', {
+    method: 'POST',
+    body: JSON.stringify({ phone, code }),
+  });
+
+  // Guardar token en localStorage (compatible con results_token)
+  if (data.success && data.data) {
+    localStorage.setItem('whatsapp_auth_token', data.data.token);
+    localStorage.setItem('whatsapp_auth_expires', data.data.expiresAt);
+    localStorage.setItem('whatsapp_auth_paciente_id', data.data.pacienteId?.toString() || '');
+  }
+
+  // Retornar solo el contenido de data.data para simplificar el uso
+  return data.data;
+}
+
+/**
+ * Generar token de autorización de WhatsApp sandbox
+ * @param {string} phone - Número de teléfono
+ * @returns {Promise<{success: boolean, whatsappLink: string, sandboxCode: string, token: string, expiresIn: number, expiresAt: string}>}
+ */
+export async function generateWhatsAppAuthToken(phone) {
+  const data = await fetchApi('/auth/whatsapp/generate-authorization-token', {
+    method: 'POST',
+    body: JSON.stringify({ phone }),
+  });
+
+  return data;
+}
+
+/**
+ * Verificar si el usuario completó la autorización de WhatsApp
+ * @param {string} phone - Número de teléfono
+ * @returns {Promise<{success: boolean, isAuthorized: boolean, phoneNumber: string | null}>}
+ */
+export async function checkWhatsAppAuthorization(phone) {
+  const data = await fetchApi(`/auth/whatsapp/check-authorization?phone=${encodeURIComponent(phone)}`, {
+    method: 'GET',
+  });
+
+  return data;
+}
+
+/**
+ * Obtener token de WhatsApp almacenado
+ */
+export function getWhatsAppToken() {
+  return localStorage.getItem('whatsapp_auth_token');
+}
+
+/**
+ * Obtener ID de paciente WhatsApp almacenado
+ */
+export function getWhatsAppPacienteId() {
+  const id = localStorage.getItem('whatsapp_auth_paciente_id');
+  return id ? parseInt(id, 10) : null;
+}
+
+/**
+ * Verificar si hay sesión activa de WhatsApp
+ */
+export function hasWhatsAppSession() {
+  const token = getWhatsAppToken();
+  const expiresAt = localStorage.getItem('whatsapp_auth_expires');
+
+  if (!token || !expiresAt) {
+    return false;
+  }
+
+  // Verificar si el token no ha expirado
+  const expiryDate = new Date(expiresAt);
+  return expiryDate > new Date();
 }

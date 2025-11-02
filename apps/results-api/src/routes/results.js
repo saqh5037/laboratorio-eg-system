@@ -143,6 +143,64 @@ router.get('/resultados/orden/:numero', requireAuth, async (req, res) => {
 });
 
 /**
+ * GET /api/resultados/orden/:numero/con-historico
+ * Obtener resultados completos de una orden CON los últimos 3 resultados históricos
+ * de cada prueba para comparación inline
+ */
+router.get('/resultados/orden/:numero/con-historico', requireAuth, async (req, res) => {
+  try {
+    const { numero } = req.params;
+    const { ci_paciente } = req.paciente;
+
+    // Verificar que la orden pertenece al paciente
+    const perteneceAlPaciente = await Orden.verificarPropiedad(numero, ci_paciente);
+
+    if (!perteneceAlPaciente) {
+      return res.status(403).json({
+        success: false,
+        error: 'No tiene permiso para acceder a esta orden',
+      });
+    }
+
+    // Obtener detalles de la orden
+    const orden = await Orden.findByNumero(numero, ci_paciente);
+
+    if (!orden) {
+      return res.status(404).json({
+        success: false,
+        error: 'Orden no encontrada',
+      });
+    }
+
+    // Obtener resultados, estadísticas y últimos 3 históricos en paralelo
+    const [resultados, estadisticas, ultimos3] = await Promise.all([
+      Resultado.findByOrden(numero),
+      Resultado.getEstadisticas(numero),
+      Resultado.findUltimos3PorOrden(numero, ci_paciente)
+    ]);
+
+    logger.info(`GET /api/resultados/orden/${numero}/con-historico`);
+
+    res.json({
+      success: true,
+      data: {
+        orden,
+        resultados: resultados.resultados,
+        resultados_por_area: resultados.porArea,
+        estadisticas,
+        ultimos3_por_prueba: ultimos3  // Objeto con prueba_id como clave
+      },
+    });
+  } catch (error) {
+    logger.error('Error en /resultados/orden/:numero/con-historico:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al obtener resultados con histórico',
+    });
+  }
+});
+
+/**
  * GET /api/resultados/orden/:numero/pdf
  * Descargar PDF de resultados de una orden específica
  */

@@ -5,6 +5,14 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14.18-blue.svg)](https://www.postgresql.org/)
 [![Turborepo](https://img.shields.io/badge/Turborepo-Monorepo-red.svg)](https://turbo.build/)
 
+[![CI Tests](https://github.com/saqh5037/laboratorio-eg-system/actions/workflows/01-ci-tests.yml/badge.svg)](https://github.com/saqh5037/laboratorio-eg-system/actions/workflows/01-ci-tests.yml)
+[![Deploy Staging](https://github.com/saqh5037/laboratorio-eg-system/actions/workflows/02-deploy-staging.yml/badge.svg)](https://github.com/saqh5037/laboratorio-eg-system/actions/workflows/02-deploy-staging.yml)
+[![Deploy Production](https://github.com/saqh5037/laboratorio-eg-system/actions/workflows/03-deploy-production.yml/badge.svg)](https://github.com/saqh5037/laboratorio-eg-system/actions/workflows/03-deploy-production.yml)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./docs/PR-TEMPLATE.md)
+[![Deployment Status](https://img.shields.io/badge/Deployment-Professional-success.svg)](./docs/DEPLOYMENT-SUMMARY.md)
+
 Sistema completo de gestión para laboratorio clínico con PWA, portal de resultados y sincronización automática.
 
 ## 📦 Servicios
@@ -163,11 +171,18 @@ laboratorio-eg-system/
 
 La documentación completa está disponible en la carpeta [`docs/`](./docs):
 
+### Documentación General
 - **[Resumen del Proyecto](./docs/RESUMEN-PROYECTO-COMPLETO.md)** - Inventario completo
 - **[Arquitectura](./docs/ARQUITECTURA_LABORATORIO_EG.excalidraw.json)** - Diagrama visual
-- **[Deployment](./docs/DEPLOYMENT_PRODUCTION.md)** - Guía de producción
-- **[Sincronización](./docs/SINCRONIZACION-AUTOMATICA.md)** - Sistema de sync
 - **[Inicio Rápido](./docs/README-INICIO-RAPIDO.md)** - Quick start guide
+- **[Sincronización](./docs/SINCRONIZACION-AUTOMATICA.md)** - Sistema de sync
+
+### Deployment y DevOps
+- **[🚀 Deployment Summary](./docs/DEPLOYMENT-SUMMARY.md)** - Workflow completo de deployment profesional
+- **[Branch Protection Setup](./docs/GITHUB-BRANCH-PROTECTION-SETUP.md)** - Configuración de branch protection
+- **[Monitoring Setup](./docs/MONITORING-SETUP.md)** - Configuración de UptimeRobot
+- **[Pull Request Template](./docs/PR-TEMPLATE.md)** - Template para PRs
+- **[Deployment Production](./docs/DEPLOYMENT_PRODUCTION.md)** - Guía legacy de producción
 
 ## 🎯 Funcionalidades Destacadas
 
@@ -220,30 +235,78 @@ npm run test:coverage
 
 ## 🚀 Deployment
 
-### Frontend (Vercel - Recomendado)
+Este proyecto utiliza un **workflow profesional de deployment** con GitFlow y GitHub Actions.
+
+### Workflow Rápido
+
 ```bash
-cd apps/web
-npm run build
-vercel --prod
+# 1. Desarrollar en rama feature
+git checkout -b feature/nueva-funcionalidad
+
+# 2. Commit y push
+git add .
+git commit -m "feat: descripción"
+git push origin feature/nueva-funcionalidad
+
+# 3. Crear PR → develop (CI Tests corren automáticamente)
+# 4. Merge → Auto-deploy a Staging
+
+# 5. Testing en staging OK? → Crear PR: develop → main
+# 6. Merge a main → Crear tag de versión
+git tag -a v1.2.0 -m "Release v1.2.0"
+git push origin v1.2.0
+
+# 7. GitHub Release se crea automáticamente
+# 8. Deploy manual a producción via GitHub Actions
 ```
 
-### APIs (VPS/EC2 con PM2)
-```bash
-cd apps/results-api
-npm run build
-pm2 start src/index.js --name results-api
-pm2 save
-```
+### GitHub Actions Workflows
 
-Ver [Guía de Deployment](./docs/DEPLOYMENT_PRODUCTION.md) para más detalles.
+| Workflow | Trigger | Propósito |
+|----------|---------|-----------|
+| **01-CI Tests** | Push/PR | Tests, linting, build validation |
+| **02-Deploy Staging** | Push a `develop` | Auto-deploy a staging |
+| **03-Deploy Production** | Manual | Deploy a producción (requiere confirmación) |
+| **04-Rollback** | Manual | Rollback a versión anterior |
+| **05-Database Migration** | Manual | Ejecutar migraciones de DB |
+| **06-Create Release** | Push tag `v*.*.*` | Auto-crear GitHub Release |
+
+**📖 Documentación completa:** Ver [Deployment Summary](./docs/DEPLOYMENT-SUMMARY.md)
 
 ## 🤝 Contribuir
 
-1. Fork el repositorio
-2. Crea una rama: `git checkout -b feature/nueva-funcionalidad`
-3. Commit: `git commit -m 'feat: agregar nueva funcionalidad'`
-4. Push: `git push origin feature/nueva-funcionalidad`
-5. Abre un Pull Request
+Este proyecto utiliza **Branch Protection** en `main` y un workflow profesional de Pull Requests.
+
+### Proceso de Contribución
+
+1. **Fork** el repositorio
+2. **Crea una rama** desde `develop`:
+   ```bash
+   git checkout develop
+   git pull origin develop
+   git checkout -b feature/nueva-funcionalidad
+   ```
+3. **Desarrolla** tu funcionalidad
+4. **Commit** siguiendo [Conventional Commits](https://www.conventionalcommits.org/):
+   ```bash
+   git commit -m 'feat: agregar nueva funcionalidad'
+   ```
+5. **Push** tu rama:
+   ```bash
+   git push origin feature/nueva-funcionalidad
+   ```
+6. **Abre un Pull Request** usando el [template de PR](./docs/PR-TEMPLATE.md)
+7. **Espera review** y aprobación (CI Tests deben pasar)
+8. **Merge** después de aprobación
+
+### Requisitos para Merge
+
+- ✅ CI Tests pasando (linting, type-check, build)
+- ✅ Al menos 1 aprobación de reviewer
+- ✅ Todos los comentarios resueltos
+- ✅ Branch actualizada con develop/main
+
+Ver [Branch Protection Setup](./docs/GITHUB-BRANCH-PROTECTION-SETUP.md) para más detalles.
 
 ## 📄 Licencia
 

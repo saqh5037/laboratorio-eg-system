@@ -283,67 +283,9 @@ router.post('/logout', async (req, res) => {
 });
 
 /**
- * GET /api/auth/me
- * Obtener datos del paciente autenticado
- *
- * Headers:
- * Authorization: Bearer <token>
+ * NOTA: El endpoint /me principal está más abajo (línea ~604) con el middleware authenticateToken
+ * Este endpoint duplicado fue eliminado para evitar conflictos
  */
-router.get('/me', async (req, res) => {
-  try {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
-        success: false,
-        error: 'Token no proporcionado'
-      });
-    }
-
-    const token = authHeader.substring(7);
-
-    // Validar token
-    const validation = await SessionService.validateToken(token);
-
-    if (!validation.valid) {
-      return res.status(401).json({
-        success: false,
-        error: validation.error
-      });
-    }
-
-    // Obtener datos del paciente
-    const paciente = await AuthService.findPatientById(validation.pacienteId);
-
-    if (!paciente) {
-      return res.status(404).json({
-        success: false,
-        error: 'Paciente no encontrado'
-      });
-    }
-
-    res.json({
-      success: true,
-      data: {
-        paciente: {
-          id: paciente.id,
-          nombre: paciente.nombre,
-          apellido: paciente.apellido,
-          ci_paciente: paciente.ci_paciente,
-          telefono: paciente.telefono,
-          email: paciente.email
-        }
-      }
-    });
-
-  } catch (error) {
-    logger.error('Error en /me:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Error al obtener datos del paciente'
-    });
-  }
-});
 
 /**
  * GET /api/auth/sessions
@@ -562,6 +504,158 @@ router.get('/telegram/check-authorization', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Error al verificar autorización'
+    });
+  }
+});
+
+/**
+ * Middleware para verificar JWT token
+ */
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      error: 'No se proporcionó token de autenticación'
+    });
+  }
+
+  const jwt = require('jsonwebtoken');
+  const config = require('../config/config');
+
+  jwt.verify(token, config.security.jwtSecret, (err, decoded) => {
+    if (err) {
+      logger.warn(`❌ Token inválido: ${err.message}`);
+      return res.status(401).json({
+        success: false,
+        error: 'Token inválido o expirado'
+      });
+    }
+
+    // Normalizar el formato del token para compatibilidad
+    // SessionService usa: { paciente_id, ci_paciente, nombre, type, telegramChatId }
+    // El viejo formato usaba: { phone, pacienteId, channel }
+    req.user = {
+      pacienteId: decoded.paciente_id || decoded.pacienteId,
+      ci_paciente: decoded.ci_paciente,
+      nombre: decoded.nombre,
+      phone: decoded.phone,
+      channel: decoded.channel || (decoded.type === 'patient_session' ? 'unified' : 'unknown'),
+      telegramChatId: decoded.telegramChatId,
+      type: decoded.type
+    };
+
+    next();
+  });
+};
+
+/**
+ * GET /api/auth/me
+ * Obtener información del usuario autenticado
+ */
+router.get('/me', authenticateToken, async (req, res) => {
+  try {
+    const { phone, pacienteId, channel } = req.user;
+    const labsisPool = require('../db/labsisPool');
+
+    logger.info(`📋 Solicitando datos del usuario autenticado: ${phone} (canal: ${channel})`);
+
+    // Si hay pacienteId, buscar en LABSIS
+    if (pacienteId) {
+      const pacienteResult = await labsisPool.query(
+        `SELECT id, nombre, apellido, apellido_segundo, ci_paciente,
+                fecha_nacimiento, telefono, telefono_celular, email
+         FROM paciente
+         WHERE id = $1`,
+        [pacienteId]
+      );
+
+      if (pacienteResult.rows.length > 0) {
+        const paciente = pacienteResult.rows[0];
+
+        return res.json({
+          success: true,
+          data: {
+            paciente: {
+              id: paciente.id,
+              nombre: paciente.nombre,
+              apellido: paciente.apellido,
+              apellido_segundo: paciente.apellido_segundo,
+              ci_paciente: paciente.ci_paciente,
+              fecha_nacimiento: paciente.fecha_nacimiento,
+              telefono: paciente.telefono,
+              telefono_celular: paciente.telefono_celular,
+              email: paciente.email
+            },
+            channel
+          }
+        });
+      }
+    }
+
+    // Si no hay pacienteId o no se encontró, buscar por teléfono
+    // Extraer solo dígitos para búsqueda más flexible
+    const cleanPhone = phone.replace(/[^0-9]/g, '');
+    const last10Digits = cleanPhone.slice(-10);
+
+    logger.info(`🔍 Buscando paciente con teléfono ${phone} (clean: ${cleanPhone}, last10: ${last10Digits})`);
+
+    const pacienteResult = await labsisPool.query(
+      `SELECT id, nombre, apellido, apellido_segundo, ci_paciente,
+              fecha_nacimiento, telefono, telefono_celular, email
+       FROM paciente
+       WHERE REGEXP_REPLACE(COALESCE(telefono, ''), '[^0-9]', '', 'g') LIKE $1
+          OR REGEXP_REPLACE(COALESCE(telefono_celular, ''), '[^0-9]', '', 'g') LIKE $1
+          OR REGEXP_REPLACE(COALESCE(telefono, ''), '[^0-9]', '', 'g') LIKE $2
+          OR REGEXP_REPLACE(COALESCE(telefono_celular, ''), '[^0-9]', '', 'g') LIKE $2
+       LIMIT 1`,
+      [`%${cleanPhone}%`, `%${last10Digits}%`]
+    );
+
+    if (pacienteResult.rows.length > 0) {
+      const paciente = pacienteResult.rows[0];
+
+      logger.info(`✅ Paciente encontrado: ${paciente.nombre} ${paciente.apellido} (ID: ${paciente.id})`);
+
+      return res.json({
+        success: true,
+        data: {
+          paciente: {
+            id: paciente.id,
+            nombre: paciente.nombre,
+            apellido: paciente.apellido,
+            apellido_segundo: paciente.apellido_segundo,
+            ci_paciente: paciente.ci_paciente,
+            fecha_nacimiento: paciente.fecha_nacimiento,
+            telefono: paciente.telefono,
+            telefono_celular: paciente.telefono_celular,
+            email: paciente.email
+          },
+          channel
+        }
+      });
+    }
+
+    // No se encontró el paciente
+    logger.warn(`⚠️ No se encontró paciente para el teléfono ${phone}`);
+
+    return res.json({
+      success: true,
+      data: {
+        phone,
+        channel,
+        paciente: null,
+        message: 'Usuario autenticado pero sin perfil de paciente'
+      }
+    });
+
+  } catch (error) {
+    logger.error(`❌ Error obteniendo datos del usuario: ${error.message}`);
+    return res.status(500).json({
+      success: false,
+      error: 'Error al obtener datos del usuario'
     });
   }
 });

@@ -1,0 +1,112 @@
+name: 06 - Create GitHub Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Trigger on semantic version tags (v1.0.0, v1.2.3, etc.)
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for changelog generation
+
+      - name: Get previous tag
+        id: previoustag
+        run: |
+          # Get the second most recent tag (previous release)
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          echo "previous_tag=${PREV_TAG}" >> $GITHUB_OUTPUT
+          echo "Previous tag: ${PREV_TAG}"
+
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          PREV_TAG="${{ steps.previoustag.outputs.previous_tag }}"
+          CURRENT_TAG="${{ github.ref_name }}"
+
+          # Create release notes file
+          cat > RELEASE_NOTES.md << 'EOF'
+          ## 🚀 Cambios en esta versión
+
+          EOF
+
+          # Generate changelog from commits
+          if [ -z "$PREV_TAG" ]; then
+            echo "### Commits incluidos:" >> RELEASE_NOTES.md
+            echo "" >> RELEASE_NOTES.md
+            git log --pretty=format:"- %s (%h)" --reverse >> RELEASE_NOTES.md
+          else
+            echo "### Cambios desde ${PREV_TAG}:" >> RELEASE_NOTES.md
+            echo "" >> RELEASE_NOTES.md
+            git log ${PREV_TAG}..HEAD --pretty=format:"- %s (%h)" --reverse >> RELEASE_NOTES.md
+          fi
+
+          # Add deployment information
+          cat >> RELEASE_NOTES.md << 'EOF'
+
+
+          ## 📋 Deployment
+
+          Esta versión fue etiquetada el $(date '+%d de %B, %Y').
+
+          ### Para deployar a producción:
+
+          1. Ve a [Actions](https://github.com/${{ github.repository }}/actions)
+          2. Selecciona el workflow **03 - Deploy to Production**
+          3. Click en **Run workflow**
+          4. Escribe `DEPLOY` para confirmar
+          5. Click en **Run workflow**
+
+          ### Archivos incluidos:
+
+          - Frontend: `apps/web/`
+          - Backend APIs: `apps/results-api/`, `apps/sync-service/`, `apps/messaging-bot/`
+
+          ## 🔄 Rollback
+
+          Si necesitas hacer rollback a la versión anterior:
+
+          1. Ve a [Actions](https://github.com/${{ github.repository }}/actions)
+          2. Selecciona el workflow **04 - Rollback**
+          3. Click en **Run workflow**
+          4. Escribe `ROLLBACK` para confirmar
+          5. Selecciona el tag de la versión anterior
+
+          ## 📊 Verificación Post-Deployment
+
+          Después del deployment, verifica:
+
+          - ✅ Servicios corriendo: `pm2 status`
+          - ✅ Logs sin errores: `pm2 logs results-api --lines 50`
+          - ✅ Frontend accesible: https://[tu-dominio]
+          - ✅ API health check: https://[tu-dominio]/api/health
+
+          ---
+
+          🤖 Release generado automáticamente por GitHub Actions
+          EOF
+
+          echo "notes_file=RELEASE_NOTES.md" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: RELEASE_NOTES.md
+          draft: false
+          prerelease: false
+          generate_release_notes: true  # GitHub will add additional notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify Success
+        run: |
+          echo "✅ Release ${{ github.ref_name }} created successfully"
+          echo "🔗 View at: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}"

@@ -64,12 +64,16 @@ const corsOptions = {
       }
     } else {
       // En producción, usar lista estricta
+      // Parsear CORS_ORIGIN como lista separada por comas
+      const corsOriginEnv = process.env.CORS_ORIGIN || '';
+      const corsOriginsList = corsOriginEnv.split(',').map(o => o.trim()).filter(Boolean);
+
       const allowedOrigins = [
         'http://localhost:5173',
         'http://localhost:3000',
-        process.env.CORS_ORIGIN
+        ...corsOriginsList
       ].filter(Boolean);
-      
+
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {

@@ -16,6 +16,47 @@ class MessageTemplateService {
   }
 
   /**
+   * Template: Orden Creada
+   * @param {object} data - { numero, paciente, estudios, fecha }
+   * @returns {object} { message, buttons }
+   */
+  ordenCreada(data) {
+    const { numero, paciente, estudios, fecha } = data;
+
+    const estudiosTexto = estudios && estudios.length > 0
+      ? estudios.map(e => `  • ${e}`).join('\n')
+      : '  • Información no disponible';
+
+    const message = `📋 *¡Nueva Orden de Trabajo Creada!*
+
+Estimado(a) *${paciente}*,
+
+Se ha creado la orden de trabajo *#${numero}* el ${fecha}.
+
+📋 *Estudios solicitados:*
+${estudiosTexto}
+
+ℹ️ *Próximos pasos:*
+1. Realizar el pago de la orden
+2. Entrega de muestras (si aplica)
+3. Procesamiento en laboratorio
+
+Le mantendremos informado del progreso de su orden.
+
+━━━━━━━━━━━━━━━━━━
+_Laboratorio EG - Desde 1982_
+📞 ${this.labPhone}`;
+
+    const buttons = [
+      [
+        { text: '🌐 Portal Web', url: this.baseUrl },
+      ]
+    ];
+
+    return { message, buttons };
+  }
+
+  /**
    * Template: Orden Pagada
    * @param {object} data - { numero, paciente, estudios, fechaEstimada }
    * @returns {object} { message, buttons }
@@ -24,7 +65,7 @@ class MessageTemplateService {
     const { numero, paciente, estudios, fechaEstimada } = data;
 
     const estudiosTexto = estudios.length > 0
-      ? estudios.map(e => `  • ${e.nombre}`).join('\n')
+      ? estudios.map(e => `  • ${e}`).join('\n')
       : '  • Información no disponible';
 
     const message = `🎉 *¡Orden de Trabajo Registrada!*
@@ -302,6 +343,7 @@ _Laboratorio EG - Desde 1982_`;
    */
   format(templateName, data) {
     const templates = {
+      orden_creada: this.ordenCreada.bind(this),
       orden_pagada: this.ordenPagada.bind(this),
       resultados_listos: this.resultadosListos.bind(this),
       orden_en_proceso: this.ordenEnProceso.bind(this),

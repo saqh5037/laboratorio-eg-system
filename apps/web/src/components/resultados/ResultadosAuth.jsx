@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import logger from '../../utils/logger';
 import { autenticarPaciente } from '../../services/resultsApi';
 import toast from 'react-hot-toast';
 import TelegramAuthModal from '../auth/TelegramAuthModal';
-import { useTelegramAuth } from '../../contexts/TelegramAuthContext';
+import WhatsAppAuthModal from '../auth/WhatsAppAuthModal';
+import { TelegramAuthProvider } from '../../contexts/TelegramAuthContext';
 import { getAuthenticatedPatient } from '../../services/messagingBotApi';
 
 export default function ResultadosAuth({ onAuthSuccess }) {
@@ -11,8 +11,8 @@ export default function ResultadosAuth({ onAuthSuccess }) {
   const [fechaNacimiento, setFechaNacimiento] = useState('');
   const [loading, setLoading] = useState(false);
   const [showTelegramModal, setShowTelegramModal] = useState(false);
-  const [selectedMethod, setSelectedMethod] = useState(null); // null, 'telegram', 'cedula'
-  const { login } = useTelegramAuth();
+  const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState(null); // null, 'telegram', 'whatsapp', 'cedula'
 
   // Verificar si hay un estado de autenticación Telegram pendiente al montar
   useEffect(() => {
@@ -46,7 +46,7 @@ export default function ResultadosAuth({ onAuthSuccess }) {
       toast.success(`Bienvenido ${data.paciente.nombre}`);
       onAuthSuccess(data);
     } catch (error) {
-      logger.error('Error de autenticación:', error);
+      console.error('Error de autenticación:', error);
 
       if (error.code === 'RATE_LIMIT_EXCEEDED') {
         toast.error('Demasiados intentos. Por favor, intente más tarde.');
@@ -67,21 +67,60 @@ export default function ResultadosAuth({ onAuthSuccess }) {
     setSelectedMethod(method);
     if (method === 'telegram') {
       setShowTelegramModal(true);
+    } else if (method === 'whatsapp') {
+      setShowWhatsAppModal(true);
     }
   };
 
   // Manejar éxito de autenticación Telegram
   const handleTelegramAuthSuccess = async (authData) => {
     try {
-      // Llamar al login del context
-      login(authData);
-
       // Obtener datos reales del paciente desde el backend
       const { getAuthenticatedPatient } = await import('../../services/messagingBotApi');
       const pacienteData = await getAuthenticatedPatient();
 
       // IMPORTANTE: Guardar el token también como 'results_token' para compatibilidad
       // con el resultsApi.js que busca ese nombre específico
+      localStorage.setItem('results_token', authData.token);
+      localStorage.setItem('results_paciente', JSON.stringify({
+        nombre: `${pacienteData.nombre} ${pacienteData.apellido}`,
+        ci_paciente: pacienteData.ci_paciente,
+      }));
+
+      // Crear objeto compatible con onAuthSuccess
+      const authSuccessData = {
+        token: authData.token,
+        paciente: {
+          id: pacienteData.id,
+          nombre: pacienteData.nombre,
+          apellido: pacienteData.apellido,
+          ci_paciente: pacienteData.ci_paciente,
+        },
+      };
+
+      onAuthSuccess(authSuccessData);
+    } catch (error) {
+      console.error('Error al obtener datos del paciente:', error);
+      toast.error('Error al cargar datos del paciente');
+    }
+  };
+
+  // Manejar éxito de autenticación WhatsApp
+  const handleWhatsAppAuthSuccess = async (authData) => {
+    try {
+      // IMPORTANTE: Guardar el token PRIMERO en localStorage para que
+      // getAuthenticatedPatient() pueda usarlo
+      localStorage.setItem('whatsapp_auth_token', authData.token);
+      localStorage.setItem('whatsapp_auth_expires', authData.expiresAt);
+      if (authData.pacienteId) {
+        localStorage.setItem('whatsapp_auth_paciente_id', authData.pacienteId.toString());
+      }
+
+      // Ahora obtener datos reales del paciente desde el backend
+      const { getAuthenticatedPatient } = await import('../../services/messagingBotApi');
+      const pacienteData = await getAuthenticatedPatient();
+
+      // También guardar como 'results_token' para compatibilidad con resultsApi.js
       localStorage.setItem('results_token', authData.token);
       localStorage.setItem('results_paciente', JSON.stringify({
         nombre: `${pacienteData.nombre} ${pacienteData.apellido}`,
@@ -127,7 +166,7 @@ export default function ResultadosAuth({ onAuthSuccess }) {
 
           {/* Pantalla de selección de método */}
           {selectedMethod === null && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
               {/* Opción Telegram */}
               <button
                 onClick={() => handleMethodSelect('telegram')}
@@ -146,6 +185,28 @@ export default function ResultadosAuth({ onAuthSuccess }) {
                   <div className="hidden sm:block text-xs text-white/80 mt-2 lg:mt-4">
                     ✓ Sin contraseñas<br/>
                     ✓ Autenticación instantánea
+                  </div>
+                </div>
+              </button>
+
+              {/* Opción WhatsApp */}
+              <button
+                onClick={() => handleMethodSelect('whatsapp')}
+                className="group relative overflow-hidden bg-gradient-to-br from-[#25D366] to-[#128C7E] active:from-[#128C7E] active:to-[#075E54] md:hover:from-[#128C7E] md:hover:to-[#075E54] text-white rounded-xl p-5 sm:p-6 lg:p-8 shadow-lg md:hover:shadow-2xl transition-all duration-300 md:transform md:hover:scale-105 active:scale-95 min-h-[140px] sm:min-h-[160px]"
+              >
+                <div className="flex flex-col items-center space-y-2 sm:space-y-3 lg:space-y-4">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                    <svg className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-1">WhatsApp</h3>
+                    <p className="text-white/90 text-xs sm:text-sm">Popular y Confiable</p>
+                  </div>
+                  <div className="hidden sm:block text-xs text-white/80 mt-2 lg:mt-4">
+                    ✓ Fácil acceso<br/>
+                    ✓ Verificación por SMS
                   </div>
                 </div>
               </button>
@@ -263,10 +324,19 @@ export default function ResultadosAuth({ onAuthSuccess }) {
       </div>
 
       {/* Modal de Telegram */}
-      <TelegramAuthModal
-        isOpen={showTelegramModal}
-        onClose={() => setShowTelegramModal(false)}
-        onSuccess={handleTelegramAuthSuccess}
+      <TelegramAuthProvider>
+        <TelegramAuthModal
+          isOpen={showTelegramModal}
+          onClose={() => setShowTelegramModal(false)}
+          onSuccess={handleTelegramAuthSuccess}
+        />
+      </TelegramAuthProvider>
+
+      {/* Modal de WhatsApp */}
+      <WhatsAppAuthModal
+        isOpen={showWhatsAppModal}
+        onClose={() => setShowWhatsAppModal(false)}
+        onSuccess={handleWhatsAppAuthSuccess}
       />
     </>
   );

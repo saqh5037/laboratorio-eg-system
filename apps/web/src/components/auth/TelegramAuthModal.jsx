@@ -264,7 +264,25 @@ export default function TelegramAuthModal({ isOpen, onClose, onSuccess }) {
     } catch (error) {
       console.error('Error al solicitar código:', error);
 
-      if (error.code === 'PATIENT_NOT_FOUND') {
+      // Verificar si el error indica que se requiere autorización
+      if (error.data && error.data.requiresAuthorization) {
+        // Generar token de autorización
+        try {
+          const authData = await generateAuthorizationToken(formatPhone(phone));
+
+          setRequiresAuthorization(true);
+          setAuthorizationLink(authData.telegramLink);
+          setStep(3); // Paso de autorización
+
+          // Iniciar polling para verificar autorización
+          setPollingForAuth(true);
+
+          toast.success('Por favor, autoriza la comunicación en Telegram', { duration: 5000 });
+        } catch (authError) {
+          console.error('Error al generar token de autorización:', authError);
+          toast.error('Error al generar enlace de autorización');
+        }
+      } else if (error.code === 'PATIENT_NOT_FOUND') {
         toast.error('No se encontró un paciente con este teléfono');
       } else if (error.code === 'RATE_LIMIT_EXCEEDED') {
         toast.error('Demasiados intentos. Intente más tarde.');

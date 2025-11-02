@@ -1,6 +1,7 @@
 const { botPool, labsisPool } = require('../../db/pool');
 const logger = require('../../utils/logger');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const config = require('../../config/config');
 
 /**
@@ -24,8 +25,8 @@ class SessionService {
     try {
       const { pacienteId, telegramChatId, deviceInfo, ipAddress, userAgent } = params;
 
-      // Obtener ci_paciente de la base de datos
-      const pacienteResult = await botPool.query(
+      // Obtener ci_paciente de la base de datos LABSIS
+      const pacienteResult = await labsisPool.query(
         'SELECT ci_paciente, nombre, apellido FROM paciente WHERE id = $1',
         [pacienteId]
       );
@@ -42,7 +43,8 @@ class SessionService {
         ci_paciente: paciente.ci_paciente,  // ← AGREGAR ESTO
         nombre: `${paciente.nombre} ${paciente.apellido}`,  // ← AGREGAR ESTO
         type: 'patient_session',
-        telegramChatId
+        telegramChatId,
+        jti: crypto.randomBytes(16).toString('hex')  // JWT ID único para evitar duplicados
       };
 
       const token = jwt.sign(payload, this.JWT_SECRET, {

@@ -3,8 +3,9 @@ const cors = require('cors');
 const helmet = require('helmet');
 const config = require('./config/config');
 const logger = require('./utils/logger');
-const { testConnection, closePool } = require('./db/pool');
+const { testConnection, closePool, botPool } = require('./db/pool');
 const TelegramAdapter = require('./adapters/telegram/TelegramAdapter');
+const WhatsAppAdapter = require('./adapters/whatsapp/WhatsAppAdapter');
 const ConversationService = require('./core/services/ConversationService');
 const GeminiService = require('./core/services/GeminiService');
 const PresupuestoService = require('./core/services/PresupuestoService');
@@ -13,6 +14,7 @@ const PresupuestoWorkflow = require('./core/workflows/PresupuestoWorkflow');
 const StateManager = require('./utils/StateManager');
 const { formatLabInfo, formatPresupuestoInfo, formatCitaInfo } = require('./utils/formatters');
 const NotificationService = require('./core/services/NotificationService');
+const MultiChannelNotificationService = require('./core/services/MultiChannelNotificationService');
 const ChangeDetectorService = require('./core/services/ChangeDetectorService');
 const TelegramUserRegistryService = require('./core/services/TelegramUserRegistryService');
 const AuthService = require('./core/services/AuthService');
@@ -25,6 +27,8 @@ class MessagingBotService {
   constructor() {
     this.app = express();
     this.telegramAdapter = null;
+    this.whatsappAdapter = null;
+    this.cleanupIntervalId = null;
   }
 
   /**
@@ -74,6 +78,10 @@ class MessagingBotService {
     const authRoutes = require('./routes/auth');
     this.app.use('/api/auth', authRoutes);
 
+    // WhatsApp Authentication routes
+    const whatsappAuthRoutes = require('./api/routes/whatsapp-auth.routes');
+    this.app.use('/api/auth/whatsapp', whatsappAuthRoutes);
+
     // Notification preferences routes
     const preferencesRoutes = require('./api/routes/preferences.routes');
     this.app.use('/api/preferences', preferencesRoutes);
@@ -81,6 +89,22 @@ class MessagingBotService {
     // Notifications testing routes
     const notificationsRoutes = require('./routes/notifications.routes');
     this.app.use('/api/notifications', notificationsRoutes);
+
+    // WhatsApp webhook
+    this.app.post('/api/webhooks/whatsapp', async (req, res) => {
+      try {
+        if (this.whatsappAdapter) {
+          await this.whatsappAdapter.processWebhook(req);
+          res.sendStatus(200);
+        } else {
+          logger.warn('WhatsApp webhook received but adapter not initialized');
+          res.sendStatus(503);
+        }
+      } catch (error) {
+        logger.error('Error processing WhatsApp webhook:', error);
+        res.sendStatus(500);
+      }
+    });
 
     logger.info(`🌐 Express server configured on port ${config.port}`);
   }
@@ -521,6 +545,42 @@ ${config.laboratory.hoursSunday}`, { parse_mode: 'Markdown' });
   }
 
   /**
+   * Start queue cleanup job
+   * Runs every 24 hours to clean old notifications
+   */
+  startQueueCleanupJob() {
+    const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+    // Run cleanup immediately on startup
+    this.runQueueCleanup();
+
+    // Then run every 24 hours
+    this.cleanupIntervalId = setInterval(async () => {
+      await this.runQueueCleanup();
+    }, CLEANUP_INTERVAL_MS);
+
+    logger.info('🧹 Queue cleanup job scheduled (every 24 hours)');
+  }
+
+  /**
+   * Execute queue cleanup
+   */
+  async runQueueCleanup() {
+    try {
+      const result = await botPool.query('SELECT cleanup_old_queue_items()');
+      const cleaned = result.rows[0].cleanup_old_queue_items;
+
+      if (cleaned > 0) {
+        logger.info(`🧹 Limpiadas ${cleaned} notificaciones antiguas de la cola`);
+      } else {
+        logger.info('🧹 Limpieza de cola ejecutada - No hay items antiguos para limpiar');
+      }
+    } catch (error) {
+      logger.error('Error en limpieza de cola de notificaciones:', error);
+    }
+  }
+
+  /**
    * Start the service
    */
   async start() {
@@ -536,13 +596,25 @@ ${config.laboratory.hoursSunday}`, { parse_mode: 'Markdown' });
       // Setup Telegram bot
       await this.setupTelegramBot();
 
-      // Initialize NotificationService with Telegram adapter
-      if (this.telegramAdapter) {
+      // Setup WhatsApp bot
+      this.whatsappAdapter = new WhatsAppAdapter();
+      await this.whatsappAdapter.initialize();
+
+      // Initialize MultiChannelNotificationService with both adapters
+      if (this.telegramAdapter && this.whatsappAdapter) {
+        MultiChannelNotificationService.initialize(this.telegramAdapter, this.whatsappAdapter);
+        logger.info('✅ MultiChannelNotificationService initialized with Telegram + WhatsApp');
+      } else if (this.telegramAdapter) {
+        // Fallback to old NotificationService if WhatsApp is disabled
         NotificationService.initialize(this.telegramAdapter);
+        logger.info('✅ NotificationService initialized with Telegram only');
       }
 
       // Start ChangeDetector for automatic notifications
       ChangeDetectorService.start();
+
+      // Start queue cleanup job (every 24 hours)
+      this.startQueueCleanupJob();
 
       // Start Express server
       this.app.listen(config.port, () => {
@@ -565,8 +637,18 @@ ${config.laboratory.hoursSunday}`, { parse_mode: 'Markdown' });
     // Stop change detector
     ChangeDetectorService.stop();
 
+    // Stop cleanup job
+    if (this.cleanupIntervalId) {
+      clearInterval(this.cleanupIntervalId);
+      logger.info('🧹 Queue cleanup job stopped');
+    }
+
     if (this.telegramAdapter) {
       await this.telegramAdapter.stop();
+    }
+
+    if (this.whatsappAdapter) {
+      this.whatsappAdapter.stop();
     }
 
     await closePool();
