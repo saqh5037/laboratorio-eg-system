@@ -4,6 +4,7 @@
 import express from 'express';
 import models from '../models/index.js';
 import cacheManager, { cacheMiddleware, generateCacheKey } from '../middleware/cache.js';
+import db from '../config/database.js';
 
 const router = express.Router();
 
@@ -433,24 +434,51 @@ router.post('/cache/warm-up', async (req, res) => {
 // GET /api/health - Health check del API
 router.get('/health', async (req, res) => {
   try {
-    const dbHealth = await require('../config/database.js').default.healthCheck();
+    // Check database connection
+    const dbHealth = await db.healthCheck();
     const cacheStats = cacheManager.getStats();
-    
+
+    // Calculate uptime
+    const uptime = process.uptime();
+    const uptimeFormatted = `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m ${Math.floor(uptime % 60)}s`;
+
+    // Memory usage
+    const memUsage = process.memoryUsage();
+    const memUsedMB = Math.round(memUsage.heapUsed / 1024 / 1024);
+    const memTotalMB = Math.round(memUsage.heapTotal / 1024 / 1024);
+
     res.json({
       success: true,
       status: 'healthy',
       timestamp: new Date().toISOString(),
-      database: dbHealth,
-      cache: {
-        hitRate: cacheStats.hitRate,
-        keys: cacheStats.keys
+      uptime: uptimeFormatted,
+      checks: {
+        database: {
+          status: dbHealth.connected ? 'ok' : 'error',
+          latency: dbHealth.latency,
+          version: dbHealth.version
+        },
+        cache: {
+          status: 'ok',
+          hitRate: cacheStats.hitRate,
+          keys: cacheStats.keys,
+          hits: cacheStats.hits,
+          misses: cacheStats.misses
+        },
+        memory: {
+          status: memUsedMB < memTotalMB * 0.9 ? 'ok' : 'warning',
+          used: `${memUsedMB}MB`,
+          total: `${memTotalMB}MB`,
+          percentage: `${Math.round((memUsedMB / memTotalMB) * 100)}%`
+        }
       }
     });
   } catch (error) {
     res.status(503).json({
       success: false,
       status: 'unhealthy',
-      error: error.message
+      error: error.message,
+      timestamp: new Date().toISOString()
     });
   }
 });
