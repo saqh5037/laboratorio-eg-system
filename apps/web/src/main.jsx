@@ -67,12 +67,6 @@ if ('serviceWorker' in navigator) {
         console.error('[PWA] Error al registrar Service Worker:', error);
       },
     });
-
-    // Forzar actualización si hay nueva versión
-    window.addEventListener('vite:preloadError', (event) => {
-      console.warn('[PWA] Error de precarga detectado, recargando...');
-      window.location.reload();
-    });
   }).catch((err) => {
     console.error('[PWA] Error al importar virtual:pwa-register:', err);
   });
