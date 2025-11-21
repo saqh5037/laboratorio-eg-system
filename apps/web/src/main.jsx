@@ -41,33 +41,23 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 )
 
-// Register Service Worker (vite-plugin-pwa)
-if ('serviceWorker' in navigator) {
-  // Importar el registro del SW generado por vite-plugin-pwa
-  import('virtual:pwa-register').then(({ registerSW }) => {
-    const updateSW = registerSW({
-      immediate: true,
-      onNeedRefresh() {
-        console.log('[PWA] Nueva versión disponible, actualizando...');
-      },
-      onOfflineReady() {
-        console.log('[PWA] App lista para funcionar offline');
-      },
-      onRegistered(registration) {
-        console.log('[PWA] Service Worker registrado correctamente');
-
-        // Auto-update cada hora
-        if (registration) {
-          setInterval(() => {
-            registration.update();
-          }, 60 * 60 * 1000); // 1 hora
-        }
-      },
-      onRegisterError(error) {
-        console.error('[PWA] Error al registrar Service Worker:', error);
-      },
-    });
-  }).catch((err) => {
-    console.error('[PWA] Error al importar virtual:pwa-register:', err);
+// DESARROLLO: Desregistrar Service Worker si existe
+// En producción, el SW se registrará automáticamente con vite-plugin-pwa
+if ('serviceWorker' in navigator && process.env.NODE_ENV === 'development') {
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    for (const registration of registrations) {
+      registration.unregister();
+      console.log('[DEV] Service Worker desregistrado para desarrollo');
+    }
   });
+
+  // Limpiar caches del Service Worker
+  if ('caches' in window) {
+    caches.keys().then((names) => {
+      names.forEach((name) => {
+        caches.delete(name);
+        console.log('[DEV] Cache eliminado:', name);
+      });
+    });
+  }
 }

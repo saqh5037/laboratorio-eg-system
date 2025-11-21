@@ -120,7 +120,7 @@ export default defineConfig({
       },
 
       devOptions: {
-        enabled: true, // Habilitar SW en desarrollo para testing
+        enabled: false, // Deshabilitado en desarrollo - solo producción
         type: 'module',
       },
     }),
