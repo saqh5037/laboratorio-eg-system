@@ -1,10 +1,130 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
 import { resolve } from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.svg', '**/*.{png,jpg,jpeg,svg,ico,woff,woff2}'],
+
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+
+        // CRÍTICO: Network-first para JavaScript para evitar cache de versiones antiguas
+        runtimeCaching: [
+          {
+            urlPattern: /^https?:\/\/localhost:5173\/.*\.js$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'js-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24, // 1 día
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: /^https?:\/\/localhost:5173\/assets\/.*\.js$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'assets-js-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24, // 1 día
+              },
+            },
+          },
+          {
+            urlPattern: /^https?:\/\/localhost:5173\/assets\/.*\.css$/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'css-cache',
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 60 * 60 * 24 * 7, // 7 días
+              },
+            },
+          },
+          {
+            urlPattern: /\.(png|jpg|jpeg|svg|gif|webp)$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 días
+              },
+            },
+          },
+          {
+            urlPattern: /\.(woff|woff2|ttf|eot)$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'fonts-cache',
+              expiration: {
+                maxEntries: 30,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 año
+              },
+            },
+          },
+          {
+            urlPattern: /^https?:\/\/localhost:(3001|3005)\/api\/.*/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+              networkTimeoutSeconds: 5,
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 5, // 5 minutos
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
+
+        // Limpiar cache antiguo
+        cleanupOutdatedCaches: true,
+
+        // Skip waiting para activar nuevo SW inmediatamente
+        skipWaiting: true,
+        clientsClaim: true,
+      },
+
+      manifest: {
+        name: 'Sistema de Laboratorio Clínico',
+        short_name: 'Lab System',
+        description: 'Sistema de gestión de estudios clínicos y análisis de laboratorio',
+        theme_color: '#ffffff',
+        background_color: '#ffffff',
+        display: 'standalone',
+        orientation: 'portrait-primary',
+        scope: '/',
+        start_url: '/',
+        icons: [
+          {
+            src: '/favicon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any maskable',
+          },
+        ],
+      },
+
+      devOptions: {
+        enabled: true, // Habilitar SW en desarrollo para testing
+        type: 'module',
+      },
+    }),
+  ],
   
   // Optimizaciones de desarrollo
   server: {
@@ -92,7 +212,12 @@ export default defineConfig({
       '@contexts': resolve(__dirname, 'src/contexts'),
       '@layouts': resolve(__dirname, 'src/layouts'),
       '@assets': resolve(__dirname, 'src/assets'),
+      // Fix para React 19 en monorepo: Forzar resolución desde root
+      'react': resolve(__dirname, '../../node_modules/react'),
+      'react-dom': resolve(__dirname, '../../node_modules/react-dom'),
     },
+    // CRÍTICO para monorepos: Asegura una sola instancia de React
+    dedupe: ['react', 'react-dom'],
   },
   
   // Optimizaciones de dependencias
@@ -132,10 +257,5 @@ export default defineConfig({
     port: 4173,
     strictPort: true,
     host: true,
-  },
-  
-  // Configuración de PWA (se expandirá con workbox si es necesario)
-  worker: {
-    format: 'es',
   },
 })
