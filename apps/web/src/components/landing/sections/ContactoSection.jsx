@@ -231,139 +231,140 @@ const ContactoSection = ({ section, content, companyInfo }) => {
       </header>
 
       {/* Contact Content */}
-      <div className="relative z-10 w-full py-8 md:py-12">
-        <div className="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24">
-          {/* Contact Cards */}
-          <div className="space-y-6 mb-12 relative z-20">
-            {/* First Row: Main Contact Info - 2 columns */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* Address */}
-              {getContactInfoByType('address').length > 0 && (
-                <div className="bg-white rounded-xl p-5 shadow-[0_8px_30px_rgba(123,104,166,0.12)] hover:shadow-[0_12px_40px_rgba(123,104,166,0.18)] border border-eg-purple/10 transition-all duration-300">
-                  <div className="flex items-start gap-4">
-                    <div className="bg-gradient-to-br from-eg-purple/15 to-eg-pink/15 rounded-xl p-3 border border-eg-purple/20">
-                      <FaMapMarkerAlt className="text-eg-purple w-7 h-7" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-xl font-medium text-eg-purple mb-2">Dirección</h3>
-                      {getContactInfoByType('address').map((addr, idx) => (
-                        <p key={idx} className="text-eg-dark text-base leading-relaxed">
-                          {addr.value}
-                        </p>
+      <div className="relative z-10 w-full py-12 md:py-16">
+        <div className="max-w-[1400px] mx-auto px-6 sm:px-8 md:px-12 lg:px-16">
+          {/* Contact Cards - Grid uniforme 2x2 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12 md:mb-16 relative z-20">
+            {/* Address Card */}
+            {getContactInfoByType('address').length > 0 && (
+              <div className="bg-white rounded-2xl p-8 md:p-10 shadow-[0_8px_30px_rgba(123,104,166,0.12)] hover:shadow-[0_16px_50px_rgba(123,104,166,0.18)] border border-eg-purple/10 transition-all duration-300 hover:-translate-y-1">
+                <div className="flex items-start gap-5">
+                  <div className="bg-gradient-to-br from-eg-purple to-eg-purple/80 rounded-2xl p-4 shadow-lg flex-shrink-0">
+                    <FaMapMarkerAlt className="text-white w-8 h-8" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-2xl font-bold text-eg-purple mb-4 tracking-tight">Dirección</h3>
+                    {getContactInfoByType('address').map((addr, idx) => (
+                      <p key={idx} className="text-eg-dark text-lg leading-relaxed font-medium">
+                        {addr.value}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Phones Card */}
+            {getContactInfoByType('phone').length > 0 && (
+              <div className="bg-white rounded-2xl p-8 md:p-10 shadow-[0_8px_30px_rgba(123,104,166,0.12)] hover:shadow-[0_16px_50px_rgba(123,104,166,0.18)] border border-eg-purple/10 transition-all duration-300 hover:-translate-y-1">
+                <div className="flex items-start gap-5">
+                  <div className="bg-gradient-to-br from-eg-purple to-eg-purple/80 rounded-2xl p-4 shadow-lg flex-shrink-0">
+                    <FaPhone className="text-white w-8 h-8" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-2xl font-bold text-eg-purple mb-4 tracking-tight">Teléfonos</h3>
+                    <div className="space-y-2">
+                      {getContactInfoByType('phone').map((phone, idx) => (
+                        <a
+                          key={idx}
+                          href={`tel:${phone.value}`}
+                          className="block text-eg-dark text-lg font-semibold hover:text-eg-purple transition-colors hover:translate-x-1 transform duration-200"
+                        >
+                          {phone.value}
+                        </a>
                       ))}
                     </div>
                   </div>
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Phones */}
-              {getContactInfoByType('phone').length > 0 && (
-                <div className="bg-white rounded-xl p-5 shadow-[0_8px_30px_rgba(123,104,166,0.12)] hover:shadow-[0_12px_40px_rgba(123,104,166,0.18)] border border-eg-purple/10 transition-all duration-300">
-                  <div className="flex items-start gap-4">
-                    <div className="bg-gradient-to-br from-eg-purple/15 to-eg-pink/15 rounded-xl p-3 border border-eg-purple/20">
-                      <FaPhone className="text-eg-purple w-7 h-7" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-xl font-medium text-eg-purple mb-2">Teléfonos</h3>
-                      <div className="space-y-1">
-                        {getContactInfoByType('phone').map((phone, idx) => (
-                          <a
-                            key={idx}
-                            href={`tel:${phone.value}`}
-                            className="block text-eg-dark text-base hover:text-eg-purple transition-colors"
-                          >
-                            {phone.value}
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+            {/* Email Card */}
+            <div className="bg-white rounded-2xl p-8 md:p-10 shadow-[0_8px_30px_rgba(123,104,166,0.12)] hover:shadow-[0_16px_50px_rgba(123,104,166,0.18)] border border-eg-purple/10 transition-all duration-300 hover:-translate-y-1">
+              <div className="flex items-start gap-5">
+                <div className="bg-gradient-to-br from-eg-purple to-eg-purple/80 rounded-2xl p-4 shadow-lg flex-shrink-0">
+                  <FaEnvelope className="text-white w-8 h-8" />
                 </div>
-              )}
-            </div>
-
-            {/* Second Row: Email + Hours */}
-            <div className="grid grid-cols-2 gap-3 sm:gap-5">
-              {/* Email */}
-              <div className="bg-white rounded-xl p-5 shadow-[0_8px_30px_rgba(123,104,166,0.12)] hover:shadow-[0_12px_40px_rgba(123,104,166,0.18)] border border-eg-purple/10 transition-all duration-300">
-                <div className="flex items-start gap-4">
-                  <div className="bg-gradient-to-br from-eg-purple/15 to-eg-pink/15 rounded-xl p-3 border border-eg-purple/20">
-                    <FaEnvelope className="text-eg-purple w-7 h-7" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-xl font-medium text-eg-purple mb-2">Email</h3>
-                    <div className="space-y-1">
-                      {getContactInfoByType('email').length > 0 ? (
-                        getContactInfoByType('email').map((email, idx) => (
-                          <a
-                            key={idx}
-                            href={`mailto:${email.value}`}
-                            className="block text-eg-purple hover:text-eg-pink transition-colors font-medium text-base md:text-lg underline decoration-2 underline-offset-2 break-all"
-                          >
-                            {email.value}
-                          </a>
-                        ))
-                      ) : (
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-2xl font-bold text-eg-purple mb-4 tracking-tight">Email</h3>
+                  <div className="space-y-2">
+                    {getContactInfoByType('email').length > 0 ? (
+                      getContactInfoByType('email').map((email, idx) => (
                         <a
-                          href="mailto:contacto@microtec.com.mx"
-                          className="block text-eg-purple hover:text-eg-pink transition-colors font-medium text-base md:text-lg underline decoration-2 underline-offset-2 break-all"
+                          key={idx}
+                          href={`mailto:${email.value}`}
+                          className="block text-eg-purple hover:text-eg-pink transition-colors font-bold text-lg underline decoration-2 underline-offset-4 break-words hover:translate-x-1 transform duration-200"
                         >
-                          contacto@microtec.com.mx
+                          {email.value}
                         </a>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Hours */}
-              <div className="bg-white rounded-xl p-5 shadow-[0_8px_30px_rgba(123,104,166,0.12)] hover:shadow-[0_12px_40px_rgba(123,104,166,0.18)] border border-eg-purple/10 transition-all duration-300">
-                <div className="flex items-start gap-4">
-                  <div className="bg-gradient-to-br from-eg-purple/15 to-eg-pink/15 rounded-xl p-3 border border-eg-purple/20">
-                    <FaClock className="text-eg-purple w-7 h-7" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-xl font-medium text-eg-purple mb-2">Horario</h3>
-                    <div className="space-y-1">
-                      {getContactInfoByType('hours').length > 0 ? (
-                        getContactInfoByType('hours').map((hour, idx) => (
-                          <p key={idx} className="text-eg-dark text-sm leading-relaxed">
-                            <span className="font-medium">{hour.label}:</span> {hour.value}
-                          </p>
-                        ))
-                      ) : (
-                        <p className="text-eg-dark text-sm">Lunes a Viernes: 7:00 AM - 7:00 PM</p>
-                      )}
-                    </div>
+                      ))
+                    ) : (
+                      <a
+                        href="mailto:contacto@microtec.com.mx"
+                        className="block text-eg-purple hover:text-eg-pink transition-colors font-bold text-lg underline decoration-2 underline-offset-4 break-words hover:translate-x-1 transform duration-200"
+                      >
+                        contacto@microtec.com.mx
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Third Row: Services (if exists) */}
-            {getContactInfoByType('service').length > 0 && (
-              <div className="bg-white rounded-xl p-5 shadow-[0_8px_30px_rgba(123,104,166,0.12)] hover:shadow-[0_12px_40px_rgba(123,104,166,0.18)] border border-eg-purple/10 transition-all duration-300">
-                <div className="flex items-start gap-4">
-                  <div className="bg-gradient-to-br from-eg-purple/15 to-eg-pink/15 rounded-xl p-3 border border-eg-purple/20">
-                    <FaTruck className="text-eg-purple w-7 h-7" />
+            {/* Hours Card */}
+            <div className="bg-white rounded-2xl p-8 md:p-10 shadow-[0_8px_30px_rgba(123,104,166,0.12)] hover:shadow-[0_16px_50px_rgba(123,104,166,0.18)] border border-eg-purple/10 transition-all duration-300 hover:-translate-y-1">
+              <div className="flex items-start gap-5">
+                <div className="bg-gradient-to-br from-eg-purple to-eg-purple/80 rounded-2xl p-4 shadow-lg flex-shrink-0">
+                  <FaClock className="text-white w-8 h-8" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-2xl font-bold text-eg-purple mb-4 tracking-tight">Horario</h3>
+                  <div className="space-y-2">
+                    {getContactInfoByType('hours').length > 0 ? (
+                      getContactInfoByType('hours').map((hour, idx) => (
+                        <p key={idx} className="text-eg-dark text-base leading-relaxed">
+                          <span className="font-bold text-eg-purple">{hour.label}:</span>{' '}
+                          <span className="font-medium">{hour.value}</span>
+                        </p>
+                      ))
+                    ) : (
+                      <p className="text-eg-dark text-base font-medium">
+                        <span className="font-bold text-eg-purple">Lunes a Viernes:</span> 7:00 AM - 7:00 PM
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Services Section - Full width outside grid */}
+          {getContactInfoByType('service').length > 0 && (
+            <div className="mb-8 md:mb-12">
+              <div className="bg-white rounded-2xl p-8 md:p-10 shadow-[0_8px_30px_rgba(123,104,166,0.12)] hover:shadow-[0_16px_50px_rgba(123,104,166,0.18)] border border-eg-purple/10 transition-all duration-300 hover:-translate-y-1">
+                <div className="flex items-start gap-5">
+                  <div className="bg-gradient-to-br from-eg-purple to-eg-purple/80 rounded-2xl p-4 shadow-lg flex-shrink-0">
+                    <FaTruck className="text-white w-8 h-8" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-xl font-medium text-eg-purple mb-2">
+                    <h3 className="text-2xl font-bold text-eg-purple mb-4 tracking-tight">
                       {getContactInfoByType('service')[0]?.label || 'Servicios'}
                     </h3>
-                    <p className="text-eg-dark text-base leading-relaxed">
+                    <p className="text-eg-dark text-lg leading-relaxed font-medium">
                       {getContactInfoByType('service')[0]?.value ||
                         'Servicio de toma de muestras a domicilio disponible'}
                     </p>
                   </div>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Social Media Section */}
-            {getContactInfoByType('social').length > 0 && (
-              <div className="bg-white rounded-xl p-6 shadow-[0_8px_30px_rgba(123,104,166,0.12)] hover:shadow-[0_12px_40px_rgba(123,104,166,0.18)] border border-eg-purple/10 transition-all duration-300">
-                <h3 className="text-xl font-medium text-eg-purple mb-4 text-center">
+          {/* Social Media Section - Full width outside grid */}
+          {getContactInfoByType('social').length > 0 && (
+            <div className="mb-12 md:mb-16">
+              <div className="bg-white rounded-2xl p-8 md:p-10 shadow-[0_8px_30px_rgba(123,104,166,0.12)] hover:shadow-[0_16px_50px_rgba(123,104,166,0.18)] border border-eg-purple/10 transition-all duration-300">
+                <h3 className="text-2xl font-bold text-eg-purple mb-6 text-center tracking-tight">
                   Síguenos en Redes Sociales
                 </h3>
                 <div className="flex flex-wrap items-center justify-center gap-4">
@@ -396,8 +397,8 @@ const ContactoSection = ({ section, content, companyInfo }) => {
                   })}
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* WhatsApp CTA */}
           {(() => {

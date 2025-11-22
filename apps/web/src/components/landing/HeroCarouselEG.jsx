@@ -222,7 +222,9 @@ const HeroCarouselEG = () => {
 
   return (
     <section
-      className="relative h-[450px] md:h-[500px] mt-20 overflow-hidden bg-gradient-to-b from-white to-eg-light-gray"
+      className="relative
+                 h-[350px] sm:h-[420px] md:h-[500px] lg:h-[550px]
+                 mt-16 sm:mt-20 overflow-hidden bg-gradient-to-b from-white to-eg-light-gray"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -252,9 +254,9 @@ const HeroCarouselEG = () => {
                 className="w-full h-full object-cover"
               />
             </picture>
-            {/* Directorio-style gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-eg-purple/90 via-eg-purple/70 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-eg-dark/30" />
+            {/* Directorio-style gradient overlay - Opacidad aumentada para mejor contraste */}
+            <div className="absolute inset-0 bg-gradient-to-r from-eg-purple/95 via-eg-purple/80 to-eg-purple/40" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-eg-dark/40" />
           </div>
 
           {/* Decorative Elements */}
@@ -284,18 +286,23 @@ const HeroCarouselEG = () => {
                   </span>
                 )}
 
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-normal text-white mb-4">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl
+                               font-normal text-white mb-4
+                               [text-shadow:_0_2px_8px_rgb(0_0_0_/_60%)]">
                   {slides[currentSlide].title}
                 </h1>
 
                 {slides[currentSlide].subtitle && (
-                  <p className="text-xl md:text-2xl mb-2 text-white/90 font-light">
+                  <p className="text-lg sm:text-xl md:text-2xl
+                                mb-2 text-white/95 font-light
+                                [text-shadow:_0_1px_6px_rgb(0_0_0_/_50%)]">
                     {slides[currentSlide].subtitle}
                   </p>
                 )}
 
                 {slides[currentSlide].description && (
-                  <p className="text-lg mb-8 text-white/80">
+                  <p className="text-base sm:text-lg mb-6 sm:mb-8 text-white/90
+                                [text-shadow:_0_1px_4px_rgb(0_0_0_/_40%)]">
                     {slides[currentSlide].description}
                   </p>
                 )}
