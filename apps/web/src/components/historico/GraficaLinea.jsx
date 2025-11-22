@@ -12,6 +12,7 @@ import {
   Dot,
 } from 'recharts';
 import { formatearNumero } from '../../utils/formatters';
+import { useThemeColors } from '../../hooks/useThemeColors';
 
 /**
  * Componente de gráfica de línea con zona de rango de referencia
@@ -21,6 +22,8 @@ import { formatearNumero } from '../../utils/formatters';
  * @param {string} props.numeroOrdenActual - Número de la orden actual para resaltarla
  */
 export function GraficaLinea({ data, prueba, numeroOrdenActual }) {
+  const { primary } = useThemeColors();
+
   if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-64 bg-gray-50 rounded-lg">
@@ -229,7 +232,7 @@ export function GraficaLinea({ data, prueba, numeroOrdenActual }) {
               cy={cy}
               r={sizeResaltado + 6}
               fill="none"
-              stroke="#7B68A6"
+              stroke={primary}
               strokeWidth={3}
               opacity={0.4}
               className="animate-pulse"
@@ -240,7 +243,7 @@ export function GraficaLinea({ data, prueba, numeroOrdenActual }) {
               cy={cy}
               r={sizeResaltado + 3}
               fill="none"
-              stroke="#7B68A6"
+              stroke={primary}
               strokeWidth={2}
             />
           </>

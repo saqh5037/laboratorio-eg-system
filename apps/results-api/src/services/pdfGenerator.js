@@ -94,26 +94,26 @@ function dibujarEncabezado(doc, orden) {
   doc.fontSize(9)
      .font('Helvetica-Bold')
      .fillColor('#000000')
-     .text('LABORATORIO CLINICO MICROBIOLÓGICO ELIZABETH', 40, 90, { width: 280 })
-     .text('GUTIERREZ', 40, 102, { width: 280 });
+     .text('MICRO-TEC', 40, 90, { width: 280 })
+     .text('LABORATORIO CLÍNICO DE REFERENCIA', 40, 102, { width: 280 });
 
   doc.fontSize(8)
      .font('Helvetica')
-     .text('Av. Libertador Edf. Majestic Piso 1 Ofc. 18', 40, 118)
-     .text(' 762.05.61 763.59.09 763.66.28', 40, 130)
-     .text(' Rif. J-40233378-1', 40, 142);
+     .text('Medellín 338, Roma Sur, Cuauhtémoc', 40, 118)
+     .text('Tel: 55 52653770 | WhatsApp: +52 56 1123 7738', 40, 130)
+     .text('Ciudad de México, CDMX 06760', 40, 142);
 
   // Encabezado duplicado (arriba a la derecha del logo)
   doc.fontSize(9)
      .font('Helvetica-Bold')
-     .text('LABORATORIO CLINICO MICROBIOLÓGICO ELIZABETH', 300, 40, { width: 270 })
-     .text('GUTIERREZ', 300, 52, { width: 270 });
+     .text('MICRO-TEC', 300, 40, { width: 270 })
+     .text('LABORATORIO CLÍNICO DE REFERENCIA', 300, 52, { width: 270 });
 
   doc.fontSize(8)
      .font('Helvetica')
-     .text('Av. Libertador Edf. Majestic Piso 1 Ofc. 18', 300, 68)
-     .text(' 762.05.61 763.59.09 763.66.28', 300, 80)
-     .text(' Rif. J-40233378-1', 300, 92);
+     .text('Medellín 338, Roma Sur, Cuauhtémoc', 300, 68)
+     .text('Tel: 55 52653770 | WhatsApp: +52 56 1123 7738', 300, 80)
+     .text('Ciudad de México, CDMX 06760', 300, 92);
 
   // Fecha y Orden (esquina superior derecha)
   const fechaActual = new Date();
@@ -453,14 +453,13 @@ async function dibujarPiePagina(doc, paginaActual, totalPaginas, numeroOrden) {
      .font('Helvetica')
      .fillColor('#000000')
      .text(
-       'LABORATORIO CLINICO MICROBIOLÓGICO ELIZABETH GUTIERREZ Av. Libertador Edf. Majestic Piso 1 Ofc. 18',
+       'MICRO-TEC - LABORATORIO CLÍNICO DE REFERENCIA | Medellín 338, Roma Sur, Cuauhtémoc',
        110,
        footerY + 15,
        { width: 400, align: 'center' }
      );
 
-  doc.text('762.05.61 763.59.09 763.66.28', 110, footerY + 28, { width: 400, align: 'center' });
-  doc.text('Rif. J-40233378-1', 110, footerY + 41, { width: 400, align: 'center' });
+  doc.text('Tel: 55 52653770 | WhatsApp: +52 56 1123 7738 | Ciudad de México, CDMX 06760', 110, footerY + 28, { width: 400, align: 'center' });
 
   // Número de página en la esquina inferior derecha
   doc.fontSize(8)

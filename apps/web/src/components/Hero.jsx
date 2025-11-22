@@ -34,7 +34,7 @@ const Hero = ({ onSearch }) => {
           <div className="mb-8">
             <img
               src="/Logo.png"
-              alt="LaboratorioEG"
+              alt="MICRO-TEC"
               className="w-24 h-24 md:w-32 md:h-32 mx-auto drop-shadow-2xl"
             />
           </div>
@@ -48,7 +48,7 @@ const Hero = ({ onSearch }) => {
           {/* Claim corto y directo */}
           <p className="text-xl md:text-2xl lg:text-3xl font-normal text-white/95 mb-12 leading-relaxed max-w-4xl mx-auto"
              style={{textShadow: '0 2px 10px rgba(0,0,0,0.2)'}}>
-            43 años de experiencia • 100+ estudios • Resultados en 24h
+            Calidad y confianza • 100+ estudios • Resultados rápidos
           </p>
 
           {/* CTAs principales grandes y prominentes */}

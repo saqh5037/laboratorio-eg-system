@@ -88,7 +88,23 @@ Este documento te ayuda a encontrar rápidamente la información que necesitas.
 
 ---
 
-### 5. **PROCESO_SINCRONIZACION.md** (Existente)
+### 5. **SISTEMA-DINAMICO.md** ⭐⭐⭐ (NUEVO)
+**Para:** Administradores, desarrolladores frontend
+**Contenido:**
+- Sistema completo de personalización dinámica
+- Guía de administración del panel admin
+- Configuración de navegación, logos, temas
+- Hooks disponibles (useNavigation, useCompanyInfo, etc.)
+- Endpoints API documentados
+- Migraciones de base de datos
+- Troubleshooting y mejores prácticas
+
+**Tiempo de lectura:** 20-30 minutos
+**Úsalo cuando:** Necesites configurar o modificar la apariencia del sitio desde el admin panel
+
+---
+
+### 6. **PROCESO_SINCRONIZACION.md** (Existente)
 **Para:** Referencia del proceso anterior
 **Contenido:**
 - Documentación del sistema de sincronización original
@@ -98,7 +114,7 @@ Este documento te ayuda a encontrar rápidamente la información que necesitas.
 
 ---
 
-### 6. **DEPLOYMENT_PRODUCTION.md** (Existente)
+### 7. **DEPLOYMENT_PRODUCTION.md** (Existente)
 **Para:** DevOps, deployment a producción
 **Contenido:**
 - Instrucciones de despliegue a producción

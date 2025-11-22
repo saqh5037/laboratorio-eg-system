@@ -6,6 +6,7 @@ import ResultadosDetalle from '../components/resultados/ResultadosDetalle';
 import DashboardGlobal from '../components/dashboard/DashboardGlobal';
 import HeatMapModal from '../components/dashboard/HeatMapModal';
 import { FiltrosProvider } from '../contexts/FiltrosContext';
+import { useSystemConfig } from '../hooks/useSystemConfig';
 import {
   haySesionActiva,
   getPacienteInfo,
@@ -30,6 +31,11 @@ export default function Resultados() {
   const [heatMapModalOpen, setHeatMapModalOpen] = useState(false);
   const [filtrosExpanded, setFiltrosExpanded] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
+
+  // Configuración de features
+  const { getConfigValue } = useSystemConfig();
+  const pdfExportEnabled = getConfigValue('features.export.pdf.enabled') !== false;
+  const heatmapEnabled = getConfigValue('features.dashboard.heatmap.enabled') !== false;
 
   // Verificar sesión al cargar
   useEffect(() => {
@@ -273,14 +279,16 @@ export default function Resultados() {
                           <span className="text-base">🔍</span>
                           <span className="hidden sm:inline">Filtrar</span>
                         </button>
-                        <button
-                          onClick={() => setHeatMapModalOpen(true)}
-                          className="px-4 py-2 bg-white hover:bg-orange-50 text-orange-600 hover:text-orange-700 rounded-lg transition-all duration-200 text-sm font-semibold flex items-center gap-2 min-h-[40px] shadow-md hover:shadow-lg hover:scale-105 border border-orange-200"
-                          title="Heat Map"
-                        >
-                          <span className="text-base">🔥</span>
-                          <span className="hidden sm:inline">Heat Map</span>
-                        </button>
+                        {heatmapEnabled && (
+                          <button
+                            onClick={() => setHeatMapModalOpen(true)}
+                            className="px-4 py-2 bg-white hover:bg-orange-50 text-orange-600 hover:text-orange-700 rounded-lg transition-all duration-200 text-sm font-semibold flex items-center gap-2 min-h-[40px] shadow-md hover:shadow-lg hover:scale-105 border border-orange-200"
+                            title="Heat Map"
+                          >
+                            <span className="text-base">🔥</span>
+                            <span className="hidden sm:inline">Heat Map</span>
+                          </button>
+                        )}
                       </div>
                     </div>
                   </>
@@ -404,26 +412,29 @@ export default function Resultados() {
                       <span>▶</span>
                     </button>
 
-                    <button
-                      onClick={handleExportar}
-                      disabled={exportLoading}
-                      className={`px-4 py-2 bg-white hover:bg-green-50 text-green-600 hover:text-green-700 rounded-lg transition-all duration-200 text-sm font-semibold flex items-center gap-2 min-h-[40px] shadow-md hover:shadow-lg hover:scale-105 border border-green-200 ${
-                        exportLoading ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
-                      title="Exportar PDF"
-                    >
-                      {exportLoading ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
-                          <span className="hidden sm:inline">Exportando...</span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="text-base">📄</span>
-                          <span className="hidden sm:inline">Exportar PDF</span>
-                        </>
-                      )}
-                    </button>
+                    {/* Botón Exportar PDF - Solo si está habilitado en configuración */}
+                    {pdfExportEnabled && (
+                      <button
+                        onClick={handleExportar}
+                        disabled={exportLoading}
+                        className={`px-4 py-2 bg-white hover:bg-green-50 text-green-600 hover:text-green-700 rounded-lg transition-all duration-200 text-sm font-semibold flex items-center gap-2 min-h-[40px] shadow-md hover:shadow-lg hover:scale-105 border border-green-200 ${
+                          exportLoading ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                        title="Exportar PDF"
+                      >
+                        {exportLoading ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
+                            <span className="hidden sm:inline">Exportando...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-base">📄</span>
+                            <span className="hidden sm:inline">Exportar PDF</span>
+                          </>
+                        )}
+                      </button>
+                    )}
                   </div>
                 </div>
               </>
@@ -471,7 +482,7 @@ export default function Resultados() {
         </main>
 
         {/* Modal de Heat Map */}
-        {autenticado && paciente && (
+        {heatmapEnabled && autenticado && paciente && (
           <HeatMapModal
             isOpen={heatMapModalOpen}
             onClose={() => setHeatMapModalOpen(false)}

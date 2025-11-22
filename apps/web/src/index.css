@@ -12,36 +12,73 @@
     font-style: normal;
   }
 
-  /* ===== VARIABLES CSS CON COLORES PANTONE OFICIALES ===== */
+  /* ===== VARIABLES CSS DINÁMICAS - VALORES POR DEFECTO ===== */
+  /* Estos valores son sobrescritos dinámicamente por SystemConfigContext */
+  /* Los defaults preservan la apariencia actual de Lab EG */
   :root {
-    /* Pantone 2665U - Purple principal */
-    --color-eg-purple: 123 104 166;
-    /* Pantone 250U - Pink secundario */
-    --color-eg-pink: 221 181 213;
-    /* CoolGray 9U - Gris frío oficial */
-    --color-eg-gray: 139 140 142;
-    /* Negro Pantone 231F20 */
-    --color-eg-dark: 35 31 32;
-    --color-eg-black: 35 31 32;
-    /* Blanco puro */
-    --color-eg-white: 255 255 255;
+    /* ==================== COLORES PRINCIPALES ==================== */
+    /* Estos valores serán sobrescritos por JavaScript desde theme_config */
+    --color-primary: #7B68A6;           /* Pantone 2665U - Purple principal */
+    --color-secondary: #DDB5D5;         /* Pantone 250U - Pink secundario */
+    --color-accent: #8B8C8E;            /* CoolGray 9U - Gris frío oficial */
 
-    /* Alias para compatibilidad */
-    --color-primary: 123 104 166;
-    --color-secondary: 221 181 213;
-    --color-background: 255 255 255;
-    --color-text-primary: 35 31 32;
-    --color-text-secondary: 139 140 142;
+    --color-text-primary: #231F20;      /* Negro Pantone */
+    --color-text-secondary: #8B8C8E;    /* Cool Gray */
+
+    --color-background: #FFFFFF;        /* Blanco puro */
+    --color-surface: #F9FAFB;           /* Light gray surface */
+
+    /* ==================== MODO OSCURO ==================== */
+    --color-dark-bg: #0F1729;           /* Dark blue background */
+    --color-dark-surface: #1A2238;      /* Dark surface */
+    --color-dark-text: #E8F0FF;         /* Light blue text */
+    --color-dark-text-secondary: #94A3B8; /* Muted text */
+
+    /* ==================== COLORES SEMÁNTICOS ==================== */
+    --color-success: #10B981;           /* Green */
+    --color-warning: #F59E0B;           /* Orange */
+    --color-error: #EF4444;             /* Red */
+    --color-info: #3B82F6;              /* Blue */
+
+    /* ==================== TIPOGRAFÍA ==================== */
+    --font-family-primary: 'DIN Pro', sans-serif;
+    --font-family-secondary: 'Inter', sans-serif;
+
+    --font-size-base: 1rem;             /* 16px */
+    --font-size-h1: 2rem;               /* 32px */
+    --font-size-h2: 1.69rem;            /* ~27px */
+    --font-size-h3: 1.5rem;             /* 24px */
+
+    /* ==================== LOGO & BRANDING ==================== */
+    --logo-path: url(/Logo.png);
+    --logo-margin: 37.8px;              /* 1cm según manual */
+    --logo-max-width: 200px;
+
+    /* ==================== SPACING & LAYOUT ==================== */
+    --border-radius-sm: 0.25rem;        /* 4px */
+    --border-radius-md: 0.5rem;         /* 8px */
+    --border-radius-lg: 0.75rem;        /* 12px */
+    --border-radius-xl: 1rem;           /* 16px */
+
+    /* ==================== EFECTOS ==================== */
+    --shadow-intensity: 0.5;            /* 0-1 scale, usado para rgba */
+    --glassmorphism-blur: 12px;
+
+    /* ==================== COMPATIBILITY ALIASES ==================== */
+    /* Para mantener compatibilidad con código existente */
+    --color-eg-purple: 123 104 166;     /* RGB para Tailwind */
+    --color-eg-pink: 221 181 213;       /* RGB para Tailwind */
+    --color-eg-gray: 139 140 142;       /* RGB para Tailwind */
+    --color-eg-dark: 35 31 32;          /* RGB para Tailwind */
+    --color-eg-black: 35 31 32;
+    --color-eg-white: 255 255 255;
     --color-border: 221 181 213;
 
-    /* Margen del logo: 1cm = 37.8px según manual */
-    --logo-margin: 37.8px;
-
-    /* Design tokens */
-    --radius: 0.5rem;
-    --shadow-sm: 0 1px 2px 0 rgba(123, 104, 166, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(123, 104, 166, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(123, 104, 166, 0.1);
+    /* Design tokens (calculados desde variables principales - DINÁMICOS) */
+    --radius: var(--border-radius-md);
+    --shadow-sm: 0 1px 2px 0 rgb(var(--color-eg-purple) / calc(var(--shadow-intensity) * 0.1));
+    --shadow-md: 0 4px 6px -1px rgb(var(--color-eg-purple) / calc(var(--shadow-intensity) * 0.2));
+    --shadow-lg: 0 10px 15px -3px rgb(var(--color-eg-purple) / calc(var(--shadow-intensity) * 0.2));
 
     /* Transición suave para cambio de tema */
     --transition-theme: 300ms ease-in-out;
@@ -87,10 +124,10 @@
     font-weight: normal; /* NO usar bold ni semibold */
   }
 
-  /* Custom scrollbar styles */
+  /* Custom scrollbar styles (DINÁMICO) */
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: rgb(123 104 166) rgb(243 244 246);
+    scrollbar-color: rgb(var(--color-eg-purple)) rgb(243 244 246);
   }
 
   .custom-scrollbar::-webkit-scrollbar {
@@ -104,12 +141,12 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgb(123 104 166);
+    background: rgb(var(--color-eg-purple));
     border-radius: 3px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgb(107 88 150);
+    background: rgb(var(--color-eg-purple) / 0.85);
   }
 
   /* Card hover animations */

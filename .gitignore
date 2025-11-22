@@ -52,3 +52,7 @@ output/
 # Database backups
 *.sql.gz
 *.dump
+
+# Backups SQL grandes
+backups/**/*.backup
+backups/**/*.sql

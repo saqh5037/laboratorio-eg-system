@@ -85,26 +85,27 @@ class PostgresListener {
   }
 
   invalidateCache(payload) {
-    const { tabla, operacion } = payload;
+    const { tabla, operacion, prueba_id, lista_precios_id } = payload;
 
     console.log(`🗑️ Invalidando caché por cambio en "${tabla}" (${operacion})`);
+    console.log(`📝 Detalles: prueba_id=${prueba_id}, lista_precios_id=${lista_precios_id}`);
 
     // Invalidar caché de pruebas si cambió la tabla de precios
-    if (tabla === 'lista_precios_has_prueba') {
-      cacheManager.invalidate('pruebas');
-      console.log('✅ Caché de pruebas invalidado');
+    if (tabla === 'lista_precios_has_prueba' || prueba_id) {
+      const deleted = cacheManager.invalidate('prueba');
+      console.log(`✅ Caché de pruebas invalidado (${deleted} keys)`);
     }
 
     // Invalidar caché de grupos si cambió la tabla de precios de grupos
     if (tabla === 'lista_precios_has_gprueba') {
-      cacheManager.invalidate('grupos');
-      console.log('✅ Caché de grupos invalidado');
+      const deleted = cacheManager.invalidate('grupo');
+      console.log(`✅ Caché de grupos invalidado (${deleted} keys)`);
     }
 
     // También invalidar búsquedas relacionadas
-    cacheManager.invalidate('search');
-    cacheManager.invalidate('unified');
-    console.log('✅ Caché de búsquedas invalidado');
+    const searchDeleted = cacheManager.invalidate('search');
+    const unifiedDeleted = cacheManager.invalidate('unified');
+    console.log(`✅ Caché de búsquedas invalidado (search: ${searchDeleted}, unified: ${unifiedDeleted})`);
   }
 
   async reconnect() {

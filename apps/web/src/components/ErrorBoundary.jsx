@@ -179,7 +179,7 @@ class ErrorBoundary extends React.Component {
             {/* Footer */}
             <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
               <div className="flex items-center justify-between text-sm text-gray-600">
-                <span>Laboratorio Elizabeth Gutiérrez</span>
+                <span>Sistema de Laboratorio</span>
                 <span>ID: {Date.now().toString(36)}</span>
               </div>
             </div>

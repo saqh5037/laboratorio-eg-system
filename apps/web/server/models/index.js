@@ -62,13 +62,14 @@ export const Prueba = {
   },
 
   // Buscar prueba por ID
-  async findById(id) {
+  async findById(id, listaPreciosId = 27) {
     const query = `
       SELECT
         p.*,
         a.area as area_nombre,
         tm.tipo as tipo_muestra_nombre,
         tc.tipo as tipo_contenedor_nombre,
+        lpp.precio as precio_lista,
         -- Valores referenciales activos (subquery)
         (
           SELECT json_agg(
@@ -92,13 +93,14 @@ export const Prueba = {
             AND vr.activo = true
         ) as valores_referenciales
       FROM prueba p
+      LEFT JOIN lista_precios_has_prueba lpp ON p.id = lpp.prueba_id AND lpp.lista_precios_id = $2
       LEFT JOIN area a ON p.area_id = a.id
       LEFT JOIN tipo_muestra tm ON p.tipo_muestra_id = tm.id
       LEFT JOIN tipo_contenedor tc ON p.tipo_contenedor_id = tc.id
       WHERE p.id = $1 AND p.activa = true
     `;
 
-    const result = await db.query(query, [id]);
+    const result = await db.query(query, [id, listaPreciosId]);
     return result.rows[0];
   },
 

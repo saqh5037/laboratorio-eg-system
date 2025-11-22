@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion';
 import { LOGO_SPECS } from '../../constants/brandDesignSystem';
+import { useCompanyInfo } from '../../hooks/useCompanyInfo';
 
 /**
  * BrandLogo - Componente profesional del logo corporativo
  *
- * Cumple con el manual de imagen de Laboratorio Elizabeth Gutiérrez:
+ * Cumple con el manual de imagen del laboratorio:
  * - Respeta márgenes mínimos (1cm = 37.8px)
  * - RIF siempre visible cuando showRif=true
  * - NO distorsiona ni recolorea el logo
@@ -13,7 +14,7 @@ import { LOGO_SPECS } from '../../constants/brandDesignSystem';
  * @param {string} variant - Variante del logo: 'full', 'icon', 'horizontal'
  * @param {string} size - Tamaño: 'xs', 'sm', 'md', 'lg', 'xl', '2xl', 'custom'
  * @param {boolean} showRif - Mostrar RIF (requerido legalmente en la mayoría de casos)
- * @param {boolean} showName - Mostrar nombre "ELIZABETH GUTIÉRREZ"
+ * @param {boolean} showName - Mostrar nombre de la empresa
  * @param {boolean} animated - Habilitar animación hover
  * @param {string} className - Clases adicionales de Tailwind
  * @param {object} customSize - Tamaño personalizado {width, height} cuando size='custom'
@@ -31,6 +32,8 @@ const BrandLogo = ({
   theme = 'default',
   onClick = null,
 }) => {
+  // Obtener URLs dinámicas de configuración
+  const { companyInfo } = useCompanyInfo();
 
   // Tamaños predefinidos según especificaciones del manual
   const sizeClasses = {
@@ -44,12 +47,15 @@ const BrandLogo = ({
     custom: ''     // Usar customSize prop
   };
 
-  // Rutas de los logos
+  // Rutas de los logos - Dinámicas con fallback a valores genéricos
   const logoSources = {
-    full: '/Logo.png',        // Logo completo con doble hélice ADN integrada en E y G
-    icon: '/Logo.png',        // Mismo logo (no tenemos isotipo separado todavía)
-    horizontal: '/Logo.png'   // Mismo logo (futuro: versión horizontal)
+    full: companyInfo?.logo_full_url || '/Logo.png',        // Logo completo
+    icon: companyInfo?.logo_icon_url || '/Logo.png',      // Isotipo/icono
+    horizontal: companyInfo?.logo_horizontal_url || '/Logo.png'   // Versión horizontal
   };
+
+  // Alt text dinámico
+  const altText = companyInfo?.logo_alt_text || `${companyInfo?.name || 'Laboratorio'} - Logo oficial`;
 
   // Estilos de contenedor según tema
   const themeStyles = {
@@ -80,7 +86,7 @@ const BrandLogo = ({
   const LogoImage = () => (
     <motion.img
       src={logoSources[variant]}
-      alt="Laboratorio Clínico Microbiológico Elizabeth Gutiérrez - Logo oficial con doble hélice de ADN"
+      alt={altText}
       className={`
         ${customSize ? '' : sizeClasses[size]}
         ${customSize ? `w-[${customSize.width}] h-[${customSize.height}]` : 'w-auto'}
@@ -118,13 +124,13 @@ const BrandLogo = ({
         </div>
         {showName && (
           <div className="flex flex-col">
-            {showRif && (
+            {showRif && companyInfo?.rif && (
               <span className="text-2xs text-eg-gray dark:text-eg-dark-muted uppercase tracking-wider">
-                RIF: {LOGO_SPECS.rif}
+                RIF: {companyInfo.rif}
               </span>
             )}
             <h1 className="text-lg sm:text-xl bg-eg-gradient bg-clip-text text-transparent">
-              ELIZABETH GUTIÉRREZ
+              {companyInfo?.name?.toUpperCase() || ''}
             </h1>
           </div>
         )}
@@ -145,14 +151,14 @@ const BrandLogo = ({
 
       {(showName || showRif) && (
         <div className="flex flex-col items-center text-center">
-          {showName && (
+          {showName && companyInfo?.name && (
             <h2 className="text-base sm:text-lg bg-eg-gradient bg-clip-text text-transparent font-normal">
-              ELIZABETH GUTIÉRREZ
+              {companyInfo.name.toUpperCase()}
             </h2>
           )}
-          {showRif && (
+          {showRif && companyInfo?.rif && (
             <p className="text-2xs text-eg-gray dark:text-eg-dark-muted uppercase tracking-wider">
-              RIF: {LOGO_SPECS.rif}
+              RIF: {companyInfo.rif}
             </p>
           )}
         </div>

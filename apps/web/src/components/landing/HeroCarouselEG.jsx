@@ -1,61 +1,231 @@
 import React, { useState, useEffect } from 'react';
+/* eslint-disable-next-line no-unused-vars */
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { FaChevronLeft, FaChevronRight, FaCalendarAlt, FaFlask, FaClock, FaUserMd, FaWhatsapp } from 'react-icons/fa';
+import {
+  FaChevronLeft,
+  FaChevronRight,
+  FaCalendarAlt,
+  FaFlask,
+  FaClock,
+  FaUserMd,
+  FaWhatsapp,
+  FaPhone,
+  FaLaptop,
+  FaUser,
+  FaEnvelope,
+  FaMapMarkerAlt,
+  FaCheckCircle,
+  FaHeart,
+  FaStar,
+  FaBell,
+  FaFile,
+  FaImage,
+  FaVideo,
+  FaPlay,
+  FaPause,
+  FaStop,
+  FaSyncAlt,
+  FaSearch,
+  FaFilter,
+  FaCog,
+  FaQuestionCircle,
+  FaInfoCircle,
+  FaExclamationTriangle,
+  FaTimesCircle,
+  FaPlus,
+  FaMinus,
+  FaEdit,
+  FaTrash,
+  FaSave,
+  FaTimes,
+  FaLock,
+  FaUnlock,
+  FaEye,
+  FaEyeSlash,
+  FaDownload,
+  FaUpload,
+  FaShare,
+  FaCopy,
+  FaPrint,
+  FaHome,
+  FaArrowLeft,
+  FaArrowRight,
+  FaArrowUp,
+  FaArrowDown,
+  FaBars,
+} from 'react-icons/fa';
+import { getActiveSlides } from '../../services/carouselApi';
+
+// Mapeo de iconos dinámicos
+const ICON_MAP = {
+  calendar: FaCalendarAlt,
+  flask: FaFlask,
+  phone: FaPhone,
+  whatsapp: FaWhatsapp,
+  laptop: FaLaptop,
+  user: FaUser,
+  email: FaEnvelope,
+  map: FaMapMarkerAlt,
+  check: FaCheckCircle,
+  heart: FaHeart,
+  star: FaStar,
+  bell: FaBell,
+  file: FaFile,
+  image: FaImage,
+  video: FaVideo,
+  play: FaPlay,
+  pause: FaPause,
+  stop: FaStop,
+  refresh: FaSyncAlt,
+  search: FaSearch,
+  filter: FaFilter,
+  settings: FaCog,
+  help: FaQuestionCircle,
+  info: FaInfoCircle,
+  warning: FaExclamationTriangle,
+  error: FaTimesCircle,
+  plus: FaPlus,
+  minus: FaMinus,
+  edit: FaEdit,
+  delete: FaTrash,
+  save: FaSave,
+  close: FaTimes,
+  lock: FaLock,
+  unlock: FaUnlock,
+  eye: FaEye,
+  'eye-off': FaEyeSlash,
+  download: FaDownload,
+  upload: FaUpload,
+  share: FaShare,
+  copy: FaCopy,
+  print: FaPrint,
+  home: FaHome,
+  back: FaArrowLeft,
+  forward: FaArrowRight,
+  up: FaArrowUp,
+  down: FaArrowDown,
+  menu: FaBars,
+};
+
+// Función helper para obtener el componente de icono
+const getIconComponent = (iconName) => {
+  if (!iconName) return FaCalendarAlt; // Default
+  const IconComponent = ICON_MAP[iconName.toLowerCase()];
+  return IconComponent || FaCalendarAlt; // Fallback a calendar si no existe
+};
 
 const HeroCarouselEG = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [slides, setSlides] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [, setError] = useState(null);  
+  const [isPaused, setIsPaused] = useState(false);
+  const [lastInteractionTime, setLastInteractionTime] = useState(null);
 
-  const slides = [
-    {
-      id: 1,
-      title: "Tu salud es nuestra prioridad",
-      subtitle: "Tecnología de vanguardia y atención personalizada",
-      description: "43 años de experiencia cuidando de ti y tu familia",
-      image: "https://images.unsplash.com/photo-1581595220892-b0739db3ba8c?w=1920",
-      cta1: { text: "Agenda tu cita", link: "/contacto" },
-      cta2: { text: "Ver estudios", link: "/estudios" }
-    },
-    {
-      id: 2,
-      title: "Check-up desde $599",
-      subtitle: "Paquetes preventivos con descuentos especiales",
-      description: "Incluye más de 25 estudios esenciales",
-      image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=1920",
-      cta1: { text: "Ver paquetes", link: "/estudios" },
-      badge: "30% descuento"
-    },
-    {
-      id: 3,
-      title: "Resultados en 24 horas",
-      subtitle: "Portal en línea y notificaciones por WhatsApp",
-      description: "Accede a tus resultados desde cualquier dispositivo",
-      image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1920",
-      cta1: { text: "Portal de resultados", link: "/resultados" }
-    }
-  ];
-
+  // Cargar slides desde la API
   useEffect(() => {
+    async function fetchSlides() {
+      try {
+        setLoading(true);
+        const response = await getActiveSlides();
+
+        if (response.data && response.data.length > 0) {
+          setSlides(response.data);
+        }
+        // Si no hay slides, simplemente mostrar estado vacío (no usar fallback hardcodeado)
+      } catch (err) {
+        console.error('Error loading carousel slides:', err);
+        setError(err.message);
+        // No usar fallback - permitir que el componente maneje el estado vacío
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchSlides();
+  }, []);
+
+  // Auto-avance del carrusel con pausa inteligente
+  useEffect(() => {
+    if (slides.length === 0 || isPaused) return;
+
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 6000);
+
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length, isPaused]);
+
+  // Auto-resume después de 10 segundos de inactividad
+  useEffect(() => {
+    if (!isPaused || !lastInteractionTime) return;
+
+    const autoResumeTimer = setTimeout(() => {
+      setIsPaused(false);
+      setLastInteractionTime(null);
+    }, 10000); // 10 segundos
+
+    return () => clearTimeout(autoResumeTimer);
+  }, [isPaused, lastInteractionTime]);
+
+  // Helpers para pausa con interacción
+  const pauseCarousel = () => {
+    setIsPaused(true);
+    setLastInteractionTime(Date.now());
+  };
 
   const goToSlide = (index) => {
     setCurrentSlide(index);
+    pauseCarousel(); // Pausar al cambiar de slide manualmente
   };
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
+    pauseCarousel(); // Pausar al hacer clic en siguiente
   };
 
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+    pauseCarousel(); // Pausar al hacer clic en anterior
   };
 
+  // Handlers para hover
+  const handleMouseEnter = () => {
+    pauseCarousel();
+  };
+
+  const handleMouseLeave = () => {
+    // Resume después de 2 segundos de que el usuario salga
+    setTimeout(() => {
+      setIsPaused(false);
+      setLastInteractionTime(null);
+    }, 2000);
+  };
+
+  // Mostrar loading state
+  if (loading) {
+    return (
+      <section className="relative h-[450px] md:h-[500px] mt-20 overflow-hidden bg-gradient-to-b from-white to-eg-light-gray flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-eg-purple border-t-transparent"></div>
+          <p className="text-gray-600 mt-4">Cargando...</p>
+        </div>
+      </section>
+    );
+  }
+
+  // Si no hay slides, no renderizar el carrusel
+  if (slides.length === 0) {
+    return null;
+  }
+
   return (
-    <section className="relative h-[450px] md:h-[500px] mt-20 overflow-hidden bg-gradient-to-b from-white to-eg-light-gray">
+    <section
+      className="relative h-[450px] md:h-[500px] mt-20 overflow-hidden bg-gradient-to-b from-white to-eg-light-gray"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <AnimatePresence mode="wait">
         <motion.div
           key={currentSlide}
@@ -67,11 +237,21 @@ const HeroCarouselEG = () => {
         >
           {/* Background with Overlay */}
           <div className="absolute inset-0">
-            <img
-              src={slides[currentSlide].image}
-              alt={slides[currentSlide].title}
-              className="w-full h-full object-cover"
-            />
+            <picture>
+              {/* Imagen optimizada para móvil si está disponible */}
+              {slides[currentSlide].image_mobile_url && (
+                <source
+                  media="(max-width: 768px)"
+                  srcSet={slides[currentSlide].image_mobile_url}
+                />
+              )}
+              {/* Imagen desktop (fallback) */}
+              <img
+                src={slides[currentSlide].image_url}
+                alt={slides[currentSlide].image_alt || slides[currentSlide].title}
+                className="w-full h-full object-cover"
+              />
+            </picture>
             {/* Directorio-style gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-r from-eg-purple/90 via-eg-purple/70 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-eg-dark/30" />
@@ -90,48 +270,66 @@ const HeroCarouselEG = () => {
                 transition={{ delay: 0.2 }}
                 className="max-w-2xl"
               >
-                {slides[currentSlide].badge && (
-                  <span className="inline-block px-4 py-2 bg-eg-pink text-eg-purple rounded-full text-sm font-medium mb-4 shadow-md">
-                    {slides[currentSlide].badge}
+                {slides[currentSlide].badge_text && (
+                  <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium mb-4 shadow-md ${
+                    slides[currentSlide].badge_color === 'pink' ? 'bg-eg-pink text-eg-purple' :
+                    slides[currentSlide].badge_color === 'purple' ? 'bg-eg-purple text-white' :
+                    slides[currentSlide].badge_color === 'blue' ? 'bg-blue-500 text-white' :
+                    slides[currentSlide].badge_color === 'green' ? 'bg-green-500 text-white' :
+                    slides[currentSlide].badge_color === 'red' ? 'bg-red-500 text-white' :
+                    slides[currentSlide].badge_color === 'yellow' ? 'bg-yellow-500 text-gray-900' :
+                    'bg-eg-pink text-eg-purple'
+                  }`}>
+                    {slides[currentSlide].badge_text}
                   </span>
                 )}
 
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-normal text-white mb-4">
                   {slides[currentSlide].title}
                 </h1>
-                
-                <p className="text-xl md:text-2xl mb-2 text-white/90 font-light">
-                  {slides[currentSlide].subtitle}
-                </p>
-                
-                <p className="text-lg mb-8 text-white/80">
-                  {slides[currentSlide].description}
-                </p>
+
+                {slides[currentSlide].subtitle && (
+                  <p className="text-xl md:text-2xl mb-2 text-white/90 font-light">
+                    {slides[currentSlide].subtitle}
+                  </p>
+                )}
+
+                {slides[currentSlide].description && (
+                  <p className="text-lg mb-8 text-white/80">
+                    {slides[currentSlide].description}
+                  </p>
+                )}
 
                 <div className="flex flex-wrap gap-4">
-                  {slides[currentSlide].cta1 && (
-                    <Link
-                      to={slides[currentSlide].cta1.link}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-white text-eg-purple rounded-lg 
-                               font-medium hover:shadow-[0_8px_24px_rgba(255,255,255,0.3)] 
-                               transition-all transform hover:scale-105"
-                    >
-                      <FaCalendarAlt />
-                      {slides[currentSlide].cta1.text}
-                    </Link>
-                  )}
-                  
-                  {slides[currentSlide].cta2 && (
-                    <Link
-                      to={slides[currentSlide].cta2.link}
-                      className="inline-flex items-center gap-2 px-6 py-3 border-2 border-white 
-                               text-white rounded-lg font-medium hover:bg-white/10 
-                               transition-all backdrop-blur-sm"
-                    >
-                      <FaFlask />
-                      {slides[currentSlide].cta2.text}
-                    </Link>
-                  )}
+                  {slides[currentSlide].cta1_text && slides[currentSlide].cta1_link && (() => {
+                    const Icon1 = getIconComponent(slides[currentSlide].cta1_icon);
+                    return (
+                      <Link
+                        to={slides[currentSlide].cta1_link}
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-white text-eg-purple rounded-lg
+                                 font-medium hover:shadow-[0_8px_24px_rgba(255,255,255,0.3)]
+                                 transition-all transform hover:scale-105"
+                      >
+                        <Icon1 />
+                        {slides[currentSlide].cta1_text}
+                      </Link>
+                    );
+                  })()}
+
+                  {slides[currentSlide].cta2_text && slides[currentSlide].cta2_link && (() => {
+                    const Icon2 = getIconComponent(slides[currentSlide].cta2_icon);
+                    return (
+                      <Link
+                        to={slides[currentSlide].cta2_link}
+                        className="inline-flex items-center gap-2 px-6 py-3 border-2 border-white
+                                 text-white rounded-lg font-medium hover:bg-white/10
+                                 transition-all backdrop-blur-sm"
+                      >
+                        <Icon2 />
+                        {slides[currentSlide].cta2_text}
+                      </Link>
+                    );
+                  })()}
                 </div>
               </motion.div>
             </div>

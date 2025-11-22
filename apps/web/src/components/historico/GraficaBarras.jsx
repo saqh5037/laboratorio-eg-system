@@ -12,6 +12,7 @@ import {
   LabelList,
 } from 'recharts';
 import { formatearNumero } from '../../utils/formatters';
+import { useThemeColors } from '../../hooks/useThemeColors';
 
 /**
  * Componente de gráfica de barras con indicadores de estado
@@ -21,6 +22,8 @@ import { formatearNumero } from '../../utils/formatters';
  * @param {string} props.numeroOrdenActual - Número de la orden actual para resaltarla
  */
 export function GraficaBarras({ data, prueba, numeroOrdenActual }) {
+  const { primary } = useThemeColors();
+
   if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-64 bg-gray-50 rounded-lg">
@@ -332,7 +335,7 @@ export function GraficaBarras({ data, prueba, numeroOrdenActual }) {
                 <Cell
                   key={`cell-${index}`}
                   fill={getGradientByEstado(entry.estado)}
-                  stroke={esOrdenActual ? '#7B68A6' : (entry.esCritico ? '#dc2626' : getColorByEstado(entry.estado))}
+                  stroke={esOrdenActual ? primary : (entry.esCritico ? '#dc2626' : getColorByEstado(entry.estado))}
                   strokeWidth={esOrdenActual ? 5 : (entry.esCritico ? 4 : 1)}
                   opacity={esOrdenActual ? 1 : 0.85}
                 />
