@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import legacy from '@vitejs/plugin-legacy'
 import { VitePWA } from 'vite-plugin-pwa'
 import { resolve } from 'path'
 
@@ -7,6 +8,41 @@ import { resolve } from 'path'
 export default defineConfig({
   plugins: [
     react(),
+
+    // Legacy support para iOS 11+, Android 6+, Safari 11+
+    legacy({
+      targets: [
+        'iOS >= 11',           // iPhone 7+ (2016)
+        'Safari >= 11',        // macOS High Sierra+
+        'Chrome >= 64',        // Android 6+
+        'Firefox >= 67',       // Desktop moderno
+        'Samsung >= 8.2',      // Samsung Browser
+        'Android >= 6.0',      // Android Marshmallow+
+        'not dead'
+      ],
+      modernTargets: [
+        'iOS >= 13.4',         // Bundle moderno para iOS recientes
+        'Safari >= 13.1',
+        'Chrome >= 87',
+        'Firefox >= 78',
+        'Edge >= 88'
+      ],
+      modernPolyfills: true,
+      renderLegacyChunks: true,
+      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+      polyfills: [
+        'es.promise.finally',
+        'es/map',
+        'es/set',
+        'es.array.iterator',
+        'es.object.assign',
+        'es.promise',
+        'es.string.includes',
+        'es.array.find',
+        'es.array.find-index'
+      ]
+    }),
+
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', '**/*.{png,jpg,jpeg,svg,ico,woff,woff2}'],
@@ -135,8 +171,9 @@ export default defineConfig({
   
   // Optimizaciones de construcción
   build: {
-    // Targets modernos para mejor performance
-    target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari13.1'],
+    // Target ES2015 para máxima compatibilidad (iOS 11+, Android 6+)
+    // El plugin legacy generará bundles optimizados para navegadores modernos
+    target: 'es2015',
     
     // Optimizar chunks
     rollupOptions: {
