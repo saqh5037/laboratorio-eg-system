@@ -5,15 +5,21 @@ import Sidebar from '../components/Sidebar';
 // import Footer from '../components/FooterDirectorio'; // Removed: Each page now manages its own footer
 import Breadcrumb from '../components/Breadcrumb';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useCompanyInfo } from '../hooks/useCompanyInfo';
+import SEOHead from '../components/SEOHead';
 
 const MainLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
+  const { companyInfo } = useCompanyInfo();
   const isHomePage = location.pathname === '/';
   const isContactPage = location.pathname === '/contacto';
   const isNosotrosPage = location.pathname === '/nosotros';
   const isEstudiosPage = location.pathname.startsWith('/estudios');
   const isResultadosPage = location.pathname.startsWith('/resultados');
+
+  // WhatsApp dinámico desde company_info
+  const whatsappLink = companyInfo?.whatsapp_link || 'https://wa.me/5256112377380';
 
   // Cerrar sidebar al cambiar de ruta en móvil
   useEffect(() => {
@@ -30,6 +36,9 @@ const MainLayout = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+      {/* SEO Head - Meta tags dinámicos */}
+      <SEOHead />
+
       {/* Header Fixed - Visible en todas las páginas */}
       <Header onMenuToggle={toggleSidebar} isSidebarOpen={isSidebarOpen} />
 
@@ -111,9 +120,9 @@ const MainLayout = ({ children }) => {
         </main>
       </div>
 
-      {/* Botón flotante de WhatsApp */}
+      {/* Botón flotante de WhatsApp - Dinámico */}
       <motion.a
-        href="https://wa.me/584149019327"
+        href={whatsappLink}
         target="_blank"
         rel="noopener noreferrer"
         initial={{ scale: 0 }}

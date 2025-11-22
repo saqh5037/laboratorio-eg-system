@@ -68,15 +68,15 @@ const config = {
 
   // Laboratory Information
   laboratory: {
-    name: process.env.LAB_NAME || 'Laboratorio EG',
-    fullName: process.env.LAB_FULL_NAME || 'Laboratorio Elizabeth Gutiérrez',
-    address: process.env.LAB_ADDRESS || 'Av. Libertador, Edf. Majestic, Piso 1, Consultorio 18, La Campiña, Caracas 1050, Venezuela',
-    phone1: process.env.LAB_PHONE_1 || '+58 212 762.0561',
-    phone2: process.env.LAB_PHONE_2 || '+58 212 763.5909',
-    phone3: process.env.LAB_PHONE_3 || '+58 212 763.6628',
-    email: process.env.LAB_EMAIL || 'info@laboratorioeg.com',
-    website: process.env.LAB_WEBSITE || 'https://laboratorioeg.com',
-    social: process.env.LAB_SOCIAL || '@laboratorioeg',
+    name: process.env.LAB_NAME || 'MICRO-TEC',
+    fullName: process.env.LAB_FULL_NAME || 'MICRO-TEC Laboratorio Clínico de Referencia',
+    address: process.env.LAB_ADDRESS || 'Medellín 338, Roma Sur, Cuauhtémoc, 06760 Ciudad de México, CDMX',
+    phone1: process.env.LAB_PHONE_1 || '55 52653770',
+    phone2: process.env.LAB_PHONE_2 || '',
+    phone3: process.env.LAB_PHONE_3 || '',
+    email: process.env.LAB_EMAIL || 'contacto@micro-tec.com.mx',
+    website: process.env.LAB_WEBSITE || 'https://micro-tec.com.mx',
+    social: process.env.LAB_SOCIAL || '@microteclaboratorio',
 
     // Horarios
     hoursWeekday: process.env.LAB_HOURS_WEEKDAY || 'Lunes a Viernes: 7:00 AM - 4:00 PM',

@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import performanceMonitor from './utils/performance.js'
+import { SystemConfigProvider } from './contexts/SystemConfigContext.jsx'
+import { AdminAuthProvider } from './contexts/AdminAuthContext.jsx'
 
 // Inicializar monitoreo de rendimiento
 if (process.env.NODE_ENV === 'production') {
@@ -31,6 +33,31 @@ preloadCriticalData();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <SystemConfigProvider>
+      <AdminAuthProvider>
+        <App />
+      </AdminAuthProvider>
+    </SystemConfigProvider>
   </StrictMode>,
 )
+
+// DESARROLLO: Desregistrar Service Worker si existe
+// En producción, el SW se registrará automáticamente con vite-plugin-pwa
+if ('serviceWorker' in navigator && process.env.NODE_ENV === 'development') {
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    for (const registration of registrations) {
+      registration.unregister();
+      console.log('[DEV] Service Worker desregistrado para desarrollo');
+    }
+  });
+
+  // Limpiar caches del Service Worker
+  if ('caches' in window) {
+    caches.keys().then((names) => {
+      names.forEach((name) => {
+        caches.delete(name);
+        console.log('[DEV] Cache eliminado:', name);
+      });
+    });
+  }
+}

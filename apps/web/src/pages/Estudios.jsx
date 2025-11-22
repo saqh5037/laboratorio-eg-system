@@ -11,6 +11,7 @@ import {
 import { useLabData } from '../hooks/useLabDataDB';
 import { useAdvancedSearch } from '../hooks/useAdvancedSearch';
 import { useFavorites } from '../hooks/useFavorites';
+import { useSystemConfig } from '../hooks/useSystemConfig';
 import AdvancedSearchBox from '../components/AdvancedSearchBox';
 import StudyDetailModal from '../components/StudyDetailModal';
 import { exportToJSON } from '../utils/excelProcessor';
@@ -74,9 +75,14 @@ const BUTTON_SECONDARY = `
 const Estudios = () => {
   const labData = useLabData({ autoLoad: true, useCache: true });
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { getConfigValue } = useSystemConfig();
   const [selectedStudy, setSelectedStudy] = useState(null);
   const [viewMode, setViewMode] = useState('grid');
   const [showStudyCard, setShowStudyCard] = useState(false);
+
+  // Configuración de features
+  const jsonExportEnabled = getConfigValue('features.export.json.enabled') !== false;
+  const advancedSearchEnabled = getConfigValue('features.search.advanced.enabled') !== false;
 
   const {
     searchQuery: searchTerm,
@@ -190,8 +196,9 @@ const Estudios = () => {
       */}
       <section className="sticky top-16 z-30 bg-white border-b-2 border-gray-200 shadow-md">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-4">
-          {/* Buscador principal - tamaño grande, alto contraste */}
-          <AdvancedSearchBox
+          {/* Buscador - Avanzado si está habilitado, simple si no */}
+          {advancedSearchEnabled ? (
+            <AdvancedSearchBox
             searchQuery={searchTerm}
             setSearchQuery={setSearchTerm}
             filters={{
@@ -226,6 +233,31 @@ const Estudios = () => {
             categories={categories}
             onSearch={() => {}}
           />
+          ) : (
+            /* Búsqueda Simple - Fallback cuando búsqueda avanzada está desactivada */
+            <div className="mb-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Buscar estudios..."
+                  className="w-full px-4 py-3 pl-12 text-lg border-2 border-gray-300 rounded-xl focus:border-eg-purple focus:ring-2 focus:ring-eg-purple/20 outline-none transition-all"
+                  aria-label="Buscar estudios"
+                />
+                <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl" />
+                {searchTerm && (
+                  <button
+                    onClick={clearSearch}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 font-bold text-xl"
+                    aria-label="Limpiar búsqueda"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Controles secundarios - botones accesibles */}
           <div className="flex flex-wrap items-center justify-between gap-3 mt-4">
@@ -265,15 +297,18 @@ const Estudios = () => {
                 />
                 <span className="hidden md:inline">Actualizar</span>
               </button>
-              <button
-                onClick={handleExport}
-                disabled={!hasResults}
-                className={BUTTON_SECONDARY}
-                aria-label="Exportar resultados"
-              >
-                <FaDownload className="inline mr-2" aria-hidden="true" />
-                <span className="hidden md:inline">Exportar</span>
-              </button>
+              {/* Botón Exportar JSON - Solo si está habilitado en configuración */}
+              {jsonExportEnabled && (
+                <button
+                  onClick={handleExport}
+                  disabled={!hasResults}
+                  className={BUTTON_SECONDARY}
+                  aria-label="Exportar resultados"
+                >
+                  <FaDownload className="inline mr-2" aria-hidden="true" />
+                  <span className="hidden md:inline">Exportar</span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -343,10 +378,10 @@ const Estudios = () => {
                         </span>
                       )}
                     </div>
-                    {estudio.precio > 0 && (
+                    {(estudio.precio_lista || estudio.precio) > 0 && (
                       <div className="text-right">
                         <p className="text-2xl font-bold text-eg-purple">
-                          ${estudio.precio.toFixed(2)}
+                          ${(estudio.precio_lista || estudio.precio).toFixed(2)}
                         </p>
                       </div>
                     )}
@@ -393,10 +428,10 @@ const Estudios = () => {
                       )}
                     </div>
 
-                    {estudio.precio > 0 && (
+                    {(estudio.precio_lista || estudio.precio) > 0 && (
                       <div className="mt-4 pt-4 border-t-2 border-gray-200">
                         <p className="text-2xl font-bold text-eg-purple">
-                          ${estudio.precio.toFixed(2)}
+                          ${(estudio.precio_lista || estudio.precio).toFixed(2)}
                         </p>
                         <p className="text-sm text-gray-600 font-medium mt-1">Precio</p>
                       </div>

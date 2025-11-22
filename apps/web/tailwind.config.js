@@ -8,73 +8,100 @@ export default {
   theme: {
     extend: {
       colors: {
-        // ===== COLORES PANTONE OFICIALES DEL MANUAL DE IMAGEN =====
-        // NUNCA usar colores fuera de esta paleta
+        // ===== COLORES DINÁMICOS CON CSS VARIABLES =====
+        // Estos colores se actualizan dinámicamente desde theme_config
 
-        // Pantone 2665U - Purple principal
+        // Colores principales - ahora usando CSS variables
+        'primary': 'var(--color-primary)',
+        'secondary': 'var(--color-secondary)',
+        'accent': 'var(--color-accent)',
+
+        // Colores de texto
+        'text-primary': 'var(--color-text-primary)',
+        'text-secondary': 'var(--color-text-secondary)',
+
+        // Colores de fondo
+        'background': 'var(--color-background)',
+        'surface': 'var(--color-surface)',
+
+        // Modo oscuro
+        'dark-bg': 'var(--color-dark-bg)',
+        'dark-surface': 'var(--color-dark-surface)',
+        'dark-text': 'var(--color-dark-text)',
+        'dark-text-secondary': 'var(--color-dark-text-secondary)',
+
+        // Colores semánticos
+        'success': 'var(--color-success)',
+        'warning': 'var(--color-warning)',
+        'error': 'var(--color-error)',
+        'info': 'var(--color-info)',
+
+        // ===== COMPATIBILITY: MANTENER COLORES PANTONE EXISTENTES =====
+        // Estos se mantienen para compatibilidad con código existente
+        // Los colores eg-* ahora también usan CSS variables
+
+        // Pantone 2665U - Purple principal (ESCALAS DINÁMICAS)
         'eg-purple': {
-          DEFAULT: '#7B68A6',
-          50: '#F5F3F9',
-          100: '#E8E4F1',
-          200: '#D1C9E3',
-          300: '#BAAED5',
-          400: '#9B88C6',
-          500: '#7B68A6',  // Pantone 2665U oficial
-          600: '#685590',
-          700: '#554279',
-          800: '#3F3159',
-          900: '#2A203C',
+          DEFAULT: 'rgb(var(--color-eg-purple))',
+          50: 'rgb(var(--color-eg-purple) / 0.05)',
+          100: 'rgb(var(--color-eg-purple) / 0.10)',
+          200: 'rgb(var(--color-eg-purple) / 0.20)',
+          300: 'rgb(var(--color-eg-purple) / 0.30)',
+          400: 'rgb(var(--color-eg-purple) / 0.50)',
+          500: 'rgb(var(--color-eg-purple))',  // Dinámico desde CSS var
+          600: 'rgb(var(--color-eg-purple) / 0.90)',
+          700: 'rgb(var(--color-eg-purple) / 0.80)',
+          800: 'rgb(var(--color-eg-purple) / 0.70)',
+          900: 'rgb(var(--color-eg-purple) / 0.60)',
         },
 
-        // Pantone 250U - Pink secundario
+        // Pantone 250U - Pink secundario (ESCALAS DINÁMICAS)
         'eg-pink': {
-          DEFAULT: '#DDB5D5',
-          50: '#FAF6F9',
-          100: '#F4EBF1',
-          200: '#E8D6E3',
-          300: '#DDB5D5',  // Pantone 250U oficial
-          400: '#D19BC7',
-          500: '#C17FB3',
-          600: '#A8629A',
-          700: '#854D7A',
-          800: '#5F375A',
-          900: '#3D243B',
+          DEFAULT: 'rgb(var(--color-eg-pink))',
+          50: 'rgb(var(--color-eg-pink) / 0.05)',
+          100: 'rgb(var(--color-eg-pink) / 0.10)',
+          200: 'rgb(var(--color-eg-pink) / 0.20)',
+          300: 'rgb(var(--color-eg-pink))',  // Dinámico desde CSS var
+          400: 'rgb(var(--color-eg-pink) / 0.50)',
+          500: 'rgb(var(--color-eg-pink) / 0.70)',
+          600: 'rgb(var(--color-eg-pink) / 0.80)',
+          700: 'rgb(var(--color-eg-pink) / 0.85)',
+          800: 'rgb(var(--color-eg-pink) / 0.90)',
+          900: 'rgb(var(--color-eg-pink) / 0.95)',
         },
 
-        // CoolGray 9U - Gris frío oficial
+        // CoolGray 9U - Gris frío oficial (ESCALAS DINÁMICAS)
         'eg-gray': {
-          DEFAULT: '#8B8C8E',
-          50: '#F8F8F9',
-          100: '#EEEFF0',
-          200: '#DCDDE0',
-          300: '#CBCCCF',
-          400: '#ADAEB2',
-          500: '#8B8C8E',  // CoolGray 9U oficial
-          600: '#6F7073',
-          700: '#58595B',
-          800: '#404143',
-          900: '#2A2B2C',
+          DEFAULT: 'rgb(var(--color-eg-gray))',
+          50: 'rgb(var(--color-eg-gray) / 0.05)',
+          100: 'rgb(var(--color-eg-gray) / 0.10)',
+          200: 'rgb(var(--color-eg-gray) / 0.20)',
+          300: 'rgb(var(--color-eg-gray) / 0.30)',
+          400: 'rgb(var(--color-eg-gray) / 0.50)',
+          500: 'rgb(var(--color-eg-gray))',  // Dinámico desde CSS var
+          600: 'rgb(var(--color-eg-gray) / 0.90)',
+          700: 'rgb(var(--color-eg-gray) / 0.80)',
+          800: 'rgb(var(--color-eg-gray) / 0.70)',
+          900: 'rgb(var(--color-eg-gray) / 0.60)',
         },
 
         // Negro Pantone 231F20
-        'eg-black': '#231F20',
+        'eg-black': 'rgb(var(--color-eg-black))',
+        'eg-dark': 'rgb(var(--color-eg-dark))',
 
         // Blanco puro
-        'eg-white': '#FFFFFF',
+        'eg-white': 'rgb(var(--color-eg-white))',
 
         // Color de fondo claro
         'eg-light-gray': '#F5F5F5',
 
-        // Alias para compatibilidad (apuntan a eg-purple)
-        'eg-dark': '#231F20',
-
         // ===== MODO OSCURO (TONOS FRÍOS) =====
         // Temperatura fría: azules oscuros en lugar de grises
-        'eg-dark-bg': '#0F1729',        // Background azul oscuro frío
-        'eg-dark-surface': '#1A2238',   // Surface azul oscuro
-        'eg-dark-elevated': '#243447',  // Cards elevados
-        'eg-dark-text': '#E8F0FF',      // Texto azul claro frío
-        'eg-dark-muted': '#8B9FC7',     // Texto secundario azul
+        'eg-dark-bg': 'var(--color-dark-bg)',
+        'eg-dark-surface': 'var(--color-dark-surface)',
+        'eg-dark-elevated': '#243447',
+        'eg-dark-text': 'var(--color-dark-text)',
+        'eg-dark-muted': 'var(--color-dark-text-secondary)',
       },
       fontFamily: {
         // DIN Pro como ÚNICA fuente (manual de imagen)
@@ -148,16 +175,16 @@ export default {
         },
       },
       boxShadow: {
-        // Sombras con tonos fríos (purple con baja opacidad)
-        'sm': '0 1px 2px 0 rgba(123, 104, 166, 0.05)',
-        'DEFAULT': '0 1px 3px 0 rgba(123, 104, 166, 0.1), 0 1px 2px 0 rgba(123, 104, 166, 0.06)',
-        'md': '0 4px 6px -1px rgba(123, 104, 166, 0.1), 0 2px 4px -1px rgba(123, 104, 166, 0.06)',
-        'lg': '0 10px 15px -3px rgba(123, 104, 166, 0.1), 0 4px 6px -2px rgba(123, 104, 166, 0.05)',
-        'xl': '0 20px 25px -5px rgba(123, 104, 166, 0.1), 0 10px 10px -5px rgba(123, 104, 166, 0.04)',
-        '2xl': '0 25px 50px -12px rgba(123, 104, 166, 0.25)',
-        'inner': 'inset 0 2px 4px 0 rgba(123, 104, 166, 0.06)',
-        'purple': '0 10px 40px -10px rgba(123, 104, 166, 0.3)',
-        'pink': '0 10px 40px -10px rgba(221, 181, 213, 0.3)',
+        // Sombras dinámicas usando CSS variables
+        'sm': '0 1px 2px 0 rgb(var(--color-eg-purple) / 0.05)',
+        'DEFAULT': '0 1px 3px 0 rgb(var(--color-eg-purple) / 0.1), 0 1px 2px 0 rgb(var(--color-eg-purple) / 0.06)',
+        'md': '0 4px 6px -1px rgb(var(--color-eg-purple) / 0.1), 0 2px 4px -1px rgb(var(--color-eg-purple) / 0.06)',
+        'lg': '0 10px 15px -3px rgb(var(--color-eg-purple) / 0.1), 0 4px 6px -2px rgb(var(--color-eg-purple) / 0.05)',
+        'xl': '0 20px 25px -5px rgb(var(--color-eg-purple) / 0.1), 0 10px 10px -5px rgb(var(--color-eg-purple) / 0.04)',
+        '2xl': '0 25px 50px -12px rgb(var(--color-eg-purple) / 0.25)',
+        'inner': 'inset 0 2px 4px 0 rgb(var(--color-eg-purple) / 0.06)',
+        'purple': '0 10px 40px -10px rgb(var(--color-eg-purple) / 0.3)',
+        'pink': '0 10px 40px -10px rgb(var(--color-eg-pink) / 0.3)',
       },
       backdropBlur: {
         xs: '2px',
@@ -180,28 +207,28 @@ export default {
         'bounce-in': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
       },
       backgroundImage: {
-        // SOLO gradientes autorizados con Pantone
+        // SOLO gradientes autorizados con Pantone (DINÁMICOS)
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
 
-        // Gradientes institucionales base
-        'eg-purple-gradient': 'linear-gradient(135deg, #7B68A6 0%, #9B88C6 100%)',
-        'eg-pink-gradient': 'linear-gradient(135deg, #DDB5D5 0%, #E8C4DD 100%)',
-        'eg-gradient': 'linear-gradient(135deg, #7B68A6 0%, #DDB5D5 100%)',
+        // Gradientes institucionales base (usando CSS variables)
+        'eg-purple-gradient': 'linear-gradient(135deg, rgb(var(--color-eg-purple)) 0%, rgb(var(--color-eg-purple) / 0.7) 100%)',
+        'eg-pink-gradient': 'linear-gradient(135deg, rgb(var(--color-eg-pink)) 0%, rgb(var(--color-eg-pink) / 0.8) 100%)',
+        'eg-gradient': 'linear-gradient(135deg, rgb(var(--color-eg-purple)) 0%, rgb(var(--color-eg-pink)) 100%)',
 
         // Gradientes avanzados para branding vibrante
-        'eg-hero-gradient': 'linear-gradient(135deg, #7B68A6 0%, #9B88C6 50%, #DDB5D5 100%)',
-        'eg-cta-gradient': 'linear-gradient(90deg, #7B68A6 0%, #DDB5D5 100%)',
-        'eg-overlay': 'linear-gradient(180deg, rgba(123,104,166,0.95) 0%, rgba(221,181,213,0.9) 100%)',
-        'eg-overlay-light': 'linear-gradient(180deg, rgba(123,104,166,0.1) 0%, rgba(221,181,213,0.05) 100%)',
+        'eg-hero-gradient': 'linear-gradient(135deg, rgb(var(--color-eg-purple)) 0%, rgb(var(--color-eg-purple) / 0.7) 50%, rgb(var(--color-eg-pink)) 100%)',
+        'eg-cta-gradient': 'linear-gradient(90deg, rgb(var(--color-eg-purple)) 0%, rgb(var(--color-eg-pink)) 100%)',
+        'eg-overlay': 'linear-gradient(180deg, rgb(var(--color-eg-purple) / 0.95) 0%, rgb(var(--color-eg-pink) / 0.9) 100%)',
+        'eg-overlay-light': 'linear-gradient(180deg, rgb(var(--color-eg-purple) / 0.1) 0%, rgb(var(--color-eg-pink) / 0.05) 100%)',
 
         // Gradientes para fondos sutiles
-        'eg-subtle-purple': 'linear-gradient(to bottom right, rgba(123,104,166,0.05), rgba(255,255,255,0))',
-        'eg-subtle-pink': 'linear-gradient(to bottom right, rgba(221,181,213,0.05), rgba(255,255,255,0))',
+        'eg-subtle-purple': 'linear-gradient(to bottom right, rgb(var(--color-eg-purple) / 0.05), rgba(255,255,255,0))',
+        'eg-subtle-pink': 'linear-gradient(to bottom right, rgb(var(--color-eg-pink) / 0.05), rgba(255,255,255,0))',
 
-        // Mantener los antiguos para compatibilidad
-        'purple-gradient': 'linear-gradient(135deg, #7B68A6 0%, #9B88C6 100%)',
-        'pink-gradient': 'linear-gradient(135deg, #DDB5D5 0%, #E8C4DD 100%)',
+        // Mantener los antiguos para compatibilidad (ahora dinámicos)
+        'purple-gradient': 'linear-gradient(135deg, rgb(var(--color-eg-purple)) 0%, rgb(var(--color-eg-purple) / 0.7) 100%)',
+        'pink-gradient': 'linear-gradient(135deg, rgb(var(--color-eg-pink)) 0%, rgb(var(--color-eg-pink) / 0.8) 100%)',
       },
       minHeight: {
         'touch-target': '44px',  // Mínimo para accesibilidad

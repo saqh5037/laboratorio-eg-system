@@ -18,7 +18,15 @@
     "dev:web": "turbo run dev --filter=web",
     "dev:api": "turbo run dev --filter=results-api",
     "dev:sync": "turbo run dev --filter=sync-service",
-    "dev:bot": "turbo run dev --filter=messaging-bot"
+    "dev:bot": "turbo run dev --filter=messaging-bot",
+    "start:all": "./scripts/start-dev.sh",
+    "start:config": "./scripts/start-dev.sh config",
+    "start:backend": "./scripts/start-dev.sh backend",
+    "start:frontend": "./scripts/start-dev.sh frontend",
+    "stop:all": "./scripts/stop-dev.sh",
+    "stop:config": "./scripts/stop-dev.sh config",
+    "stop:backend": "./scripts/stop-dev.sh backend",
+    "stop:frontend": "./scripts/stop-dev.sh frontend"
   },
   "devDependencies": {
     "turbo": "^1.10.0",

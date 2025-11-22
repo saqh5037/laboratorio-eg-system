@@ -14,9 +14,11 @@ import {
   FaAward,
 } from 'react-icons/fa';
 import { FooterLogo } from './brand/BrandLogo';
+import { useCompanyInfo } from '../hooks/useCompanyInfo';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { companyInfo } = useCompanyInfo();
 
   const quickLinks = [
     { name: 'Estudios', path: '/estudios' },
@@ -59,8 +61,7 @@ const Footer = () => {
               </p>
             </div>
             <p className="text-eg-gray dark:text-eg-dark-muted text-sm mb-4">
-              Más de 43 años brindando servicios de análisis clínicos con los más altos
-              estándares de calidad y precisión.
+              Servicios de análisis clínicos con los más altos estándares de calidad y precisión.
             </p>
             <div className="flex gap-3">
               {socialLinks.map((social, index) => (
@@ -167,7 +168,7 @@ const Footer = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <p className="text-eg-gray dark:text-eg-dark-muted text-sm text-center sm:text-left">
-              © {currentYear} Laboratorio Elizabeth Gutiérrez. Todos los derechos reservados.
+              © {currentYear} {companyInfo?.name || 'Laboratorio'}. Todos los derechos reservados.
             </p>
             <div className="flex gap-4">
               <Link

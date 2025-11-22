@@ -1,9 +1,9 @@
 export const LAB_INFO = {
-  name: 'Laboratorio Elizabeth Gutiérrez',
-  fullName: 'Laboratorio Clínico Microbiológico Elizabeth Gutiérrez',
-  slogan: 'LaboratorioEG siempre a tu lado',
-  foundedYear: 1981,
-  rif: 'J-40233378-1',
+  name: 'Laboratorio',
+  fullName: 'Laboratorio Clínico',
+  slogan: 'Tu salud, nuestra prioridad',
+  foundedYear: null,
+  rif: '',
   email: 'contacto@laboratorioeg.com',
   phone: '+52 (555) 123-4567',
   whatsapp: '+52 (555) 987-6543',
@@ -149,9 +149,9 @@ export const ROUTES = {
 };
 
 export const META_TAGS = {
-  title: 'Laboratorio Elizabeth Gutiérrez - Análisis Clínicos y Diagnóstico Médico',
-  description: 'Laboratorio de análisis clínicos con más de 43 años de experiencia. Resultados confiables, tecnología de vanguardia y atención personalizada.',
-  keywords: 'laboratorio clínico, análisis de sangre, estudios médicos, química sanguínea, hematología, microbiología, Ciudad de México',
-  author: 'Laboratorio Elizabeth Gutiérrez',
+  title: 'Laboratorio - Sistema de Análisis Clínicos',
+  description: 'Sistema profesional de análisis clínicos. Resultados confiables, tecnología de vanguardia y atención personalizada.',
+  keywords: 'laboratorio clínico, análisis de sangre, estudios médicos, química sanguínea, hematología, microbiología',
+  author: 'Sistema de Laboratorio',
   ogImage: '/og-image.jpg',
 };

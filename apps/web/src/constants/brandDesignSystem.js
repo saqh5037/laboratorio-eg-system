@@ -102,8 +102,8 @@ export const TYPOGRAPHY = {
 
 // ===== LOGOTIPO Y MARCA =====
 export const LOGO_SPECS = {
-  rif: 'J-40233378-1',
-  rifVisibility: 'ALWAYS', // RIF debe estar SIEMPRE visible
+  rif: 'RFC-PENDIENTE',
+  rifVisibility: 'OPTIONAL', // RIF es opcional para MICRO-TEC
 
   margins: {
     minimum: '1cm',      // Margen mínimo del manual

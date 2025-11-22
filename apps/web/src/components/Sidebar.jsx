@@ -7,68 +7,79 @@ import {
   FaChartBar,
   FaInfoCircle,
   FaEnvelope,
+  FaHeart,
 } from 'react-icons/fa';
+import { Home, Info, Mail, FlaskConical, FileBarChart, Heart } from 'lucide-react';
+import { useSystemConfig } from '../hooks/useSystemConfig';
+import { useNavigation } from '../hooks/useNavigation';
+
+// Mapa de iconos para convertir string a componente
+const iconMap = {
+  Home: <Home size={20} />,
+  Info: <Info size={20} />,
+  Mail: <Mail size={20} />,
+  FlaskConical: <FlaskConical size={20} />,
+  FileBarChart: <FileBarChart size={20} />,
+  Heart: <Heart size={20} />,
+  // Fallbacks FontAwesome
+  FaHome: <FaHome size={20} />,
+  FaInfoCircle: <FaInfoCircle size={20} />,
+  FaEnvelope: <FaEnvelope size={20} />,
+  FaFlask: <FaFlask size={20} />,
+  FaChartBar: <FaChartBar size={20} />,
+  FaHeart: <FaHeart size={20} />,
+};
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
+  const { isPageEnabled, getConfigValue } = useSystemConfig();
+  const { getSidebarItems, loading: navLoading } = useNavigation();
 
-  // Navegación principal - EXACTAMENTE igual que el Header de navegador
-  const mainNavigation = [
-    {
-      id: 'inicio',
-      name: 'Inicio',
-      icon: <FaHome />,
-      anchor: 'inicio',  // Anchor cuando estamos en home
-      path: '/',         // Path cuando estamos en otras páginas
-    },
-    {
-      id: 'nosotros',
-      name: 'Nosotros',
-      icon: <FaInfoCircle />,
-      anchor: 'nosotros',
-      hashPath: '/#nosotros',  // Path con hash para otras páginas
-    },
-    {
-      id: 'contacto',
-      name: 'Contacto',
-      icon: <FaEnvelope />,
-      anchor: 'contacto',
-      hashPath: '/#contacto',
-    },
-    {
-      id: 'estudios',
-      name: 'Estudios',
-      icon: <FaFlask />,
-      path: '/estudios',
-    },
-    {
-      id: 'resultados',
-      name: 'Resultados',
-      icon: <FaChartBar />,
-      path: '/resultados',
-    },
-  ];
+  // Features flags
+  const favoritesEnabled = getConfigValue('features.favorites.enabled') !== false;
+
+  // Obtener items de navegación dinámicos
+  const sidebarItems = getSidebarItems();
+
+  // Filtrar items basado en configuración del sistema
+  const filteredItems = sidebarItems.filter(item => {
+    // Items que requieren verificación de página habilitada
+    if (item.url === '/estudios') return isPageEnabled('estudios');
+    if (item.url === '/resultados') return isPageEnabled('resultados');
+    if (item.url === '/favoritos') return favoritesEnabled;
+    // Verificar secciones anchor en landing page
+    if (item.url === '/#nosotros' || item.url.includes('#nosotros')) return isPageEnabled('nosotros');
+    if (item.url === '/#contacto' || item.url.includes('#contacto')) return isPageEnabled('contacto');
+    return true;
+  });
 
   const handleNavigation = (item) => {
-    if (isHomePage && item.anchor) {
+    const isAnchorLink = item.url.includes('#');
+    const anchorId = isAnchorLink ? item.url.split('#')[1] : null;
+
+    if (isHomePage && anchorId) {
       // Si estamos en home y el item tiene anchor, hacer scroll
-      scrollToSection(item.anchor);
+      scrollToSection(anchorId);
     }
     // Si es un link normal, el Link component manejará la navegación
     onClose(); // Cerrar sidebar después de navegar
   };
 
   const isActive = (item) => {
-    // Para items con path simple
-    if (item.path && item.path !== '/') {
-      return location.pathname === item.path;
+    // Para items con path simple (no anchors)
+    if (!item.url.includes('#') && item.url !== '/') {
+      return location.pathname === item.url;
     }
     // Para Inicio
-    if (item.id === 'inicio') {
+    if (item.url === '/') {
       return location.pathname === '/';
     }
     return false;
+  };
+
+  const getIcon = (iconName) => {
+    return iconMap[iconName] || <Home size={20} />;
   };
 
   return (
@@ -106,10 +117,22 @@ const Sidebar = ({ isOpen, onClose }) => {
           {/* Navigation */}
           <nav className="flex-1 px-4 py-6">
             <div className="space-y-1">
-              {mainNavigation.map(item => {
-                // Determinar si usamos anchor o path según la página
-                const useAnchor = isHomePage && item.anchor;
-                const linkPath = useAnchor ? '#' : (item.hashPath || item.path);
+              {navLoading ? (
+                // Skeleton loading placeholders
+                Array.from({ length: 5 }).map((_, i) => (
+                  <div key={`skeleton-${i}`} className="px-3 py-2.5 rounded-lg animate-pulse">
+                    <div className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-gray-200 rounded"></div>
+                      <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                ))
+              ) : filteredItems.map(item => {
+                // Determinar si es anchor link
+                const isAnchorLink = item.url.includes('#');
+                const anchorId = isAnchorLink ? item.url.split('#')[1] : null;
+                const useAnchor = isHomePage && anchorId;
+                const linkPath = useAnchor ? '#' : item.url;
 
                 return (
                   <div key={item.id}>
@@ -126,8 +149,8 @@ const Sidebar = ({ isOpen, onClose }) => {
                           fontFamily: 'DIN Pro, -apple-system, sans-serif',
                         }}
                       >
-                        <span className="text-xl">{item.icon}</span>
-                        <span className="font-normal text-base">{item.name}</span>
+                        <span className="text-xl">{getIcon(item.icon)}</span>
+                        <span className="font-normal text-base">{item.label}</span>
                       </button>
                     ) : (
                       // En otras páginas, usar Link
@@ -143,8 +166,8 @@ const Sidebar = ({ isOpen, onClose }) => {
                           fontFamily: 'DIN Pro, -apple-system, sans-serif',
                         }}
                       >
-                        <span className="text-xl">{item.icon}</span>
-                        <span className="font-normal text-base">{item.name}</span>
+                        <span className="text-xl">{getIcon(item.icon)}</span>
+                        <span className="font-normal text-base">{item.label}</span>
                       </Link>
                     )}
                   </div>

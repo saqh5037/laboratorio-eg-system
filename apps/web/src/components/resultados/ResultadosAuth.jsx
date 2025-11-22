@@ -5,6 +5,7 @@ import TelegramAuthModal from '../auth/TelegramAuthModal';
 import WhatsAppAuthModal from '../auth/WhatsAppAuthModal';
 import { TelegramAuthProvider } from '../../contexts/TelegramAuthContext';
 import { getAuthenticatedPatient } from '../../services/messagingBotApi';
+import { useSystemConfig } from '../../hooks/useSystemConfig';
 
 export default function ResultadosAuth({ onAuthSuccess }) {
   const [codigoLealtad, setCodigoLealtad] = useState('');
@@ -13,6 +14,19 @@ export default function ResultadosAuth({ onAuthSuccess }) {
   const [showTelegramModal, setShowTelegramModal] = useState(false);
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState(null); // null, 'telegram', 'whatsapp', 'cedula'
+
+  // Obtener configuración de métodos de autenticación
+  const { getConfigValue } = useSystemConfig();
+
+  // Verificar qué métodos están habilitados
+  const telegramEnabled = getConfigValue('auth.methods.telegram.enabled') !== false;
+  const whatsappEnabled = getConfigValue('auth.methods.whatsapp.enabled') !== false;
+  const cedulaEnabled = getConfigValue('auth.methods.cedula.enabled') !== false;
+
+  // Obtener prioridades para ordenar los métodos
+  const telegramPriority = getConfigValue('auth.methods.telegram.priority') || 1;
+  const whatsappPriority = getConfigValue('auth.methods.whatsapp.priority') || 2;
+  const cedulaPriority = getConfigValue('auth.methods.cedula.priority') || 3;
 
   // Verificar si hay un estado de autenticación Telegram pendiente al montar
   useEffect(() => {
@@ -166,12 +180,20 @@ export default function ResultadosAuth({ onAuthSuccess }) {
 
           {/* Pantalla de selección de método */}
           {selectedMethod === null && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
-              {/* Opción Telegram */}
-              <button
-                onClick={() => handleMethodSelect('telegram')}
-                className="group relative overflow-hidden bg-gradient-to-br from-[#0088cc] to-[#0077b3] active:from-[#0077b3] active:to-[#006699] md:hover:from-[#0077b3] md:hover:to-[#006699] text-white rounded-xl p-5 sm:p-6 lg:p-8 shadow-lg md:hover:shadow-2xl transition-all duration-300 md:transform md:hover:scale-105 active:scale-95 min-h-[140px] sm:min-h-[160px]"
-              >
+            <div className={`grid grid-cols-1 ${
+              [telegramEnabled, whatsappEnabled, cedulaEnabled].filter(Boolean).length === 3
+                ? 'md:grid-cols-3'
+                : [telegramEnabled, whatsappEnabled, cedulaEnabled].filter(Boolean).length === 2
+                ? 'md:grid-cols-2'
+                : 'md:grid-cols-1 max-w-md mx-auto'
+            } gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6`}>
+              {/* Opción Telegram - Solo si está habilitado */}
+              {telegramEnabled && (
+                <button
+                  onClick={() => handleMethodSelect('telegram')}
+                  className="group relative overflow-hidden bg-gradient-to-br from-[#0088cc] to-[#0077b3] active:from-[#0077b3] active:to-[#006699] md:hover:from-[#0077b3] md:hover:to-[#006699] text-white rounded-xl p-5 sm:p-6 lg:p-8 shadow-lg md:hover:shadow-2xl transition-all duration-300 md:transform md:hover:scale-105 active:scale-95 min-h-[140px] sm:min-h-[160px]"
+                  style={{ order: telegramPriority }}
+                >
                 <div className="flex flex-col items-center space-y-2 sm:space-y-3 lg:space-y-4">
                   <div className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
                     <svg className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12" fill="currentColor" viewBox="0 0 24 24">
@@ -188,12 +210,15 @@ export default function ResultadosAuth({ onAuthSuccess }) {
                   </div>
                 </div>
               </button>
+              )}
 
-              {/* Opción WhatsApp */}
-              <button
-                onClick={() => handleMethodSelect('whatsapp')}
-                className="group relative overflow-hidden bg-gradient-to-br from-[#25D366] to-[#128C7E] active:from-[#128C7E] active:to-[#075E54] md:hover:from-[#128C7E] md:hover:to-[#075E54] text-white rounded-xl p-5 sm:p-6 lg:p-8 shadow-lg md:hover:shadow-2xl transition-all duration-300 md:transform md:hover:scale-105 active:scale-95 min-h-[140px] sm:min-h-[160px]"
-              >
+              {/* Opción WhatsApp - Solo si está habilitado */}
+              {whatsappEnabled && (
+                <button
+                  onClick={() => handleMethodSelect('whatsapp')}
+                  className="group relative overflow-hidden bg-gradient-to-br from-[#25D366] to-[#128C7E] active:from-[#128C7E] active:to-[#075E54] md:hover:from-[#128C7E] md:hover:to-[#075E54] text-white rounded-xl p-5 sm:p-6 lg:p-8 shadow-lg md:hover:shadow-2xl transition-all duration-300 md:transform md:hover:scale-105 active:scale-95 min-h-[140px] sm:min-h-[160px]"
+                  style={{ order: whatsappPriority }}
+                >
                 <div className="flex flex-col items-center space-y-2 sm:space-y-3 lg:space-y-4">
                   <div className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
                     <svg className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12" fill="currentColor" viewBox="0 0 24 24">
@@ -210,12 +235,15 @@ export default function ResultadosAuth({ onAuthSuccess }) {
                   </div>
                 </div>
               </button>
+              )}
 
-              {/* Opción Cédula */}
-              <button
-                onClick={() => handleMethodSelect('cedula')}
-                className="group relative overflow-hidden bg-gradient-to-br from-eg-purple to-eg-pink active:from-eg-purple/90 active:to-eg-pink/90 md:hover:from-eg-purple/90 md:hover:to-eg-pink/90 text-white rounded-xl p-5 sm:p-6 lg:p-8 shadow-lg md:hover:shadow-2xl transition-all duration-300 md:transform md:hover:scale-105 active:scale-95 min-h-[140px] sm:min-h-[160px]"
-              >
+              {/* Opción Cédula - Solo si está habilitado */}
+              {cedulaEnabled && (
+                <button
+                  onClick={() => handleMethodSelect('cedula')}
+                  className="group relative overflow-hidden bg-gradient-to-br from-eg-purple to-eg-pink active:from-eg-purple/90 active:to-eg-pink/90 md:hover:from-eg-purple/90 md:hover:to-eg-pink/90 text-white rounded-xl p-5 sm:p-6 lg:p-8 shadow-lg md:hover:shadow-2xl transition-all duration-300 md:transform md:hover:scale-105 active:scale-95 min-h-[140px] sm:min-h-[160px]"
+                  style={{ order: cedulaPriority }}
+                >
                 <div className="flex flex-col items-center space-y-2 sm:space-y-3 lg:space-y-4">
                   <div className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
                     <svg className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -232,6 +260,7 @@ export default function ResultadosAuth({ onAuthSuccess }) {
                   </div>
                 </div>
               </button>
+              )}
             </div>
           )}
 

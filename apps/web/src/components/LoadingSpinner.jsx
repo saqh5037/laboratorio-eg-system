@@ -100,8 +100,8 @@ export const FullScreenLoader = ({ message = 'Iniciando Laboratorio EG...' }) =>
           className="mb-8"
         >
           <img
-            src="/LogoEG.png"
-            alt="Laboratorio EG"
+            src="/LogoMicrotec.svg"
+            alt="MICRO-TEC"
             className="w-24 h-24 mx-auto rounded-full shadow-lg"
           />
         </motion.div>
