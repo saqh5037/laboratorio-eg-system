@@ -51,9 +51,11 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
 
         // CRÍTICO: Network-first para JavaScript para evitar cache de versiones antiguas
+        // IMPORTANTE: Usar patrones dinámicos que funcionen en cualquier host (localhost o IP)
         runtimeCaching: [
           {
-            urlPattern: /^https?:\/\/localhost:5173\/.*\.js$/,
+            // Cualquier archivo JS del mismo origen
+            urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.endsWith('.js'),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'js-cache',
@@ -67,7 +69,8 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /^https?:\/\/localhost:5173\/assets\/.*\.js$/,
+            // Archivos JS en /assets del mismo origen
+            urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.includes('/assets/') && url.pathname.endsWith('.js'),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'assets-js-cache',
@@ -78,7 +81,8 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /^https?:\/\/localhost:5173\/assets\/.*\.css$/,
+            // Archivos CSS en /assets del mismo origen
+            urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.includes('/assets/') && url.pathname.endsWith('.css'),
             handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'css-cache',
@@ -111,7 +115,11 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /^https?:\/\/localhost:(3001|3005)\/api\/.*/,
+            // API calls a puertos 3001 y 3005 (cualquier host)
+            urlPattern: ({ url }) => {
+              const port = url.port || (url.protocol === 'https:' ? '443' : '80');
+              return (port === '3001' || port === '3005') && url.pathname.startsWith('/api/');
+            },
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
