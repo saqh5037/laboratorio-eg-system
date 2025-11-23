@@ -1,13 +1,12 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaSearch } from 'react-icons/fa';
+import { FaSearch, FaBars, FaTimes } from 'react-icons/fa';
 import { HeaderLogo, HeaderLogoMobile } from './brand/BrandLogo';
 import { handleAnchorClick, isOnHomePage } from '../utils/smoothScroll';
 import { useSystemConfig } from '../hooks/useSystemConfig';
 import { useNavigation } from '../hooks/useNavigation';
-import NavigationDropdown from './NavigationDropdown';
 
-const Header = () => {
+const Header = ({ onMenuToggle, isSidebarOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const onHomePage = isOnHomePage(location.pathname);
@@ -42,33 +41,6 @@ const Header = () => {
   };
 
   const navItemClasses = "px-4 py-2 text-eg-black dark:text-eg-dark-text hover:text-eg-purple dark:hover:text-eg-purple transition-all duration-200 rounded-xl hover:bg-eg-purple/5 min-h-touch-target flex items-center hover:-translate-y-0.5";
-
-  // Handler unificado para navegación (usado por desktop menu y dropdown)
-  const handleNavigation = (e, item) => {
-    const isAnchorLink = item.url.includes('#');
-    const anchorId = isAnchorLink ? item.url.split('#').pop() : null;
-
-    if (isAnchorLink && anchorId) {
-      if (onHomePage) {
-        // En homepage: scroll directo
-        handleAnchorClick(e, `#${anchorId}`);
-      } else {
-        // Fuera de homepage: navegar primero
-        e.preventDefault();
-        navigate('/');
-        setTimeout(() => {
-          const element = document.getElementById(anchorId);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }, 100);
-      }
-    } else {
-      // Link normal
-      e.preventDefault();
-      navigate(item.url);
-    }
-  };
 
   // Renderizar item de navegación
   const renderNavItem = (item) => {
@@ -145,8 +117,33 @@ const Header = () => {
       <div className="h-16">
         <div className="max-w-full px-4 sm:px-6 lg:px-8 h-full">
           <div className="flex items-center justify-between h-full">
-            {/* Left section: Logo only */}
+            {/* Left section: Menu toggle + Logo */}
             <div className="flex items-center gap-2 sm:gap-4">
+              {/* Menu Toggle Button - Hamburguesa para Mobile + iPad */}
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onMenuToggle}
+                className="flex items-center gap-2 px-4 py-3 rounded-xl
+                          bg-gradient-to-r from-eg-purple to-eg-purple/90
+                          text-white font-medium text-sm
+                          hover:from-eg-purple/90 hover:to-eg-purple
+                          shadow-lg hover:shadow-xl
+                          transition-all duration-300
+                          lg:hidden min-h-touch-target
+                          border border-eg-purple/20"
+                style={{
+                  transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)'
+                }}
+                aria-label={isSidebarOpen ? "Cerrar menú" : "Abrir menú"}
+                aria-expanded={isSidebarOpen}
+              >
+                {isSidebarOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
+                <span className="hidden sm:inline font-semibold tracking-wide">
+                  {isSidebarOpen ? "CERRAR" : "MENÚ"}
+                </span>
+              </motion.button>
+
               {/* Logo con margen responsive - profesional con BrandLogo */}
               <Link to="/" className="ml-1 sm:ml-[37.8px]">
                 {/* Desktop & Tablet: Logo completo horizontal con tamaño responsive */}
@@ -186,17 +183,7 @@ const Header = () => {
               </ul>
             </nav>
 
-            {/* iPad (md-lg): Dropdown menu compacto */}
-            <div className="flex-1 hidden md:flex lg:hidden items-center justify-center">
-              {!navLoading && filteredItems.length > 0 && (
-                <NavigationDropdown
-                  items={filteredItems}
-                  onNavigate={handleNavigation}
-                />
-              )}
-            </div>
-
-            {/* Mobile: usa Sidebar con hamburger (sin cambios) */}
+            {/* Mobile + iPad: usa Sidebar con hamburger */}
 
             {/* Right section: Búsqueda con estilo profesional */}
             <div className="flex items-center gap-2 sm:gap-3">
