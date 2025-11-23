@@ -48,10 +48,9 @@ const StudyTreeView = ({ studyId, studyName, studyCode, studyType, pruebas = [],
    */
   const loadGroupTree = useCallback(async (groupId) => {
     try {
-      const apiUrl = window.location.hostname === 'localhost' 
-        ? 'http://localhost:3001' 
-        : `http://${window.location.hostname}:3001`;
-      const response = await fetch(`${apiUrl}/api/grupos/${groupId}`);
+      // Usar SIEMPRE la variable de entorno, sin detección de hostname
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/grupos/${groupId}`);
       const data = await response.json();
       
       if (!data.success) return null;

@@ -8,11 +8,9 @@ export const useLabData = (options = {}) => {
   const {
     autoLoad = true,
     useCache = true,
-    // Detectar si estamos en desarrollo y usar la IP correcta
-    apiUrl = import.meta.env.VITE_API_URL || 
-             (window.location.hostname === 'localhost' 
-               ? 'http://localhost:3001/api' 
-               : `http://${window.location.hostname}:3001/api`)
+    // Usar SIEMPRE la variable de entorno VITE_API_URL
+    // Si no está definida, usar ruta relativa '/api' (funcionará con proxy en producción)
+    apiUrl = import.meta.env.VITE_API_URL || '/api'
   } = options;
 
   const [data, setData] = useState(null);
