@@ -50,7 +50,7 @@ const Footer = () => {
   return (
     <footer className="bg-eg-black dark:bg-eg-dark-bg text-white dark:text-eg-dark-text transition-colors duration-300">
       {/* Main Footer Content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12" style={{ marginLeft: 'var(--logo-margin, 37.8px)' }}>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12" style={{ marginLeft: 'var(--logo-margin, 37.8px)' }}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info - Logo profesional con BrandLogo */}
           <div>

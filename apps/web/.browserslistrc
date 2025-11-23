@@ -1,0 +1,17 @@
+# Browserslist configuración para compatibilidad universal
+# Define qué navegadores deben ser soportados
+
+# Producción - Máxima compatibilidad
+> 0.2%
+iOS >= 11
+Safari >= 11
+Chrome >= 64
+Firefox >= 67
+Samsung >= 8.2
+Android >= 6.0
+Edge >= 88
+not dead
+not op_mini all
+
+# Navegadores modernos para bundle optimizado
+last 2 versions and > 0.5%

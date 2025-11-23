@@ -92,7 +92,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 lg:hidden"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-45 lg:hidden"
             onClick={onClose}
             aria-hidden="true"
           />
@@ -106,7 +106,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           x: isOpen ? 0 : '-100%',
         }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className={`fixed top-16 left-0 bottom-0 w-64 bg-gradient-to-b from-white to-eg-purple-50 border-r border-eg-gray/20 z-40 overflow-y-auto lg:translate-x-0 ${
+        className={`fixed top-16 left-0 bottom-0 w-64 bg-gradient-to-b from-white to-eg-purple-50 border-r border-eg-gray/20 z-50 overflow-y-auto lg:translate-x-0 ${
           isOpen ? '' : 'lg:w-64'
         }`}
         style={{
