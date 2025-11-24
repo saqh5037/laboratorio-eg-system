@@ -6,6 +6,10 @@ import performanceMonitor from './utils/performance.js'
 import { SystemConfigProvider } from './contexts/SystemConfigContext.jsx'
 import { AdminAuthProvider } from './contexts/AdminAuthContext.jsx'
 
+// CRÍTICO: Validar variables de entorno ANTES de iniciar la app
+// Si faltan variables requeridas, la app NO arrancará (fail-fast)
+import { config } from './config/env.js'
+
 // Inicializar monitoreo de rendimiento
 if (process.env.NODE_ENV === 'production') {
   performanceMonitor.init();

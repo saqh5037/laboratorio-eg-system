@@ -1,4 +1,7 @@
-require('dotenv').config();
+// CRÍTICO: Validar variables de entorno ANTES de importar cualquier cosa
+// Si faltan variables requeridas, el servidor NO arrancará (fail-fast)
+const config = require('./config/env');
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -24,7 +27,7 @@ const backupRoutes = require('./routes/backup.routes');
 const laboratoriesRoutes = require('./routes/laboratories.routes');
 
 const app = express();
-const PORT = process.env.PORT || 3005;
+const PORT = config.port;
 
 // ========================================
 // MIDDLEWARE
@@ -33,13 +36,9 @@ const PORT = process.env.PORT || 3005;
 // Security headers
 app.use(helmet());
 
-// CORS
-const corsOrigins = process.env.CORS_ORIGIN
-  ? process.env.CORS_ORIGIN.split(',')
-  : ['http://localhost:5173', 'http://localhost:5174'];
-
+// CORS - Usar configuración validada
 app.use(cors({
-  origin: corsOrigins,
+  origin: config.cors.origins,
   credentials: true
 }));
 
