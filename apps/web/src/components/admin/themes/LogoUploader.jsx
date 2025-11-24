@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { Upload, X, Image as ImageIcon, Loader } from 'lucide-react';
 import * as themesApi from '../../../services/themesApi';
+import { config } from '../../../config/env.js';
 
 /**
  * LogoUploader Component
@@ -125,8 +126,7 @@ export function LogoUploader({ label, type = 'main', currentLogo, onUpload, isUp
     if (currentLogo) {
       // Si es una ruta relativa, agregar el base URL del servidor de config
       if (currentLogo.startsWith('/uploads')) {
-        const API_BASE_URL = import.meta.env.VITE_CONFIG_API_URL || 'http://localhost:3005';
-        return `${API_BASE_URL}${currentLogo}`;
+        return `${config.VITE_CONFIG_API_URL}${currentLogo}`;
       }
       return currentLogo;
     }
