@@ -1,9 +1,11 @@
 /**
  * Cliente de la Config API
- * Consume endpoints de http://localhost:3005/api/config
+ * Consume endpoints de config-api
  */
 
-const CONFIG_API_URL = import.meta.env.VITE_CONFIG_API_URL || 'http://localhost:3005';
+import { config } from '../config/env.js';
+
+const CONFIG_API_URL = config.VITE_CONFIG_API_URL;
 
 /**
  * Obtener todas las configuraciones

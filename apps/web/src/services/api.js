@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { StudyAdapter } from '../adapters/studyAdapter';
+import { config } from '../config/env.js';
 
 /**
  * Servicio unificado para comunicación con el backend
@@ -7,7 +8,7 @@ import { StudyAdapter } from '../adapters/studyAdapter';
  */
 class StudyService {
   constructor() {
-    this.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+    this.baseURL = config.VITE_API_URL;
     
     // Crear instancia de axios con configuración base
     this.client = axios.create({

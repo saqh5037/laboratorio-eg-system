@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { config } from '../config/env.js';
 
 /**
  * Hook personalizado para cargar datos desde la base de datos PostgreSQL
@@ -8,9 +9,8 @@ export const useLabData = (options = {}) => {
   const {
     autoLoad = true,
     useCache = true,
-    // Usar SIEMPRE la variable de entorno VITE_API_URL
-    // Si no está definida, usar ruta relativa '/api' (funcionará con proxy en producción)
-    apiUrl = import.meta.env.VITE_API_URL || '/api'
+    // Usar configuración validada de VITE_API_URL
+    apiUrl = config.VITE_API_URL
   } = options;
 
   const [data, setData] = useState(null);

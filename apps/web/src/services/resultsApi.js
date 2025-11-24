@@ -3,7 +3,9 @@
  * Maneja la comunicación con el servicio de resultados de laboratorio
  */
 
-const RESULTS_API_URL = import.meta.env.VITE_RESULTS_API_URL || 'http://localhost:3003/api';
+import { config } from '../config/env.js';
+
+const RESULTS_API_URL = config.VITE_RESULTS_API_URL;
 
 class ResultsApiError extends Error {
   constructor(message, code, status) {

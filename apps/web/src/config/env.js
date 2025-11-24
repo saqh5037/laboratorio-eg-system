@@ -7,6 +7,9 @@ const envSchema = z.object({
   VITE_CONFIG_API_URL: z.string().url('VITE_CONFIG_API_URL debe ser una URL válida'),
   VITE_RESULTS_API_URL: z.string().url('VITE_RESULTS_API_URL debe ser una URL válida'),
 
+  // Messaging Bot API - Opcional (puede usar proxy /api/messaging en producción)
+  VITE_MESSAGING_BOT_API_URL: z.string().optional().default('/api/messaging'),
+
   // Server Configuration - Opcionales con defaults
   VITE_DEV_SERVER_PORT: z.string().optional().default('5173'),
   VITE_PREVIEW_SERVER_PORT: z.string().optional().default('4173'),
@@ -26,6 +29,7 @@ try {
     VITE_API_URL: import.meta.env.VITE_API_URL,
     VITE_CONFIG_API_URL: import.meta.env.VITE_CONFIG_API_URL,
     VITE_RESULTS_API_URL: import.meta.env.VITE_RESULTS_API_URL,
+    VITE_MESSAGING_BOT_API_URL: import.meta.env.VITE_MESSAGING_BOT_API_URL,
     VITE_DEV_SERVER_PORT: import.meta.env.VITE_DEV_SERVER_PORT,
     VITE_PREVIEW_SERVER_PORT: import.meta.env.VITE_PREVIEW_SERVER_PORT,
     VITE_CONFIG_POLL_INTERVAL: import.meta.env.VITE_CONFIG_POLL_INTERVAL,
@@ -37,7 +41,8 @@ try {
   console.log('🔗 API URLs configured:', {
     api: config.VITE_API_URL,
     config: config.VITE_CONFIG_API_URL,
-    results: config.VITE_RESULTS_API_URL
+    results: config.VITE_RESULTS_API_URL,
+    messagingBot: config.VITE_MESSAGING_BOT_API_URL
   });
 } catch (error) {
   console.error('❌ Environment validation failed:');

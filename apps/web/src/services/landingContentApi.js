@@ -14,8 +14,9 @@
  */
 
 import { logger } from '../utils/logger';
+import { config } from '../config/env.js';
 
-const API_BASE_URL = import.meta.env.VITE_CONFIG_API_URL || 'http://localhost:3005';
+const API_BASE_URL = config.VITE_CONFIG_API_URL;
 
 /**
  * Helper para obtener el token de admin del localStorage

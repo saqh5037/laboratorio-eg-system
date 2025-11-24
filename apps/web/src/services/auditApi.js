@@ -1,4 +1,6 @@
-const CONFIG_API_URL = import.meta.env.VITE_CONFIG_API_URL;
+import { config } from '../config/env.js';
+
+const CONFIG_API_URL = config.VITE_CONFIG_API_URL;
 
 /**
  * Helper para obtener headers con autenticación

@@ -3,9 +3,9 @@
  * Maneja la autenticación via Telegram
  */
 
-// Usar SIEMPRE la variable de entorno VITE_MESSAGING_BOT_API_URL
-// Si no está definida, usar ruta relativa '/api/messaging' (funcionará con proxy en producción)
-const MESSAGING_BOT_API_URL = import.meta.env.VITE_MESSAGING_BOT_API_URL || '/api/messaging';
+import { config } from '../config/env.js';
+
+const MESSAGING_BOT_API_URL = config.VITE_MESSAGING_BOT_API_URL;
 
 class MessagingBotApiError extends Error {
   constructor(message, code, status, data = {}) {

@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useCompanyInfo } from './useCompanyInfo';
 import { useLandingContent } from './useLandingContent';
+import { config } from '../config/env.js';
 
-const CONFIG_API_URL = import.meta.env.VITE_CONFIG_API_URL || 'http://localhost:3005';
+const CONFIG_API_URL = config.VITE_CONFIG_API_URL;
 
 /**
  * Hook para obtener datos dinámicos del Hero section
