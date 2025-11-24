@@ -288,7 +288,7 @@ async function startServer() {
     app.listen(PORT, () => {
       logger.info(`🚀 Config API escuchando en puerto ${PORT}`);
       logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-      logger.info(`CORS origins: ${corsOrigins.join(', ')}`);
+      logger.info(`CORS origins: ${config.cors.origins.join(', ')}`);
       logger.info('');
       logger.info('Endpoints disponibles:');
       logger.info(`  - Health check: http://localhost:${PORT}/health`);
