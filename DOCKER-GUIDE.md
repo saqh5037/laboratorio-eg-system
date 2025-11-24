@@ -9,6 +9,82 @@ Esta guía te ayudará a ejecutar el sistema completo de Laboratorio EG usando D
 - Al menos 4GB de RAM disponible
 - 10GB de espacio en disco
 
+### Instalación de Docker
+
+Si Docker no está instalado en tu sistema, sigue estos pasos:
+
+#### macOS
+
+1. Descarga Docker Desktop desde: https://docs.docker.com/desktop/install/mac-install/
+2. Instala el archivo .dmg descargado
+3. Abre Docker Desktop desde Applications
+4. Espera a que Docker Desktop inicie completamente (icono de ballena en la barra de menú)
+5. Verifica la instalación:
+   ```bash
+   docker --version
+   docker compose version
+   ```
+
+#### Linux (Ubuntu/Debian)
+
+```bash
+# Actualizar repositorios
+sudo apt-get update
+
+# Instalar dependencias
+sudo apt-get install ca-certificates curl gnupg
+
+# Agregar Docker GPG key
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Configurar repositorio
+echo \
+  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Instalar Docker
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Verificar instalación
+docker --version
+docker compose version
+```
+
+#### Windows
+
+1. Descarga Docker Desktop desde: https://docs.docker.com/desktop/install/windows-install/
+2. Ejecuta el instalador
+3. Reinicia el sistema si es necesario
+4. Abre Docker Desktop
+5. Verifica la instalación en PowerShell:
+   ```powershell
+   docker --version
+   docker compose version
+   ```
+
+### Testing Rápido
+
+Una vez instalado Docker, ejecuta el script de testing:
+
+```bash
+cd /Users/samuelquiroz/Documents/proyectos/laboratorio-eg-system
+./scripts/test-docker-build.sh
+```
+
+Este script automáticamente:
+- ✅ Verifica que Docker esté instalado y corriendo
+- ✅ Valida que los puertos estén disponibles
+- ✅ Crea .env si no existe
+- ✅ Construye todas las imágenes
+- ✅ Inicia los servicios
+- ✅ Verifica health checks
+- ✅ Prueba endpoints de salud
+- ✅ Muestra logs de errores si algo falla
+
 ## Estructura del Sistema
 
 El sistema está compuesto por 7 servicios:
