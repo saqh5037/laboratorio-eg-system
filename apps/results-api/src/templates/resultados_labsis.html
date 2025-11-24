@@ -330,11 +330,10 @@
         <img src="{{logoBase64}}" alt="Logo" class="logo" />
         {{/if}}
         <div class="header-info">
-          <div class="lab-name">MICRO-TEC<br>LABORATORIO CLÍNICO DE REFERENCIA</div>
+          <div class="lab-name">{{labNombre}}</div>
           <div class="lab-address">
-            Medellín 338, Roma Sur, Cuauhtémoc<br>
-            55 52653770 | WhatsApp: +52 56 1123 7738<br>
-            Ciudad de México, CDMX 06760
+            {{labDireccion}}<br>
+            {{labTelefono}}{{#if labEmail}} | {{labEmail}}{{/if}}
           </div>
         </div>
       </div>
@@ -470,9 +469,8 @@
       {{/if}}
     </div>
     <div class="footer-info">
-      MICRO-TEC - LABORATORIO CLÍNICO DE REFERENCIA | Medellín 338, Roma Sur, Cuauhtémoc<br>
-      55 52653770 | WhatsApp: +52 56 1123 7738<br>
-      Ciudad de México, CDMX 06760
+      {{labNombre}} | {{labDireccion}}<br>
+      {{labTelefono}}{{#if labEmail}} | {{labEmail}}{{/if}}
     </div>
     <div class="footer-page">
       {{paginaActual}} de {{totalPaginas}}

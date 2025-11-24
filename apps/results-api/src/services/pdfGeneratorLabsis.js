@@ -141,6 +141,9 @@ async function prepararDatosConDB(orden, resultados) {
   // Obtener logo del laboratorio desde DB
   const logoBase64 = await obtenerLogoLaboratorio();
 
+  // Obtener información del laboratorio desde DB
+  const labInfo = await obtenerInfoLaboratorio();
+
   // Generar QR code con URL al portal de resultados (igual que Labsis)
   const portalUrl = process.env.PORTAL_URL || 'http://localhost:5173';
   const qrData = `${portalUrl}?orden=${orden.numero}&cedula=${orden.ci_paciente}`;
@@ -167,7 +170,13 @@ async function prepararDatosConDB(orden, resultados) {
     qrCodeDataUrl,
     areas: areasProcesadas,
     paginaActual: 1,
-    totalPaginas: 1
+    totalPaginas: 1,
+    // Información del laboratorio
+    labNombre: labInfo.nombre,
+    labDireccion: labInfo.direccion,
+    labTelefono: labInfo.telefono,
+    labRif: labInfo.rif,
+    labEmail: labInfo.email
   };
 }
 
@@ -201,6 +210,50 @@ async function obtenerLogoLaboratorio() {
   } catch (error) {
     logger.error('[PDF Labsis] Error al obtener logo:', error);
     return null;
+  }
+}
+
+/**
+ * Obtiene la información del laboratorio desde la base de datos
+ */
+async function obtenerInfoLaboratorio() {
+  try {
+    // Consultar información del laboratorio
+    const result = await pool.query(`
+      SELECT nombre, direccion, telefono, rif, email
+      FROM laboratorio
+      WHERE id = 1
+    `);
+
+    if (!result.rows[0]) {
+      logger.warn('[PDF Labsis] No se encontró información del laboratorio en la base de datos');
+      return {
+        nombre: 'LABORATORIO',
+        direccion: '',
+        telefono: '',
+        rif: '',
+        email: ''
+      };
+    }
+
+    const lab = result.rows[0];
+
+    return {
+      nombre: lab.nombre || 'LABORATORIO',
+      direccion: lab.direccion || '',
+      telefono: lab.telefono || '',
+      rif: lab.rif || '',
+      email: lab.email || ''
+    };
+  } catch (error) {
+    logger.error('[PDF Labsis] Error al obtener información del laboratorio:', error);
+    return {
+      nombre: 'LABORATORIO',
+      direccion: '',
+      telefono: '',
+      rif: '',
+      email: ''
+    };
   }
 }
 

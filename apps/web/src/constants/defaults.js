@@ -24,8 +24,8 @@ export const DEFAULT_METADATA = {
 };
 
 export const DEFAULT_LOGO = {
-  full: '/LogoMicrotec.svg',
-  icon: '/LogoMicrotec.svg',
-  horizontal: '/LogoMicrotec.svg',
-  altText: 'MICRO-TEC - Laboratorio Clínico de Referencia'
+  full: '/logo-placeholder.svg',
+  icon: '/logo-placeholder.svg',
+  horizontal: '/logo-placeholder.svg',
+  altText: 'Laboratorio Clínico'
 };
