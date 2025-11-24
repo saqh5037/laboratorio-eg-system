@@ -19,9 +19,10 @@ services:
       NODE_ENV: ${NODE_ENV:-production}
       HTTP_PORT: 3002
       # Database labsisEG (sync-service uses LABSIS_* variable names)
+      # Production: labsisEGProduccion
       LABSIS_HOST: ${DB_HOST:-host.docker.internal}
       LABSIS_PORT: 5432
-      LABSIS_DB: labsisEG
+      LABSIS_DB: ${DB_NAME_LABSIS:-labsisEG}
       LABSIS_USER: labsis
       LABSIS_PASSWORD: ${DB_PASSWORD:-labsis}
       # Auth
@@ -55,9 +56,10 @@ services:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: 3003
       # Database labsisEG
+      # Production: labsisEGProduccion
       DB_HOST: ${DB_HOST:-host.docker.internal}
       DB_PORT: 5432
-      DB_NAME: labsisEG
+      DB_NAME: ${DB_NAME_LABSIS:-labsisEG}
       DB_USER: labsis
       DB_PASSWORD: ${DB_PASSWORD:-labsis}
       DB_MAX_CONNECTIONS: ${DB_MAX_CONNECTIONS:-20}
@@ -99,17 +101,19 @@ services:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: 3004
       # Database lis_bot_comunicacion (Connection String)
-      BOT_DATABASE_URL: postgresql://labsis:${DB_PASSWORD:-labsis}@${DB_HOST:-host.docker.internal}:5432/lis_bot_comunicacion
+      # Production: lis_bot_comunicacioneg
+      BOT_DATABASE_URL: postgresql://labsis:${DB_PASSWORD:-labsis}@${DB_HOST:-host.docker.internal}:5432/${DB_NAME_BOT:-lis_bot_comunicacion}
       # Individual vars for compatibility
       DB_HOST: ${DB_HOST:-host.docker.internal}
       DB_PORT: 5432
-      DB_NAME: lis_bot_comunicacion
+      DB_NAME: ${DB_NAME_BOT:-lis_bot_comunicacion}
       DB_USER: labsis
       DB_PASSWORD: ${DB_PASSWORD:-labsis}
       DB_MAX_CONNECTIONS: ${DB_MAX_CONNECTIONS:-20}
       DB_SSL: "false"
       # Labsis Database Connection (Read-Only)
-      LABSIS_DATABASE_URL: postgresql://labsis:${DB_PASSWORD:-labsis}@${DB_HOST:-host.docker.internal}:5432/labsisEG
+      # Production: labsisEGProduccion
+      LABSIS_DATABASE_URL: postgresql://labsis:${DB_PASSWORD:-labsis}@${DB_HOST:-host.docker.internal}:5432/${DB_NAME_LABSIS:-labsisEG}
       # Telegram Bot
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
       TELEGRAM_BOT_USERNAME: ${TELEGRAM_BOT_USERNAME}
@@ -154,9 +158,10 @@ services:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: 3005
       # Database lis_bot_comunicacion
+      # Production: lis_bot_comunicacioneg
       DB_HOST: ${DB_HOST:-host.docker.internal}
       DB_PORT: 5432
-      DB_NAME: lis_bot_comunicacion
+      DB_NAME: ${DB_NAME_BOT:-lis_bot_comunicacion}
       DB_USER: labsis
       DB_PASSWORD: ${DB_PASSWORD:-labsis}
       DB_MAX_CONNECTIONS: ${DB_MAX_CONNECTIONS:-20}
