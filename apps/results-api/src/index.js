@@ -13,10 +13,16 @@ const PORT = process.env.PORT || 3003;
 
 // Middlewares
 // Configurar CORS para permitir múltiples orígenes
+const corsOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
+  : [];
+
 const allowedOrigins = [
   'http://localhost:5173',
+  'http://localhost',
+  'http://192.168.1.125',
   'http://192.168.1.125:5173',
-  process.env.CORS_ORIGIN
+  ...corsOrigins
 ].filter(Boolean);
 
 app.use(cors({
@@ -27,6 +33,7 @@ app.use(cors({
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      logger.warn(`CORS blocked origin: ${origin}`);
       callback(new Error('No permitido por CORS'));
     }
   },

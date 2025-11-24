@@ -7,56 +7,6 @@
 
 services:
   # ==========================================
-  # PostgreSQL Database - labsisEG
-  # ==========================================
-  postgres-labsis:
-    image: postgres:15-alpine
-    container_name: labsis-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: labsisEG
-      POSTGRES_USER: labsis
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-labsis}
-      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=es_VE.UTF-8"
-    volumes:
-      - postgres-labsis-data:/var/lib/postgresql/data
-      - ./database/init:/docker-entrypoint-initdb.d:ro
-    ports:
-      - "${DB_PORT:-5432}:5432"
-    networks:
-      - lab-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U labsis -d labsisEG"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # ==========================================
-  # PostgreSQL Database - lis_bot_comunicacion
-  # ==========================================
-  postgres-bot:
-    image: postgres:15-alpine
-    container_name: labsis-postgres-bot
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: lis_bot_comunicacion
-      POSTGRES_USER: labsis
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-labsis}
-      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=es_VE.UTF-8"
-    volumes:
-      - postgres-bot-data:/var/lib/postgresql/data
-      - ./apps/messaging-bot/migrations:/docker-entrypoint-initdb.d:ro
-    ports:
-      - "5433:5432"
-    networks:
-      - lab-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U labsis -d lis_bot_comunicacion"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # ==========================================
   # Sync Service - PostgreSQL to JSON sync
   # ==========================================
   sync-service:
@@ -67,13 +17,13 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: ${NODE_ENV:-production}
-      PORT: 3002
-      # Database labsisEG
-      LABSIS_DB_HOST: postgres-labsis
-      LABSIS_DB_PORT: 5432
-      LABSIS_DB_NAME: labsisEG
-      LABSIS_DB_USER: labsis
-      LABSIS_DB_PASSWORD: ${DB_PASSWORD:-labsis}
+      HTTP_PORT: 3002
+      # Database labsisEG (sync-service uses LABSIS_* variable names)
+      LABSIS_HOST: ${DB_HOST:-host.docker.internal}
+      LABSIS_PORT: 5432
+      LABSIS_DB: labsisEG
+      LABSIS_USER: labsis
+      LABSIS_PASSWORD: ${DB_PASSWORD:-labsis}
       # Auth
       JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-24h}
@@ -86,11 +36,8 @@ services:
       - "3002:3002"
     networks:
       - lab-network
-    depends_on:
-      postgres-labsis:
-        condition: service_healthy
     healthcheck:
-      test: ["CMD", "node", "-e", "import('http').then(http => {http.get('http://localhost:3002/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})})"]
+      test: ["CMD", "node", "-e", "import('http').then(http => {http.get('http://localhost:3002/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})})"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -108,7 +55,7 @@ services:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: 3003
       # Database labsisEG
-      DB_HOST: postgres-labsis
+      DB_HOST: ${DB_HOST:-host.docker.internal}
       DB_PORT: 5432
       DB_NAME: labsisEG
       DB_USER: labsis
@@ -133,9 +80,6 @@ services:
       - "3003:3003"
     networks:
       - lab-network
-    depends_on:
-      postgres-labsis:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "node", "-e", "import('http').then(http => {http.get('http://localhost:3003/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})})"]
       interval: 30s
@@ -154,20 +98,18 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: 3004
-      # Database lis_bot_comunicacion
-      DB_HOST: postgres-bot
+      # Database lis_bot_comunicacion (Connection String)
+      BOT_DATABASE_URL: postgresql://labsis:${DB_PASSWORD:-labsis}@${DB_HOST:-host.docker.internal}:5432/lis_bot_comunicacion
+      # Individual vars for compatibility
+      DB_HOST: ${DB_HOST:-host.docker.internal}
       DB_PORT: 5432
       DB_NAME: lis_bot_comunicacion
       DB_USER: labsis
       DB_PASSWORD: ${DB_PASSWORD:-labsis}
       DB_MAX_CONNECTIONS: ${DB_MAX_CONNECTIONS:-20}
       DB_SSL: "false"
-      # Labsis Database Connection
-      LABSIS_DB_HOST: postgres-labsis
-      LABSIS_DB_PORT: 5432
-      LABSIS_DB_NAME: labsisEG
-      LABSIS_DB_USER: labsis
-      LABSIS_DB_PASSWORD: ${DB_PASSWORD:-labsis}
+      # Labsis Database Connection (Read-Only)
+      LABSIS_DATABASE_URL: postgresql://labsis:${DB_PASSWORD:-labsis}@${DB_HOST:-host.docker.internal}:5432/labsisEG
       # Telegram Bot
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
       TELEGRAM_BOT_USERNAME: ${TELEGRAM_BOT_USERNAME}
@@ -193,11 +135,6 @@ services:
       - "3004:3004"
     networks:
       - lab-network
-    depends_on:
-      postgres-bot:
-        condition: service_healthy
-      postgres-labsis:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3004/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
       interval: 30s
@@ -217,7 +154,7 @@ services:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: 3005
       # Database lis_bot_comunicacion
-      DB_HOST: postgres-bot
+      DB_HOST: ${DB_HOST:-host.docker.internal}
       DB_PORT: 5432
       DB_NAME: lis_bot_comunicacion
       DB_USER: labsis
@@ -251,11 +188,8 @@ services:
       - "3006:3006"
     networks:
       - lab-network
-    depends_on:
-      postgres-bot:
-        condition: service_healthy
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3005/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3005/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -291,7 +225,7 @@ services:
       - results-api
       - messaging-bot
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/health"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1/health"]
       interval: 30s
       timeout: 3s
       retries: 3
@@ -310,12 +244,6 @@ networks:
 # Volumes
 # ==========================================
 volumes:
-  # PostgreSQL data
-  postgres-labsis-data:
-    driver: local
-  postgres-bot-data:
-    driver: local
-
   # Sync Service
   sync-data:
     driver: local

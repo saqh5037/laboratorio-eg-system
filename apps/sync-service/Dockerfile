@@ -27,7 +27,7 @@ COPY package*.json ./
 
 # Install production dependencies
 # better-sqlite3 requires native compilation
-RUN npm ci --only=production && \
+RUN npm install --omit=dev && \
     npm cache clean --force
 
 # ==========================================
