@@ -1,10 +1,11 @@
 import { createContext, useState, useEffect, useCallback } from 'react';
 import { getAllConfig, getGroupedConfig } from '../services/configApi';
+import { config as envConfig } from '../config/env.js';
 
 export const SystemConfigContext = createContext(null);
 
-// Config API URL
-const CONFIG_API_URL = import.meta.env.VITE_CONFIG_API_URL || 'http://localhost:3005';
+// Config API URL (usa configuración validada)
+const CONFIG_API_URL = envConfig.VITE_CONFIG_API_URL;
 
 /**
  * Provider de configuración del sistema
@@ -253,7 +254,7 @@ export function SystemConfigProvider({ children }) {
    * Actualiza tanto config como tema
    */
   useEffect(() => {
-    const pollInterval = parseInt(import.meta.env.VITE_CONFIG_POLL_INTERVAL) || 30000;
+    const pollInterval = parseInt(envConfig.VITE_CONFIG_POLL_INTERVAL);
 
     const interval = setInterval(() => {
       console.log('🔄 Actualizando configuración y tema (polling)...');
