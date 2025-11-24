@@ -215,12 +215,17 @@ async function obtenerLogoLaboratorio() {
 
 /**
  * Obtiene la información del laboratorio desde la base de datos
+ * IMPORTANTE: La base de datos Labsis tiene el campo 'direccion' en formato multilínea:
+ * Línea 1: Dirección física
+ * Línea 2: Teléfonos
+ * Línea 3+: RIF y otros datos
  */
 async function obtenerInfoLaboratorio() {
   try {
-    // Consultar información del laboratorio
+    // Consultar SOLO las columnas que existen en el esquema Labsis
+    // NOTA: telefono y email NO existen como columnas separadas
     const result = await pool.query(`
-      SELECT nombre, direccion, telefono, rif, email
+      SELECT nombre, direccion, rif
       FROM laboratorio
       WHERE id = 1
     `);
@@ -238,15 +243,38 @@ async function obtenerInfoLaboratorio() {
 
     const lab = result.rows[0];
 
-    return {
+    // Parsear el campo direccion que contiene:
+    // "Av. Libertador Edf. Majestic Piso 1 Ofc. 18\n     762.05.61 763.59.09 763.66.28\n     Rif. J-40..."
+    let direccionLimpia = lab.direccion || '';
+    let telefono = '';
+
+    // Separar por líneas y limpiar espacios
+    const lines = direccionLimpia.split('\n').map(l => l.trim()).filter(l => l);
+
+    if (lines.length >= 2) {
+      direccionLimpia = lines[0]; // Primera línea: dirección física
+      telefono = lines[1];        // Segunda línea: números de teléfono
+    }
+
+    const labInfo = {
       nombre: lab.nombre || 'LABORATORIO',
-      direccion: lab.direccion || '',
-      telefono: lab.telefono || '',
+      direccion: direccionLimpia,
+      telefono: telefono,
       rif: lab.rif || '',
-      email: lab.email || ''
+      email: '' // No disponible en esquema Labsis original
     };
+
+    logger.info('[PDF Labsis] Información del laboratorio obtenida exitosamente:', {
+      nombre: labInfo.nombre,
+      direccion: labInfo.direccion,
+      telefono: labInfo.telefono,
+      rif: labInfo.rif
+    });
+
+    return labInfo;
   } catch (error) {
     logger.error('[PDF Labsis] Error al obtener información del laboratorio:', error);
+    logger.error('[PDF Labsis] Stack trace:', error.stack);
     return {
       nombre: 'LABORATORIO',
       direccion: '',
