@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="egGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#A78BFA;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#C4B5FD;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Círculo de fondo con gradiente suave (opcional, se puede quitar) -->
+  <circle cx="100" cy="100" r="95" fill="url(#egGradient)" opacity="0.1"/>
+  
+  <!-- Letra E -->
+  <path d="M 50 60 L 90 60 L 90 70 L 60 70 L 60 95 L 85 95 L 85 105 L 60 105 L 60 130 L 90 130 L 90 140 L 50 140 Z" 
+        fill="url(#egGradient)" 
+        stroke="url(#egGradient)" 
+        stroke-width="2"/>
+  
+  <!-- Letra G -->
+  <path d="M 150 60 Q 110 60 110 100 Q 110 140 150 140 Q 180 140 180 115 L 180 100 L 145 100 L 145 110 L 170 110 L 170 115 Q 170 130 150 130 Q 120 130 120 100 Q 120 70 150 70 Q 175 70 180 85 L 190 80 Q 183 60 150 60 Z" 
+        fill="url(#egGradient)" 
+        stroke="url(#egGradient)" 
+        stroke-width="2"/>
+</svg>
