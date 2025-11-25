@@ -33,6 +33,9 @@ const PORT = config.port;
 // MIDDLEWARE
 // ========================================
 
+// Trust proxy - Necesario para X-Forwarded-For detrás de Nginx
+app.set('trust proxy', 1);
+
 // Security headers - Configurar CSP para permitir imágenes cross-origin
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
