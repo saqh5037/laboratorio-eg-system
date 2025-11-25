@@ -33,8 +33,16 @@ const PORT = config.port;
 // MIDDLEWARE
 // ========================================
 
-// Security headers
-app.use(helmet());
+// Security headers - Configurar CSP para permitir imágenes cross-origin
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      "img-src": ["'self'", "data:", "http:", "https:"],
+    },
+  },
+}));
 
 // CORS - Usar configuración validada
 app.use(cors({
@@ -46,9 +54,12 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Servir archivos estáticos de uploads
+// Servir archivos estáticos de uploads con CORS
 const path = require('path');
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/uploads', cors({
+  origin: config.cors.origins,
+  credentials: true
+}), express.static(path.join(__dirname, '../uploads')));
 
 // Rate limiting - Configuración más permisiva para desarrollo
 const limiter = rateLimit({

@@ -51,7 +51,7 @@ const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 2 * 1024 * 1024 // 2MB máximo para logos
+    fileSize: 5 * 1024 * 1024 // 5MB máximo para logos
   }
 });
 

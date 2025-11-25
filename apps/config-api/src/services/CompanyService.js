@@ -118,7 +118,7 @@ class CompanyService {
       updatedInfo.years_of_experience = currentYear - updatedInfo.founded_year;
 
       // Invalidar caché
-      CacheService.delete(CACHE_KEY);
+      CacheService.del(CACHE_KEY);
       logger.info('Caché de company info invalidado');
 
       // Guardar nuevo valor en caché
@@ -223,7 +223,7 @@ class CompanyService {
    * Invalidar caché de company info
    */
   static invalidateCache() {
-    CacheService.delete(CACHE_KEY);
+    CacheService.del(CACHE_KEY);
     logger.info('Caché de company info invalidado manualmente');
   }
 }

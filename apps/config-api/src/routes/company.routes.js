@@ -106,7 +106,7 @@ router.put('/', authenticateAdmin, async (req, res) => {
 
     const updatedInfo = await CompanyService.updateCompanyInfo(updates);
 
-    logger.info(`Company info actualizado por ${req.adminUser.username}`, {
+    logger.info(`Company info actualizado por ${req.user.username}`, {
       fields: Object.keys(updates)
     });
 
@@ -432,7 +432,7 @@ router.post('/logos/upload', authenticateAdmin, upload, async (req, res) => {
 
     const updatedInfo = await CompanyService.updateCompanyInfo(updates);
 
-    logger.info(`Logo ${logoType} actualizado por ${req.adminUser.username}`, {
+    logger.info(`Logo ${logoType} actualizado por ${req.user.username}`, {
       url: publicUrl,
       filename: optimized.filename
     });
@@ -494,7 +494,7 @@ router.patch('/logos', authenticateAdmin, async (req, res) => {
 
     const updatedInfo = await CompanyService.updateCompanyInfo(updates);
 
-    logger.info(`URLs de logos actualizados por ${req.adminUser.username}`, {
+    logger.info(`URLs de logos actualizados por ${req.user.username}`, {
       fields: Object.keys(updates)
     });
 
@@ -550,7 +550,7 @@ router.delete('/logos/:filename', authenticateAdmin, async (req, res) => {
       });
     }
 
-    logger.info(`Logo eliminado por ${req.adminUser.username}:`, filename);
+    logger.info(`Logo eliminado por ${req.user.username}:`, filename);
 
     res.json({
       success: true,
