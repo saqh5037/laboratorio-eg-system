@@ -147,7 +147,7 @@ export default defineConfig({
         name: 'Sistema de Laboratorio Clínico',
         short_name: 'Lab System',
         description: 'Sistema de gestión de estudios clínicos y análisis de laboratorio',
-        theme_color: '#ffffff',
+        theme_color: '#7B68A6',
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait-primary',
@@ -155,10 +155,22 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
+            src: '/LogoEG.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
+          {
+            src: '/Logo.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
             src: '/favicon.svg',
             sizes: 'any',
             type: 'image/svg+xml',
-            purpose: 'any maskable',
+            purpose: 'any',
           },
         ],
       },

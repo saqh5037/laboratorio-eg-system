@@ -184,6 +184,7 @@ async function prepararDatosConDB(orden, resultados) {
 
 /**
  * Obtiene el logo del laboratorio desde la base de datos
+ * Si falla, usa logo estático como fallback
  */
 async function obtenerLogoLaboratorio() {
   try {
@@ -193,8 +194,8 @@ async function obtenerLogoLaboratorio() {
     const result = await pool.query('SELECT logo FROM laboratorio WHERE id = 1');
 
     if (!result.rows[0] || !result.rows[0].logo) {
-      logger.warn('[PDF Labsis] No se encontró logo en la base de datos');
-      return null;
+      logger.warn('[PDF Labsis] No se encontró logo en la base de datos, usando fallback estático');
+      return await obtenerLogoEstatico();
     }
 
     const logoOID = result.rows[0].logo;
@@ -218,7 +219,29 @@ async function obtenerLogoLaboratorio() {
 
     return logoBase64;
   } catch (error) {
-    logger.error('[PDF Labsis] Error al obtener logo:', error);
+    logger.error('[PDF Labsis] Error al obtener logo desde base de datos:', error);
+    logger.warn('[PDF Labsis] Usando logo estático como fallback');
+    return await obtenerLogoEstatico();
+  }
+}
+
+/**
+ * Obtiene el logo estático desde el directorio de assets
+ * Se usa como fallback cuando no se puede obtener el logo de la base de datos
+ */
+async function obtenerLogoEstatico() {
+  try {
+    const path = require('path');
+    const logoPath = path.join(__dirname, '../assets/logoEG.png');
+    logger.info(`[PDF Labsis] Cargando logo estático desde: ${logoPath}`);
+
+    const logoBuffer = await fs.readFile(logoPath);
+    const logoBase64 = `data:image/png;base64,${logoBuffer.toString('base64')}`;
+
+    logger.info(`[PDF Labsis] Logo estático cargado exitosamente, tamaño: ${logoBuffer.length} bytes`);
+    return logoBase64;
+  } catch (error) {
+    logger.error('[PDF Labsis] Error al cargar logo estático:', error);
     logger.error('[PDF Labsis] Stack trace:', error.stack);
     return null;
   }
