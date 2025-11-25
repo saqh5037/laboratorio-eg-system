@@ -164,6 +164,7 @@ services:
       DB_NAME: ${DB_NAME_BOT:-lis_bot_comunicacion}
       DB_USER: labsis
       DB_PASSWORD: ${DB_PASSWORD:-labsis}
+      CONTROL_DB: ${CONTROL_DB:-${DB_NAME_BOT}}
       DB_MAX_CONNECTIONS: ${DB_MAX_CONNECTIONS:-20}
       DB_SSL: "false"
       # Auth
