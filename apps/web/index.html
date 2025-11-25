@@ -2,7 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link id="favicon-link" rel="icon" type="image/png" href="/LogoEG.png" />
+    <link id="favicon-link" rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- PWA Meta Tags (Dinámicos) -->
@@ -39,10 +39,10 @@
     <meta id="twitter-image" name="twitter:image" content="/Logo.png" />
 
     <!-- PWA Icons (Dinámicos) -->
-    <link id="apple-touch-icon" rel="apple-touch-icon" sizes="180x180" href="/LogoEG.png" />
-    <link id="icon-32" rel="icon" type="image/png" sizes="32x32" href="/LogoEG.png" />
-    <link id="icon-16" rel="icon" type="image/png" sizes="16x16" href="/LogoEG.png" />
-    <link id="mask-icon" rel="mask-icon" href="/LogoEG.png" color="#7B68A6" />
+    <link id="apple-touch-icon" rel="apple-touch-icon" sizes="180x180" href="/favicon.svg" />
+    <link id="icon-32" rel="icon" type="image/png" sizes="32x32" href="/favicon.svg" />
+    <link id="icon-16" rel="icon" type="image/png" sizes="16x16" href="/favicon.svg" />
+    <link id="mask-icon" rel="mask-icon" href="/favicon.svg" color="#7B68A6" />
 
     <!-- PWA Manifest (Dinámico desde API) -->
     <link rel="manifest" href="%VITE_CONFIG_API_URL%/api/pwa/manifest" />
@@ -165,7 +165,7 @@
         updateMeta('twitter-image', company.og_image_url || '/Logo.png');
 
         // Update Favicon dinámicamente
-        const faviconUrl = company.favicon_url || '/LogoEG.png';
+        const faviconUrl = company.favicon_url || '/favicon.svg';
         const updateFavicon = (id, href) => {
           const el = document.getElementById(id);
           if (el) el.setAttribute('href', href);

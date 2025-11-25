@@ -29,13 +29,13 @@ router.get('/manifest', async (req, res) => {
 
       icons: [
         {
-          src: '/LogoEG.png',
+          src: companyInfo.logo_icon_url || '/LogoEG.png',
           sizes: '192x192',
           type: 'image/png',
           purpose: 'any maskable'
         },
         {
-          src: '/Logo.png',
+          src: companyInfo.logo_full_url || '/Logo.png',
           sizes: '512x512',
           type: 'image/png',
           purpose: 'any'
@@ -48,14 +48,14 @@ router.get('/manifest', async (req, res) => {
           short_name: 'Estudios',
           description: 'Ver directorio de estudios',
           url: '/estudios',
-          icons: [{ src: '/LogoEG.png', sizes: '192x192' }]
+          icons: [{ src: companyInfo.logo_icon_url || '/LogoEG.png', sizes: '192x192' }]
         },
         {
           name: 'Resultados',
           short_name: 'Resultados',
           description: 'Consultar resultados',
           url: '/resultados',
-          icons: [{ src: '/LogoEG.png', sizes: '192x192' }]
+          icons: [{ src: companyInfo.logo_icon_url || '/LogoEG.png', sizes: '192x192' }]
         }
       ],
 

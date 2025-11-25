@@ -3,8 +3,10 @@ import { useCompanyInfo } from '../../hooks/useCompanyInfo';
 import { useAdminAuth } from '../../hooks/useAdminAuth';
 import {
   Building2, Mail, Phone, MapPin, Clock, Share2, Search, Globe,
-  Smartphone, Save, RefreshCw, AlertCircle, CheckCircle, Loader2, Image
+  Smartphone, Save, RefreshCw, AlertCircle, CheckCircle, Loader2, Image, Upload
 } from 'lucide-react';
+
+const CONFIG_API_URL = import.meta.env.VITE_CONFIG_API_URL || 'http://localhost:3005';
 
 const CompanyInfoManager = () => {
   const { companyInfo, loading, error, updateCompanyInfo, fetchCompanyInfo } = useCompanyInfo();
@@ -15,6 +17,7 @@ const CompanyInfoManager = () => {
   const [saveMessage, setSaveMessage] = useState(null);
   const [activeTab, setActiveTab] = useState('identity');
   const [hasChanges, setHasChanges] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({});
 
   // Cargar datos iniciales
   useEffect(() => {
@@ -54,6 +57,84 @@ const CompanyInfoManager = () => {
     if (companyInfo) {
       setFormData(companyInfo);
       setHasChanges(false);
+    }
+  };
+
+  const handleLogoUpload = async (event, logoType) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validar tamaño (2MB max)
+    if (file.size > 2 * 1024 * 1024) {
+      setSaveMessage({ type: 'error', text: 'El archivo es muy grande. Máximo 2MB.' });
+      return;
+    }
+
+    // Validar tipo
+    const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml'];
+    if (!validTypes.includes(file.type)) {
+      setSaveMessage({ type: 'error', text: 'Formato no válido. Use PNG, JPG, WebP o SVG.' });
+      return;
+    }
+
+    try {
+      setUploadProgress(prev => ({ ...prev, [logoType]: 0 }));
+
+      const formDataUpload = new FormData();
+      formDataUpload.append('file', file);
+      formDataUpload.append('type', logoType);
+
+      const response = await fetch(`${CONFIG_API_URL}/api/company/logos/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formDataUpload
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Error al subir logo');
+      }
+
+      const result = await response.json();
+
+      // Actualizar formData con la nueva URL
+      const fieldMap = {
+        'logo_full': 'logo_full_url',
+        'logo_icon': 'logo_icon_url',
+        'logo_horizontal': 'logo_horizontal_url',
+        'favicon': 'favicon_url'
+      };
+
+      const field = fieldMap[logoType];
+      if (field && result.data?.url) {
+        handleInputChange(field, CONFIG_API_URL + result.data.url);
+      }
+
+      // Actualizar desde servidor para reflejar cambios
+      await fetchCompanyInfo();
+
+      setUploadProgress(prev => ({ ...prev, [logoType]: 100 }));
+      setSaveMessage({ type: 'success', text: 'Logo subido correctamente' });
+
+      // Limpiar progreso después de 2 segundos
+      setTimeout(() => {
+        setUploadProgress(prev => {
+          const newProgress = { ...prev };
+          delete newProgress[logoType];
+          return newProgress;
+        });
+      }, 2000);
+
+    } catch (err) {
+      console.error('Error uploading logo:', err);
+      setSaveMessage({ type: 'error', text: err.message || 'Error al subir logo' });
+      setUploadProgress(prev => {
+        const newProgress = { ...prev };
+        delete newProgress[logoType];
+        return newProgress;
+      });
     }
   };
 
@@ -236,50 +317,163 @@ const CompanyInfoManager = () => {
               <h3 className="text-lg font-semibold mb-4">Logos e Imágenes</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
+                  {/* Logo Completo */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">URL Logo Completo</label>
-                    <input
-                      type="text"
-                      value={formData.logo_full_url || ''}
-                      onChange={(e) => handleInputChange('logo_full_url', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-                      placeholder="/Logo.png"
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Logo Completo</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={formData.logo_full_url || ''}
+                        onChange={(e) => handleInputChange('logo_full_url', e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                        placeholder="/Logo.png"
+                      />
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                          onChange={(e) => handleLogoUpload(e, 'logo_full')}
+                          className="hidden"
+                        />
+                        <div className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark flex items-center gap-2">
+                          {uploadProgress.logo_full !== undefined ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Upload className="w-4 h-4" />
+                          )}
+                          Subir
+                        </div>
+                      </label>
+                    </div>
+                    {uploadProgress.logo_full !== undefined && (
+                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div
+                          className="bg-primary h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${uploadProgress.logo_full}%` }}
+                        />
+                      </div>
+                    )}
                     <p className="text-xs text-gray-500 mt-1">Logo principal para footer y páginas completas</p>
                   </div>
+
+                  {/* Logo Icono */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">URL Logo Icono</label>
-                    <input
-                      type="text"
-                      value={formData.logo_icon_url || ''}
-                      onChange={(e) => handleInputChange('logo_icon_url', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-                      placeholder="/LogoMicrotec.svg"
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Logo Icono</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={formData.logo_icon_url || ''}
+                        onChange={(e) => handleInputChange('logo_icon_url', e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                        placeholder="/LogoEG.png"
+                      />
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                          onChange={(e) => handleLogoUpload(e, 'logo_icon')}
+                          className="hidden"
+                        />
+                        <div className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark flex items-center gap-2">
+                          {uploadProgress.logo_icon !== undefined ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Upload className="w-4 h-4" />
+                          )}
+                          Subir
+                        </div>
+                      </label>
+                    </div>
+                    {uploadProgress.logo_icon !== undefined && (
+                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div
+                          className="bg-primary h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${uploadProgress.logo_icon}%` }}
+                        />
+                      </div>
+                    )}
                     <p className="text-xs text-gray-500 mt-1">Isotipo/icono para header móvil y favicons</p>
                   </div>
+
+                  {/* Logo Horizontal */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">URL Logo Horizontal</label>
-                    <input
-                      type="text"
-                      value={formData.logo_horizontal_url || ''}
-                      onChange={(e) => handleInputChange('logo_horizontal_url', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-                      placeholder="/Logo.png"
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Logo Horizontal</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={formData.logo_horizontal_url || ''}
+                        onChange={(e) => handleInputChange('logo_horizontal_url', e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                        placeholder="/Logo.png"
+                      />
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                          onChange={(e) => handleLogoUpload(e, 'logo_horizontal')}
+                          className="hidden"
+                        />
+                        <div className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark flex items-center gap-2">
+                          {uploadProgress.logo_horizontal !== undefined ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Upload className="w-4 h-4" />
+                          )}
+                          Subir
+                        </div>
+                      </label>
+                    </div>
+                    {uploadProgress.logo_horizontal !== undefined && (
+                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div
+                          className="bg-primary h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${uploadProgress.logo_horizontal}%` }}
+                        />
+                      </div>
+                    )}
                     <p className="text-xs text-gray-500 mt-1">Versión horizontal para header desktop</p>
                   </div>
+
+                  {/* Favicon */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">URL Favicon</label>
-                    <input
-                      type="text"
-                      value={formData.favicon_url || ''}
-                      onChange={(e) => handleInputChange('favicon_url', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-                      placeholder="/favicon.svg"
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Favicon</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={formData.favicon_url || ''}
+                        onChange={(e) => handleInputChange('favicon_url', e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                        placeholder="/favicon.svg"
+                      />
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                          onChange={(e) => handleLogoUpload(e, 'favicon')}
+                          className="hidden"
+                        />
+                        <div className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark flex items-center gap-2">
+                          {uploadProgress.favicon !== undefined ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Upload className="w-4 h-4" />
+                          )}
+                          Subir
+                        </div>
+                      </label>
+                    </div>
+                    {uploadProgress.favicon !== undefined && (
+                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div
+                          className="bg-primary h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${uploadProgress.favicon}%` }}
+                        />
+                      </div>
+                    )}
                     <p className="text-xs text-gray-500 mt-1">Icono del navegador (preferiblemente SVG)</p>
                   </div>
+
+                  {/* Texto Alternativo */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Texto Alternativo del Logo</label>
                     <input
@@ -292,6 +486,7 @@ const CompanyInfoManager = () => {
                     <p className="text-xs text-gray-500 mt-1">Texto para accesibilidad (alt attribute)</p>
                   </div>
                 </div>
+
                 <div className="space-y-4">
                   <h4 className="text-md font-medium text-gray-700">Vista Previa</h4>
                   <div className="bg-gray-50 p-4 rounded-lg space-y-4">
@@ -307,7 +502,7 @@ const CompanyInfoManager = () => {
                     <div>
                       <p className="text-xs text-gray-500 mb-2">Logo Icono:</p>
                       <img
-                        src={formData.logo_icon_url || '/LogoMicrotec.svg'}
+                        src={formData.logo_icon_url || '/LogoEG.png'}
                         alt="Logo icono"
                         className="h-12 object-contain"
                         onError={(e) => { e.target.style.display = 'none'; }}
@@ -323,10 +518,17 @@ const CompanyInfoManager = () => {
                       />
                     </div>
                   </div>
-                  <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-md">
-                    <p className="text-sm text-yellow-800">
-                      <strong>Nota:</strong> Las imágenes deben estar en la carpeta public/ del proyecto web
-                      o ser URLs absolutas válidas.
+                  <div className="bg-blue-50 border border-blue-200 p-3 rounded-md">
+                    <p className="text-sm text-blue-800">
+                      <strong>Instrucciones:</strong> Puede subir logos usando el botón "Subir" o pegar URLs manualmente.
+                      Los logos se optimizarán automáticamente al subirlos.
+                    </p>
+                  </div>
+                  <div className="bg-gray-50 border border-gray-200 p-3 rounded-md">
+                    <p className="text-xs text-gray-600">
+                      <strong>Formatos aceptados:</strong> PNG, JPG, WebP, SVG<br />
+                      <strong>Tamaño máximo:</strong> 2MB<br />
+                      <strong>Recomendado:</strong> 512x512px
                     </p>
                   </div>
                 </div>

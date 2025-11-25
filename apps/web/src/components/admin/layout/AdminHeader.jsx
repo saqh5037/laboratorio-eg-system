@@ -29,11 +29,19 @@ export default function AdminHeader({ onToggleSidebar }) {
           </button>
 
           <Link to="/admin" className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-eg-purple to-eg-pink flex items-center justify-center">
-              <span className="text-white font-bold text-sm">
-                {companyInfo?.short_name?.substring(0, 3) || 'LEG'}
-              </span>
-            </div>
+            {companyInfo?.logo_icon_url ? (
+              <img
+                src={companyInfo.logo_icon_url}
+                alt={companyInfo.logo_alt_text || companyInfo.short_name || 'Admin'}
+                className="w-8 h-8 object-contain"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-eg-purple to-eg-pink flex items-center justify-center">
+                <span className="text-white font-bold text-sm">
+                  {companyInfo?.short_name?.substring(0, 3) || 'LEG'}
+                </span>
+              </div>
+            )}
             <div className="hidden sm:block">
               <h1 className="text-lg font-semibold text-gray-800">
                 Admin Panel

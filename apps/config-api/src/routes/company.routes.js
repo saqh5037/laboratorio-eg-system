@@ -3,6 +3,7 @@ const router = express.Router();
 const CompanyService = require('../services/CompanyService');
 const { authenticateAdmin } = require('../middleware/adminAuth');
 const logger = require('../utils/logger');
+const { upload, LogoUploadService } = require('../services/LogoUploadService');
 
 /**
  * GET /api/company
@@ -361,6 +362,205 @@ router.post('/cache/invalidate', authenticateAdmin, async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Error al invalidar caché'
+    });
+  }
+});
+
+/**
+ * POST /api/company/logos/upload
+ * Upload de logos (admin only)
+ * Soporta: logo_full, logo_icon, logo_horizontal, favicon
+ */
+router.post('/logos/upload', authenticateAdmin, upload, async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: 'No se proporcionó ningún archivo'
+      });
+    }
+
+    const logoType = req.body.type || 'logo'; // logo_full, logo_icon, logo_horizontal, favicon
+    const filePath = req.file.path;
+    const filename = req.file.filename;
+
+    logger.info('Logo recibido para upload:', {
+      type: logoType,
+      filename,
+      size: req.file.size,
+      mimetype: req.file.mimetype
+    });
+
+    // Validar logo
+    const validation = await LogoUploadService.validateLogo(filePath, logoType);
+    if (!validation.valid) {
+      // Si la validación falla, eliminar el archivo
+      await LogoUploadService.deleteLogo(filename);
+
+      return res.status(400).json({
+        success: false,
+        error: 'Logo no válido',
+        details: validation.errors
+      });
+    }
+
+    // Optimizar logo
+    const optimized = await LogoUploadService.optimizeLogo(filePath, filename, logoType);
+
+    // Obtener URL pública
+    const publicUrl = LogoUploadService.getPublicUrl(optimized.filename);
+
+    // Mapear tipo de logo a campo de BD
+    const fieldMap = {
+      'logo_full': 'logo_full_url',
+      'logo_icon': 'logo_icon_url',
+      'logo_horizontal': 'logo_horizontal_url',
+      'favicon': 'favicon_url'
+    };
+
+    const field = fieldMap[logoType];
+    if (!field) {
+      return res.status(400).json({
+        success: false,
+        error: 'Tipo de logo no válido. Use: logo_full, logo_icon, logo_horizontal, favicon'
+      });
+    }
+
+    // Actualizar en la base de datos
+    const updates = {};
+    updates[field] = publicUrl;
+
+    const updatedInfo = await CompanyService.updateCompanyInfo(updates);
+
+    logger.info(`Logo ${logoType} actualizado por ${req.adminUser.username}`, {
+      url: publicUrl,
+      filename: optimized.filename
+    });
+
+    res.json({
+      success: true,
+      message: 'Logo subido y actualizado correctamente',
+      data: {
+        type: logoType,
+        field,
+        url: publicUrl,
+        filename: optimized.filename,
+        optimized: optimized.optimized,
+        company: updatedInfo
+      }
+    });
+  } catch (error) {
+    logger.error('Error en POST /api/company/logos/upload:', error);
+
+    // Intentar limpiar archivo si existe
+    if (req.file) {
+      try {
+        await LogoUploadService.deleteLogo(req.file.filename);
+      } catch (cleanupError) {
+        logger.warn('No se pudo limpiar archivo después de error:', cleanupError);
+      }
+    }
+
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Error al subir logo'
+    });
+  }
+});
+
+/**
+ * PATCH /api/company/logos
+ * Actualizar URLs de logos manualmente (admin only)
+ * Para cuando el usuario quiere usar URLs externas
+ */
+router.patch('/logos', authenticateAdmin, async (req, res) => {
+  try {
+    const { logo_full_url, logo_icon_url, logo_horizontal_url, favicon_url, logo_alt_text } = req.body;
+
+    const updates = {};
+
+    if (logo_full_url !== undefined) updates.logo_full_url = logo_full_url;
+    if (logo_icon_url !== undefined) updates.logo_icon_url = logo_icon_url;
+    if (logo_horizontal_url !== undefined) updates.logo_horizontal_url = logo_horizontal_url;
+    if (favicon_url !== undefined) updates.favicon_url = favicon_url;
+    if (logo_alt_text !== undefined) updates.logo_alt_text = logo_alt_text;
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'No se proporcionaron URLs de logos para actualizar'
+      });
+    }
+
+    const updatedInfo = await CompanyService.updateCompanyInfo(updates);
+
+    logger.info(`URLs de logos actualizados por ${req.adminUser.username}`, {
+      fields: Object.keys(updates)
+    });
+
+    res.json({
+      success: true,
+      message: 'URLs de logos actualizados',
+      data: updatedInfo
+    });
+  } catch (error) {
+    logger.error('Error en PATCH /api/company/logos:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Error al actualizar URLs de logos'
+    });
+  }
+});
+
+/**
+ * GET /api/company/logos/list
+ * Listar todos los logos subidos (admin only)
+ */
+router.get('/logos/list', authenticateAdmin, async (req, res) => {
+  try {
+    const logos = await LogoUploadService.listLogos();
+
+    res.json({
+      success: true,
+      data: logos
+    });
+  } catch (error) {
+    logger.error('Error en GET /api/company/logos/list:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al listar logos'
+    });
+  }
+});
+
+/**
+ * DELETE /api/company/logos/:filename
+ * Eliminar un logo subido (admin only)
+ */
+router.delete('/logos/:filename', authenticateAdmin, async (req, res) => {
+  try {
+    const { filename } = req.params;
+
+    const deleted = await LogoUploadService.deleteLogo(filename);
+
+    if (!deleted) {
+      return res.status(404).json({
+        success: false,
+        error: 'Logo no encontrado'
+      });
+    }
+
+    logger.info(`Logo eliminado por ${req.adminUser.username}:`, filename);
+
+    res.json({
+      success: true,
+      message: 'Logo eliminado correctamente'
+    });
+  } catch (error) {
+    logger.error('Error en DELETE /api/company/logos/:filename:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al eliminar logo'
     });
   }
 });

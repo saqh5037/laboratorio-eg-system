@@ -64,7 +64,8 @@ class CompanyService {
         'og_image_url', 'og_type', 'og_locale',
         'pwa_name', 'pwa_short_name', 'pwa_description',
         'privacy_policy_url', 'terms_of_service_url', 'cookies_policy_url',
-        'copyright_template', 'certifications'
+        'copyright_template', 'certifications',
+        'logo_full_url', 'logo_icon_url', 'logo_horizontal_url', 'favicon_url', 'logo_alt_text'
       ];
 
       const filteredUpdates = {};
