@@ -140,9 +140,11 @@ async function prepararDatosConDB(orden, resultados) {
 
   // Obtener logo del laboratorio desde DB
   const logoBase64 = await obtenerLogoLaboratorio();
+  logger.info(`[PDF Labsis] Logo obtenido para PDF: ${logoBase64 ? 'SI' : 'NO'}`);
 
   // Obtener información del laboratorio desde DB
   const labInfo = await obtenerInfoLaboratorio();
+  logger.info(`[PDF Labsis] Info laboratorio: ${labInfo.nombre}`);
 
   // Generar QR code con URL al portal de resultados (igual que Labsis)
   const portalUrl = process.env.PORTAL_URL || 'http://localhost:5173';
@@ -185,6 +187,8 @@ async function prepararDatosConDB(orden, resultados) {
  */
 async function obtenerLogoLaboratorio() {
   try {
+    logger.info('[PDF Labsis] Iniciando obtención de logo desde base de datos');
+
     // Consultar el OID del logo
     const result = await pool.query('SELECT logo FROM laboratorio WHERE id = 1');
 
@@ -194,14 +198,20 @@ async function obtenerLogoLaboratorio() {
     }
 
     const logoOID = result.rows[0].logo;
+    logger.info(`[PDF Labsis] Logo OID encontrado: ${logoOID}`);
 
     // Exportar el logo a un archivo temporal
     const tempPath = `/tmp/logo-${Date.now()}.png`;
+    logger.info(`[PDF Labsis] Exportando logo a: ${tempPath}`);
     await pool.query(`SELECT lo_export($1, $2)`, [logoOID, tempPath]);
 
     // Leer el archivo y convertirlo a base64
     const logoBuffer = await fs.readFile(tempPath);
+    logger.info(`[PDF Labsis] Logo leído, tamaño: ${logoBuffer.length} bytes`);
+
     const logoBase64 = `data:image/png;base64,${logoBuffer.toString('base64')}`;
+    const base64Length = logoBase64.length;
+    logger.info(`[PDF Labsis] Logo convertido a base64, tamaño: ${base64Length} caracteres`);
 
     // Eliminar archivo temporal
     await fs.unlink(tempPath).catch(() => {});
@@ -209,6 +219,7 @@ async function obtenerLogoLaboratorio() {
     return logoBase64;
   } catch (error) {
     logger.error('[PDF Labsis] Error al obtener logo:', error);
+    logger.error('[PDF Labsis] Stack trace:', error.stack);
     return null;
   }
 }
