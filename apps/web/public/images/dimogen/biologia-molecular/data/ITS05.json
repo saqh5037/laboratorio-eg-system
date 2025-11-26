@@ -1,0 +1,52 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "PANEL DE ITS 2",
+    "descripcion": "Detecta y diferencia 2 de los agentes causales más comunes de las infecciones de transmisión sexual: Chlamydia trachomatis y Neisseria gonorrhoeae.",
+    "precio": 1455.00,
+    "moneda": "USD",
+    "codigo": "ITS05",
+    "patogenosIncluidos": [
+      "Chlamydia trachomatis",
+      "Neisseria gonorrhoeae"
+    ]
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Exudado vaginal/uretral",
+    "tiempoEntrega": "1 Día hábil",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {
+      "archivo": "pages/DimogenBiologiaMolecular-16.png",
+      "descripcion": "Página completa del catálogo"
+    },
+    "recursos": [
+      {
+        "archivo": "assets/ITS05-panel-its-patogenos.jpg",
+        "tipo": "ilustracion-3d",
+        "descripcion": "Ilustración 3D de diversos patógenos de transmisión sexual. Representación colorida de bacterias y virus causantes de ITS, mostrando diferentes morfologías incluyendo diplococos, bacilos y partículas virales.",
+        "altText": "Ilustración 3D de patógenos causantes de infecciones de transmisión sexual",
+        "aptoParaWeb": true
+      }
+    ]
+  },
+  "informacionAdicional": {
+    "queEs": "El Panel de ITS 2 es una prueba molecular multiplex que detecta simultáneamente los dos agentes bacterianos más comunes de las infecciones de transmisión sexual: Chlamydia trachomatis y Neisseria gonorrhoeae. Esta combinación es particularmente útil porque ambas infecciones frecuentemente coexisten y pueden ser asintomáticas.",
+    "paraQuienEsRecomendada": "Tamizaje de mujeres sexualmente activas menores de 25 años. Personas con síntomas de uretritis, cervicitis o proctitis. Contactos sexuales de casos confirmados de clamidia o gonorrea. Personas con otras ITS diagnosticadas. Mujeres embarazadas en su primera visita prenatal. Personas que solicitan pruebas de ITS.",
+    "preparacion": "No requiere ayuno. Evitar relaciones sexuales 24-48 horas antes. No usar duchas vaginales ni medicamentos vaginales 24 horas antes. No orinar al menos 1 hora antes de la toma de muestra uretral en hombres.",
+    "interpretacionResultados": {
+      "positivo": "El resultado indica qué patógeno(s) fueron detectados. Puede ser positivo para uno o ambos. El tratamiento debe cubrir los patógenos identificados. Si ambos son positivos, se usa tratamiento dual. Las parejas sexuales deben ser evaluadas y tratadas.",
+      "negativo": "No se detectó ADN de Chlamydia trachomatis ni Neisseria gonorrhoeae. Si persisten los síntomas, considerar otras causas de ITS o repetir la prueba."
+    },
+    "frecuenciaRecomendada": "Anual para mujeres sexualmente activas menores de 25 años. Según factores de riesgo para otros grupos. Al inicio de nueva relación sexual o con múltiples parejas.",
+    "notasClinicas": "La coinfección por clamidia y gonorrea ocurre en hasta 40% de los casos. Ambas infecciones pueden ser asintomáticas, especialmente en mujeres. El panel ahorra tiempo y costo comparado con pruebas individuales. Es la combinación de tamizaje más recomendada por guías internacionales."
+  },
+  "metadatos": {
+    "paginaOriginal": 15,
+    "archivoOrigen": "DimogenBiologíaMolecular-16.pdf",
+    "fechaExtraccion": "2025-11-25"
+  }
+}

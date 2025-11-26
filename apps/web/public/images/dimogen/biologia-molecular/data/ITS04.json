@@ -1,0 +1,47 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "PANEL DE ITS 7",
+    "descripcion": "Detecta y diferencia 7 de los agentes causales de las infecciones de transmisión sexual.",
+    "precio": 1725.00,
+    "moneda": "USD",
+    "codigo": "ITS04",
+    "patogenosIncluidos": [
+      "Chlamydia trachomatis",
+      "Mycoplasma genitalium",
+      "Mycoplasma hominis",
+      "Neisseria gonorrhoeae",
+      "Trichomonas vaginalis",
+      "Ureaplasma parvum",
+      "Ureaplasma urealyticum"
+    ]
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Exudado vaginal/uretral",
+    "tiempoEntrega": "5 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-18.png"},
+    "recursos": [{
+      "archivo": "assets/ITS04-panel-its7-patogenos.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D de múltiples patógenos de transmisión sexual.",
+      "altText": "Panel de 7 patógenos de ITS",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "El Panel de ITS 7 es el más completo para patógenos bacterianos y protozoarios de ITS. Incluye los 4 más comunes más micoplasmas y ureaplasmas, microorganismos asociados con vaginosis bacteriana, uretritis y complicaciones del embarazo.",
+    "paraQuienEsRecomendada": "Evaluación completa de ITS. Vaginosis bacteriana recurrente. Uretritis persistente o recurrente. Infertilidad de causa no determinada. Mujeres con parto prematuro previo.",
+    "preparacion": "No requiere ayuno. Evitar relaciones sexuales 24-48 horas antes.",
+    "interpretacionResultados": {
+      "positivo": "Identifica específicamente cuál(es) patógeno(s) está presente. Los ureaplasmas pueden ser colonizadores normales; interpretar en contexto clínico.",
+      "negativo": "No se detectaron ninguno de los 7 patógenos."
+    },
+    "notasClinicas": "Ureaplasma y Mycoplasma hominis pueden ser parte de la flora normal en bajo número. Su significado clínico depende del contexto."
+  },
+  "metadatos": {"paginaOriginal": 17, "archivoOrigen": "DimogenBiologíaMolecular-18.pdf", "fechaExtraccion": "2025-11-25"}
+}

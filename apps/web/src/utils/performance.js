@@ -144,28 +144,51 @@ class PerformanceMonitor {
 
   createObserver(type, callback) {
     try {
+      // Check if this entry type is supported (iOS Safari compatibility)
+      if ('supportedEntryTypes' in PerformanceObserver) {
+        const supported = PerformanceObserver.supportedEntryTypes;
+        if (!supported || !supported.includes(type)) {
+          if (process.env.NODE_ENV === 'development') {
+            console.warn(`PerformanceObserver type '${type}' not supported on this browser`);
+          }
+          return;
+        }
+      }
+
       const observer = new PerformanceObserver((list) => {
         callback(list.getEntries());
       });
-      
+
       observer.observe({ type, buffered: true });
       this.observers.push(observer);
     } catch (error) {
-      console.warn(`Could not observe ${type}:`, error);
+      // Silent fail for unsupported types in production
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(`Could not observe ${type}:`, error);
+      }
     }
   }
 
   estimateTTI() {
     // Estimación simple de TTI basada en cuando no hay tareas largas
     requestIdleCallback(() => {
-      const longTasks = performance.getEntriesByType('longtask');
-      const lastLongTask = longTasks[longTasks.length - 1];
-      
-      this.metrics.vitals.tti = lastLongTask 
-        ? lastLongTask.startTime + lastLongTask.duration
-        : performance.timing.domContentLoadedEventEnd;
-        
-      this.logMetric('TTI (estimated)', this.metrics.vitals.tti);
+      try {
+        // longtask API not supported in iOS Safari
+        const longTasks = performance.getEntriesByType ?
+          (performance.getEntriesByType('longtask') || []) : [];
+        const lastLongTask = longTasks[longTasks.length - 1];
+
+        this.metrics.vitals.tti = lastLongTask
+          ? lastLongTask.startTime + lastLongTask.duration
+          : (performance.timing?.domContentLoadedEventEnd || Date.now());
+
+        this.logMetric('TTI (estimated)', this.metrics.vitals.tti);
+      } catch (error) {
+        // Silent fail - longtask API not available
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Could not estimate TTI:', error);
+        }
+      }
     });
   }
 

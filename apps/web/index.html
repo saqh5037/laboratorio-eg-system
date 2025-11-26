@@ -2,7 +2,8 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link id="favicon-link" rel="icon" type="image/png" href="/LogoEG.png" />
+    <link id="favicon-link" rel="icon" type="image/x-icon" href="/favicon.ico?v=4" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=4" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- PWA Meta Tags (Dinámicos) -->
@@ -39,13 +40,13 @@
     <meta id="twitter-image" name="twitter:image" content="/Logo.png" />
 
     <!-- PWA Icons (Dinámicos) -->
-    <link id="apple-touch-icon" rel="apple-touch-icon" sizes="180x180" href="/LogoEG.png" />
-    <link id="icon-32" rel="icon" type="image/png" sizes="32x32" href="/LogoEG.png" />
-    <link id="icon-16" rel="icon" type="image/png" sizes="16x16" href="/LogoEG.png" />
-    <link id="mask-icon" rel="mask-icon" href="/LogoEG.png" color="#7B68A6" />
+    <link id="apple-touch-icon" rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link id="icon-32" rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link id="icon-16" rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link id="mask-icon" rel="mask-icon" href="/favicon.svg" color="#0047CB" />
 
     <!-- PWA Manifest (Dinámico desde API) -->
-    <link rel="manifest" href="http://localhost:3005/api/pwa/manifest" />
+    <link rel="manifest" href="%VITE_CONFIG_API_URL%/api/pwa/manifest" />
 
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -115,9 +116,9 @@
     <script>
     (async function() {
       try {
-        const apiUrl = window.location.hostname === 'localhost'
-          ? 'http://localhost:3005/api/company'
-          : `${window.location.origin}/api/company`;
+        // IMPORTANTE: Usar variable de entorno en lugar de detectar localhost
+        // Esto permite que funcione tanto en desarrollo como en Docker
+        const apiUrl = '%VITE_CONFIG_API_URL%/api/company';
 
         const response = await fetch(apiUrl);
         if (!response.ok) throw new Error('API no disponible');
@@ -165,7 +166,7 @@
         updateMeta('twitter-image', company.og_image_url || '/Logo.png');
 
         // Update Favicon dinámicamente
-        const faviconUrl = company.favicon_url || '/LogoEG.png';
+        const faviconUrl = company.favicon_url || '/favicon.svg';
         const updateFavicon = (id, href) => {
           const el = document.getElementById(id);
           if (el) el.setAttribute('href', href);
@@ -190,6 +191,39 @@
         console.warn('⚠️ Error cargando metadata, usando valores genéricos:', error.message);
       }
     })();
+    </script>
+
+    <!-- PerformanceObserver.supportedEntryTypes polyfill para iOS Safari < 16.4 -->
+    <script>
+    // Polyfill para PerformanceObserver.supportedEntryTypes
+    // iOS Safari no tiene esta propiedad hasta versiones muy recientes
+    // Esto previene errores al intentar observar tipos no soportados
+    if (window.PerformanceObserver && !PerformanceObserver.supportedEntryTypes) {
+      // Lista mínima de tipos soportados en iOS Safari 11+
+      PerformanceObserver.supportedEntryTypes = ['navigation', 'resource', 'mark', 'measure', 'paint'];
+    }
+    </script>
+
+    <!-- requestIdleCallback polyfill para iOS Safari < 16 -->
+    <script>
+    // Polyfill para soportar iOS Safari < 16 (iOS 11-15)
+    // requestIdleCallback solo está disponible desde iOS 16.0+
+    // Este polyfill permite que la app funcione en dispositivos iOS más antiguos
+    window.requestIdleCallback = window.requestIdleCallback || function(handler) {
+      const startTime = Date.now();
+      return setTimeout(function() {
+        handler({
+          didTimeout: false,
+          timeRemaining: function() {
+            return Math.max(0, 50.0 - (Date.now() - startTime));
+          }
+        });
+      }, 1);
+    };
+
+    window.cancelIdleCallback = window.cancelIdleCallback || function(id) {
+      clearTimeout(id);
+    };
     </script>
   </head>
   <body>

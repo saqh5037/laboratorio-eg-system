@@ -1,0 +1,65 @@
+{
+  "categoria": "Microbiología de Alimentos",
+  "subcategoria": "Análisis",
+  "prueba": {
+    "titulo": "DETERMINACIÓN DE STAPHYLOCOCCUS AUREUS",
+    "descripcion": "S. aureus es una bacteria que puede causar intoxicación alimentaria, especialmente cuando se multiplica en alimentos que no se almacenan adecuadamente o se manipulan con malas prácticas de higiene.",
+    "precio": 1054.61,
+    "moneda": "MXN",
+    "codigo": "SAU05"
+  },
+  "especificaciones": {
+    "metodologia": "NOM-210-SSA1-2014",
+    "metodologiaDescripcion": "Determinación de microorganismos patógenos. Apéndice B Normativo. Método de referencia para la estimación de la cuenta de S. aureus.",
+    "tipoMuestra": ["Alimentos", "Materia prima", "Superficies vivas e inertes"],
+    "tiempoEntrega": "10 Días hábiles",
+    "temperaturaTransporte": {
+      "alimentosPereceros": "≤10°C",
+      "alimentosCongelados": "≤0°C",
+      "noPereceros": "Temperatura Ambiente",
+      "aguas": "≤10°C",
+      "superficies": "≤10°C"
+    }
+  },
+  "imagenes": {
+    "paginaCompleta": {
+      "archivo": "pages/DimogenMicrobiologiaAlimentos-18.png",
+      "descripcion": "Página de presentación del análisis"
+    },
+    "paginaEspecificaciones": {
+      "archivo": "pages/DimogenMicrobiologiaAlimentos-19.png",
+      "descripcion": "Página de especificaciones técnicas"
+    },
+    "recursos": [
+      {
+        "archivo": "assets/SAU05-staphylococcus-aureus-manitol.jpg",
+        "tipo": "cultivo-placa",
+        "descripcion": "Imagen de cultivo en placa de agar sal manitol mostrando colonias características de Staphylococcus aureus. Se observan colonias doradas/amarillas rodeadas de un halo amarillo debido a la fermentación del manitol, sobre el fondo rojizo del agar.",
+        "altText": "Colonias doradas de Staphylococcus aureus en agar sal manitol",
+        "aptoParaWeb": true
+      }
+    ]
+  },
+  "informacionAdicional": {
+    "queEs": "Staphylococcus aureus es una bacteria gram positiva, coagulasa positiva, que forma parte de la flora normal de la piel y mucosas nasales de los humanos. Sin embargo, bajo ciertas condiciones puede contaminar alimentos y producir enterotoxinas termoestables que causan intoxicación alimentaria estafilocócica.",
+    "importancia": "La intoxicación por S. aureus es una de las causas más comunes de enfermedades transmitidas por alimentos. Las enterotoxinas producidas son resistentes al calor, por lo que cocinar el alimento no elimina el riesgo si la toxina ya fue producida. La contaminación generalmente proviene de manipuladores de alimentos infectados.",
+    "paraQuienEsRecomendada": "Industrias de productos lácteos, panaderías, restaurantes, servicios de catering, preparadores de alimentos listos para consumo, y cualquier establecimiento donde haya manipulación directa de alimentos sin cocción posterior.",
+    "interpretacionResultados": {
+      "descripcion": "El resultado se expresa en UFC/g o UFC/mL. Los límites varían según el tipo de alimento.",
+      "limitesBajos": "Indican buenas prácticas de higiene personal del manipulador, adecuada temperatura de almacenamiento y proceso térmico efectivo.",
+      "limitesAltos": "Sugieren contaminación por manipuladores, mal manejo de temperatura (zona de peligro 4-60°C), o almacenamiento prolongado a temperatura inadecuada."
+    },
+    "sintomas": "La intoxicación causa náuseas, vómitos, calambres abdominales y diarrea. Los síntomas aparecen rápidamente (1-6 horas) y generalmente se resuelven en 24-48 horas. La deshidratación es el principal riesgo.",
+    "normativaAplicable": [
+      "NOM-210-SSA1-2014: Determinación de microorganismos patógenos",
+      "NOM-251-SSA1-2009: Prácticas de higiene para el proceso de alimentos",
+      "NOM-243-SSA1-2010: Leche y productos lácteos"
+    ]
+  },
+  "metadatos": {
+    "paginaOriginal": 17,
+    "paginaEspecificaciones": 18,
+    "archivoOrigen": "DimogenMicrobiologíaAlimentos-18.pdf",
+    "fechaExtraccion": "2025-11-26"
+  }
+}

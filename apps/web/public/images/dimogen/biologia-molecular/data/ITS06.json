@@ -1,0 +1,48 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "CHLAMYDIA TRACHOMATIS",
+    "descripcion": "Detecta el agente bacteriano más común de las infecciones de transmisión sexual: Chlamydia trachomatis.",
+    "precio": 1455.00,
+    "moneda": "USD",
+    "codigo": "ITS06"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Exudado vaginal/uretral",
+    "tiempoEntrega": "1 Día hábil",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {
+      "archivo": "pages/DimogenBiologiaMolecular-13.png",
+      "descripcion": "Página completa del catálogo"
+    },
+    "recursos": [
+      {
+        "archivo": "assets/ITS06-chlamydia-bacteria-3d.jpg",
+        "tipo": "ilustracion-3d",
+        "descripcion": "Ilustración 3D de la bacteria Chlamydia trachomatis. Representación de los cuerpos elementales (formas infecciosas extracelulares) de esta bacteria intracelular obligada, mostrando su morfología esférica característica.",
+        "altText": "Modelo 3D de bacteria Chlamydia trachomatis",
+        "aptoParaWeb": true
+      }
+    ]
+  },
+  "informacionAdicional": {
+    "queEs": "Chlamydia trachomatis es una bacteria intracelular obligada que causa la infección de transmisión sexual bacteriana más común en el mundo. En mujeres puede causar cervicitis, enfermedad pélvica inflamatoria (EPI), embarazo ectópico e infertilidad. En hombres causa uretritis y epididimitis. Es conocida como 'la infección silenciosa' porque hasta el 70-80% de las mujeres y 50% de los hombres infectados son asintomáticos.",
+    "paraQuienEsRecomendada": "Mujeres sexualmente activas menores de 25 años (tamizaje anual). Mujeres mayores de 25 años con factores de riesgo (nueva pareja, múltiples parejas). Hombres con síntomas de uretritis. Mujeres embarazadas en su primera visita prenatal. Parejas sexuales de personas diagnosticadas con clamidia. Personas con otras ITS diagnosticadas.",
+    "preparacion": "No requiere ayuno. Evitar relaciones sexuales 24-48 horas antes. No usar duchas vaginales ni medicamentos vaginales 24 horas antes. No orinar al menos 1 hora antes de la toma de muestra uretral en hombres.",
+    "interpretacionResultados": {
+      "positivo": "Indica infección activa por Chlamydia trachomatis. Requiere tratamiento antibiótico (generalmente azitromicina o doxiciclina). Las parejas sexuales de los últimos 60 días deben ser evaluadas y tratadas. Se recomienda abstinencia sexual durante el tratamiento y hasta 7 días después de completarlo.",
+      "negativo": "No se detectó ADN de Chlamydia trachomatis en la muestra. Sin embargo, si existe alta sospecha clínica, considerar repetir la prueba o evaluar otras causas de los síntomas."
+    },
+    "frecuenciaRecomendada": "Anual para mujeres sexualmente activas menores de 25 años. Según factores de riesgo para otros grupos. Control post-tratamiento a las 3-4 semanas no es rutinario pero se recomienda en embarazadas.",
+    "notasClinicas": "La infección no tratada puede ascender al tracto genital superior causando EPI en 10-15% de las mujeres. La reinfección es común si las parejas no son tratadas. El período de incubación es de 7-21 días. La coinfección con Neisseria gonorrhoeae es frecuente (hasta 40% de casos)."
+  },
+  "metadatos": {
+    "paginaOriginal": 12,
+    "archivoOrigen": "DimogenBiologíaMolecular-13.pdf",
+    "fechaExtraccion": "2025-11-25"
+  }
+}

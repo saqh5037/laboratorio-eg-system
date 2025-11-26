@@ -3,26 +3,9 @@
  * Maneja la autenticación via Telegram
  */
 
-// Detectar automáticamente el host
-const getMessagingBotApiUrl = () => {
-  // Si hay una variable de entorno específica, usarla
-  if (import.meta.env.VITE_MESSAGING_BOT_API_URL) {
-    return import.meta.env.VITE_MESSAGING_BOT_API_URL;
-  }
+import { config } from '../config/env.js';
 
-  // Detectar el hostname actual
-  const hostname = window.location.hostname;
-
-  // Si es localhost o 127.0.0.1, usar localhost
-  if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return 'http://localhost:3004/api';
-  }
-
-  // Si es una IP de red local, usar la misma IP
-  return `http://${hostname}:3004/api`;
-};
-
-const MESSAGING_BOT_API_URL = getMessagingBotApiUrl();
+const MESSAGING_BOT_API_URL = config.VITE_MESSAGING_BOT_API_URL;
 
 class MessagingBotApiError extends Error {
   constructor(message, code, status, data = {}) {

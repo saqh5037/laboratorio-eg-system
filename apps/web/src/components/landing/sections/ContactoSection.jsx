@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { renderIcon } from '../../../utils/iconMapper';
 import {
   FaWhatsapp,
@@ -32,6 +33,12 @@ import {
  * @param {Object} props.companyInfo - Información de la empresa
  */
 const ContactoSection = ({ section, content, companyInfo }) => {
+  // Parallax hooks
+  const sectionRef = useRef(null);
+  const { scrollY } = useScroll();
+  const y1 = useTransform(scrollY, [0, 1000], [0, 150]);
+  const y2 = useTransform(scrollY, [0, 1000], [0, 75]);
+
   // Extraer configuración de layout
   const layoutConfig = section.layout_config || {};
   const {
@@ -175,13 +182,17 @@ const ContactoSection = ({ section, content, companyInfo }) => {
 
   return (
     <section
+      ref={sectionRef}
       id={section.section_key || 'contacto'}
       className={`w-full min-h-screen bg-${backgroundColor} relative overflow-hidden scroll-mt-20`}
     >
-      {/* Decorative Blobs */}
+      {/* Decorative Blobs with Parallax */}
       {decorativeBlobs && (
         <>
-          <div className="absolute top-0 left-0 w-[500px] h-[500px] opacity-30 pointer-events-none z-0">
+          <motion.div
+            style={{ y: y1 }}
+            className="absolute top-0 left-0 w-[500px] h-[500px] opacity-30 pointer-events-none z-0"
+          >
             <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
               <path
                 fill="#DDB5D5"
@@ -189,9 +200,12 @@ const ContactoSection = ({ section, content, companyInfo }) => {
                 transform="translate(100 100)"
               />
             </svg>
-          </div>
+          </motion.div>
 
-          <div className="absolute bottom-0 right-0 w-[600px] h-[600px] opacity-40 pointer-events-none z-0">
+          <motion.div
+            style={{ y: y2 }}
+            className="absolute bottom-0 right-0 w-[600px] h-[600px] opacity-40 pointer-events-none z-0"
+          >
             <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
               <path
                 fill="#7B68A6"
@@ -199,49 +213,89 @@ const ContactoSection = ({ section, content, companyInfo }) => {
                 transform="translate(100 100)"
               />
             </svg>
-          </div>
+          </motion.div>
+
+          {/* Floating decorative elements */}
+          <motion.div
+            className="absolute top-1/4 right-[12%] w-16 h-16 bg-eg-pink/20 rounded-full blur-xl hidden lg:block"
+            animate={{ y: [0, -20, 0], scale: [1, 1.2, 1] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <motion.div
+            className="absolute bottom-1/3 left-[8%] w-12 h-12 bg-eg-purple/15 rounded-full blur-lg hidden lg:block"
+            animate={{ y: [0, 18, 0], scale: [1.1, 1, 1.1] }}
+            transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+          />
+          <motion.div
+            className="absolute top-1/2 left-[15%] w-8 h-8 bg-white/25 rounded-full hidden lg:block"
+            animate={{ y: [0, -15, 0], x: [0, 8, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+          />
         </>
       )}
 
-      {/* Hero Header */}
+      {/* Hero Header with animations */}
       <header className="relative z-10 w-full pt-12 pb-8 text-center px-6 md:px-12 lg:px-24">
         <div className="max-w-[1600px] mx-auto">
-          <h1
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
             className="text-4xl md:text-5xl lg:text-6xl font-normal text-white mb-4 tracking-tight leading-none"
             style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)' }}
           >
             {section.title || getContentBlock('contact-header', 'title') || 'CONTÁCTANOS'}
-          </h1>
-          <p
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
             className="text-lg md:text-xl lg:text-2xl text-white max-w-4xl mx-auto leading-relaxed mb-3"
             style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.7)' }}
           >
             {section.subtitle ||
               getContentBlock('contact-header', 'subtitle') ||
               'Siempre listos para ti y tu salud'}
-          </p>
-          <p
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.4 }}
             className="text-base md:text-lg text-white"
             style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.7)' }}
           >
             {companyInfo?.rif && `RIF ${companyInfo.rif} · `}
             {getContentBlock('contact-header', 'badge') || 'Compromiso con la excelencia'}
-          </p>
+          </motion.p>
         </div>
       </header>
 
       {/* Contact Content */}
       <div className="relative z-10 w-full py-12 md:py-16">
         <div className="max-w-[1400px] mx-auto px-6 sm:px-8 md:px-12 lg:px-16">
-          {/* Contact Cards - Grid uniforme 2x2 */}
+          {/* Contact Cards - Grid uniforme 2x2 with animations */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12 md:mb-16 relative z-20">
             {/* Address Card */}
             {getContactInfoByType('address').length > 0 && (
-              <div className="bg-white rounded-2xl p-8 md:p-10 shadow-[0_8px_30px_rgba(123,104,166,0.12)] hover:shadow-[0_16px_50px_rgba(123,104,166,0.18)] border border-eg-purple/10 transition-all duration-300 hover:-translate-y-1">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0 }}
+                whileHover={{ y: -8, boxShadow: '0 20px 50px rgba(123,104,166,0.22)' }}
+                className="bg-white rounded-2xl p-8 md:p-10 shadow-[0_8px_30px_rgba(123,104,166,0.12)] border border-eg-purple/10 transition-all duration-300"
+              >
                 <div className="flex items-start gap-5">
-                  <div className="bg-gradient-to-br from-eg-purple to-eg-purple/80 rounded-2xl p-4 shadow-lg flex-shrink-0">
+                  <motion.div
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                    className="bg-gradient-to-br from-eg-purple to-eg-purple/80 rounded-2xl p-4 shadow-lg flex-shrink-0"
+                  >
                     <FaMapMarkerAlt className="text-white w-8 h-8" />
-                  </div>
+                  </motion.div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-2xl font-bold text-eg-purple mb-4 tracking-tight">Dirección</h3>
                     {getContactInfoByType('address').map((addr, idx) => (
@@ -251,72 +305,110 @@ const ContactoSection = ({ section, content, companyInfo }) => {
                     ))}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )}
 
             {/* Phones Card */}
             {getContactInfoByType('phone').length > 0 && (
-              <div className="bg-white rounded-2xl p-8 md:p-10 shadow-[0_8px_30px_rgba(123,104,166,0.12)] hover:shadow-[0_16px_50px_rgba(123,104,166,0.18)] border border-eg-purple/10 transition-all duration-300 hover:-translate-y-1">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                whileHover={{ y: -8, boxShadow: '0 20px 50px rgba(123,104,166,0.22)' }}
+                className="bg-white rounded-2xl p-8 md:p-10 shadow-[0_8px_30px_rgba(123,104,166,0.12)] border border-eg-purple/10 transition-all duration-300"
+              >
                 <div className="flex items-start gap-5">
-                  <div className="bg-gradient-to-br from-eg-purple to-eg-purple/80 rounded-2xl p-4 shadow-lg flex-shrink-0">
+                  <motion.div
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                    className="bg-gradient-to-br from-eg-purple to-eg-purple/80 rounded-2xl p-4 shadow-lg flex-shrink-0"
+                  >
                     <FaPhone className="text-white w-8 h-8" />
-                  </div>
+                  </motion.div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-2xl font-bold text-eg-purple mb-4 tracking-tight">Teléfonos</h3>
                     <div className="space-y-2">
                       {getContactInfoByType('phone').map((phone, idx) => (
-                        <a
+                        <motion.a
                           key={idx}
                           href={`tel:${phone.value}`}
-                          className="block text-eg-dark text-lg font-semibold hover:text-eg-purple transition-colors hover:translate-x-1 transform duration-200"
+                          whileHover={{ x: 5 }}
+                          className="block text-eg-dark text-lg font-semibold hover:text-eg-purple transition-colors"
                         >
                           {phone.value}
-                        </a>
+                        </motion.a>
                       ))}
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )}
 
             {/* Email Card */}
-            <div className="bg-white rounded-2xl p-8 md:p-10 shadow-[0_8px_30px_rgba(123,104,166,0.12)] hover:shadow-[0_16px_50px_rgba(123,104,166,0.18)] border border-eg-purple/10 transition-all duration-300 hover:-translate-y-1">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              whileHover={{ y: -8, boxShadow: '0 20px 50px rgba(123,104,166,0.22)' }}
+              className="bg-white rounded-2xl p-8 md:p-10 shadow-[0_8px_30px_rgba(123,104,166,0.12)] border border-eg-purple/10 transition-all duration-300"
+            >
               <div className="flex items-start gap-5">
-                <div className="bg-gradient-to-br from-eg-purple to-eg-purple/80 rounded-2xl p-4 shadow-lg flex-shrink-0">
+                <motion.div
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                  className="bg-gradient-to-br from-eg-purple to-eg-purple/80 rounded-2xl p-4 shadow-lg flex-shrink-0"
+                >
                   <FaEnvelope className="text-white w-8 h-8" />
-                </div>
+                </motion.div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-2xl font-bold text-eg-purple mb-4 tracking-tight">Email</h3>
                   <div className="space-y-2">
                     {getContactInfoByType('email').length > 0 ? (
                       getContactInfoByType('email').map((email, idx) => (
-                        <a
+                        <motion.a
                           key={idx}
                           href={`mailto:${email.value}`}
-                          className="block text-eg-purple hover:text-eg-pink transition-colors font-bold text-lg underline decoration-2 underline-offset-4 break-words hover:translate-x-1 transform duration-200"
+                          whileHover={{ x: 5 }}
+                          className="block text-eg-purple hover:text-eg-pink transition-colors font-bold text-lg underline decoration-2 underline-offset-4 break-words"
                         >
                           {email.value}
-                        </a>
+                        </motion.a>
                       ))
-                    ) : (
-                      <a
-                        href="mailto:contacto@microtec.com.mx"
-                        className="block text-eg-purple hover:text-eg-pink transition-colors font-bold text-lg underline decoration-2 underline-offset-4 break-words hover:translate-x-1 transform duration-200"
+                    ) : companyInfo?.email ? (
+                      <motion.a
+                        href={`mailto:${companyInfo.email}`}
+                        whileHover={{ x: 5 }}
+                        className="block text-eg-purple hover:text-eg-pink transition-colors font-bold text-lg underline decoration-2 underline-offset-4 break-words"
                       >
-                        contacto@microtec.com.mx
-                      </a>
+                        {companyInfo.email}
+                      </motion.a>
+                    ) : (
+                      <p className="text-eg-dark text-lg font-medium">Configurar en panel admin</p>
                     )}
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Hours Card */}
-            <div className="bg-white rounded-2xl p-8 md:p-10 shadow-[0_8px_30px_rgba(123,104,166,0.12)] hover:shadow-[0_16px_50px_rgba(123,104,166,0.18)] border border-eg-purple/10 transition-all duration-300 hover:-translate-y-1">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              whileHover={{ y: -8, boxShadow: '0 20px 50px rgba(123,104,166,0.22)' }}
+              className="bg-white rounded-2xl p-8 md:p-10 shadow-[0_8px_30px_rgba(123,104,166,0.12)] border border-eg-purple/10 transition-all duration-300"
+            >
               <div className="flex items-start gap-5">
-                <div className="bg-gradient-to-br from-eg-purple to-eg-purple/80 rounded-2xl p-4 shadow-lg flex-shrink-0">
+                <motion.div
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                  className="bg-gradient-to-br from-eg-purple to-eg-purple/80 rounded-2xl p-4 shadow-lg flex-shrink-0"
+                >
                   <FaClock className="text-white w-8 h-8" />
-                </div>
+                </motion.div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-2xl font-bold text-eg-purple mb-4 tracking-tight">Horario</h3>
                   <div className="space-y-2">
@@ -329,13 +421,13 @@ const ContactoSection = ({ section, content, companyInfo }) => {
                       ))
                     ) : (
                       <p className="text-eg-dark text-base font-medium">
-                        <span className="font-bold text-eg-purple">Lunes a Viernes:</span> 7:00 AM - 7:00 PM
+                        Configurar horarios en panel admin
                       </p>
                     )}
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
 
           {/* Services Section - Full width outside grid */}
@@ -400,14 +492,25 @@ const ContactoSection = ({ section, content, companyInfo }) => {
             </div>
           )}
 
-          {/* WhatsApp CTA */}
+          {/* WhatsApp CTA with enhanced animations */}
           {(() => {
             const whatsappContact = getContactInfoByType('whatsapp')[0];
-            const whatsappNumber = whatsappContact?.value || '5256112377380';
+            // Usar número de WhatsApp desde contactInfo, companyInfo, o no mostrar
+            const whatsappNumber = whatsappContact?.value || companyInfo?.phone_whatsapp?.replace(/\D/g, '') || '';
             const whatsappLabel = whatsappContact?.label || 'Escríbenos por WhatsApp';
+
+            // Si no hay número de WhatsApp configurado, no mostrar el botón
+            if (!whatsappNumber) return null;
+
             return (
-              <div className="w-full mx-auto mb-20">
-                <a
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+                className="w-full mx-auto mb-20"
+              >
+                <motion.a
                   href={`https://wa.me/${whatsappNumber}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -416,15 +519,19 @@ const ContactoSection = ({ section, content, companyInfo }) => {
                            bg-gradient-to-r from-eg-pink via-eg-purple to-eg-pink
                            text-white rounded-full text-xl md:text-2xl font-normal
                            shadow-[0_20px_50px_rgba(123,104,166,0.4)]
-                           hover:shadow-[0_30px_70px_rgba(221,181,213,0.6)]
-                           hover:scale-105 active:scale-95
-                           transition-all duration-300
                            focus:outline-none focus:ring-4 focus:ring-eg-pink/50"
+                  whileHover={{ scale: 1.05, boxShadow: '0 30px 70px rgba(221,181,213,0.6)' }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <FaWhatsapp className="w-14 h-14 group-hover:rotate-12 transition-transform duration-300" />
+                  <motion.span
+                    animate={{ rotate: [0, 10, -10, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                  >
+                    <FaWhatsapp className="w-14 h-14" />
+                  </motion.span>
                   <span>{whatsappLabel}</span>
-                </a>
-              </div>
+                </motion.a>
+              </motion.div>
             );
           })()}
 
@@ -479,7 +586,8 @@ const ContactoSection = ({ section, content, companyInfo }) => {
             const mapEmbed = contentBlocks.find(
               b => b.section === 'contact-map' && b.block_type === 'embed'
             );
-            const addressValue = address?.value || 'MICRO-TEC Laboratorio Clínico';
+            // Usar dirección desde contactInfo o companyInfo, sin fallback hardcodeado
+            const addressValue = address?.value || companyInfo?.address_street || companyInfo?.name || 'Laboratorio';
             const hasMapUrl = mapEmbed?.content && mapEmbed.content.trim() !== '';
 
             return (

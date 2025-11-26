@@ -1,0 +1,40 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "CROMOSOMA FILADELFIA BCR/ABL1 P210 CUANTITATIVO",
+    "descripcion": "Cuantifica el transcrito de fusión BCR/ABL1 p210 para monitoreo de respuesta al tratamiento con inhibidores de tirosina quinasa en pacientes con leucemia mieloide crónica.",
+    "precio": 4508.00,
+    "moneda": "USD",
+    "codigo": "BCR26",
+    "parametrosMedidos": ["Ratio BCR/ABL1 IS (%)", "Número de copias ABL1 (control)", "Número de copias BCR/ABL1"]
+  },
+  "especificaciones": {
+    "metodologia": "RT-qPCR (PCR en tiempo real cuantitativa)",
+    "tipoMuestra": "Sangre periférica con EDTA",
+    "tiempoEntrega": "5 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-52.png"},
+    "recursos": [{
+      "archivo": "assets/BCR26-cromosoma-filadelfia-cuantitativo.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D de células leucémicas con cromosoma Filadelfia, mostrando concepto de cuantificación de carga tumoral.",
+      "altText": "Cuantificación cromosoma Filadelfia 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "La cuantificación de BCR/ABL1 mide la carga de enfermedad residual en LMC bajo tratamiento con ITK (imatinib, dasatinib, nilotinib, etc.). Se expresa como ratio BCR/ABL1/ABL1 en Escala Internacional (IS), permitiendo comparación entre laboratorios. Es el estándar de oro para monitoreo de respuesta molecular.",
+    "paraQuienEsRecomendada": "Pacientes con LMC en tratamiento con inhibidores de tirosina quinasa. Evaluación de respuesta molecular óptima (RMO). Detección temprana de pérdida de respuesta o resistencia. Consideración de discontinuación de tratamiento (remisión libre de tratamiento).",
+    "preparacion": "No requiere ayuno. Muestra de sangre periférica es suficiente para monitoreo (no requiere médula ósea). Idealmente tomar antes de la dosis diaria de ITK.",
+    "interpretacionResultados": {
+      "positivo": "RMO a 3 meses: BCR/ABL1 ≤10%. RMO a 6 meses: BCR/ABL1 ≤1%. RMO a 12 meses: BCR/ABL1 ≤0.1% (respuesta molecular mayor, RMM). Respuesta molecular profunda: ≤0.01% (MR4) o ≤0.0032% (MR4.5).",
+      "negativo": "BCR/ABL1 no detectable (respuesta molecular completa). Candidato potencial a discontinuación de ITK bajo vigilancia estricta."
+    },
+    "frecuenciaRecomendada": "Cada 3 meses durante los primeros 2 años. Cada 3-6 meses después de alcanzar RMM. Mensualmente si se considera discontinuación.",
+    "notasClinicas": "Un incremento de 1 log desde el nadir o pérdida de RMM sugiere resistencia o falta de adherencia. La discontinuación de ITK solo debe considerarse en pacientes con MR4.5 sostenida por ≥2 años. Aproximadamente 50% mantienen remisión libre de tratamiento."
+  },
+  "metadatos": {"paginaOriginal": 51, "archivoOrigen": "DimogenBiologíaMolecular-52.pdf", "fechaExtraccion": "2025-11-25"}
+}

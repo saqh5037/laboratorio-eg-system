@@ -1,0 +1,37 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "PANEL VIRAL RESPIRATORIO 4",
+    "descripcion": "Detecta y diferencia el RNA de los virus contagiosos de infecciones respiratorias.",
+    "precio": 1576.00,
+    "moneda": "USD",
+    "codigo": "TVR11",
+    "patogenosIncluidos": ["Influenza A", "Influenza B", "Virus Respiratorio Sincicial (VRS)", "SARS-CoV-2"]
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Exudado nasofaríngeo",
+    "tiempoEntrega": "1 Día hábil",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-23.png"},
+    "recursos": [
+      {"archivo": "assets/TVR11-panel-respiratorio-virus.jpg", "tipo": "ilustracion-3d", "descripcion": "Ilustración de coronavirus SARS-CoV-2", "altText": "Coronavirus 3D", "aptoParaWeb": true},
+      {"archivo": "assets/TVR11-coronavirus-detalle.jpg", "tipo": "ilustracion-3d", "descripcion": "Detalle del coronavirus", "altText": "Detalle coronavirus", "aptoParaWeb": true},
+      {"archivo": "assets/TVR11-virus-varios.jpg", "tipo": "ilustracion-3d", "descripcion": "Múltiples virus respiratorios", "altText": "Virus respiratorios", "aptoParaWeb": true}
+    ]
+  },
+  "informacionAdicional": {
+    "queEs": "El Panel Viral Respiratorio 4 detecta simultáneamente los 4 virus respiratorios más relevantes: ambos tipos de influenza, VRS y SARS-CoV-2. Es ideal para el diagnóstico diferencial durante temporadas donde estos virus co-circulan.",
+    "paraQuienEsRecomendada": "Pacientes con síntomas respiratorios agudos. Diagnóstico diferencial COVID-19 vs influenza vs VRS. Pacientes que requieren hospitalización por infección respiratoria.",
+    "preparacion": "No requiere ayuno. No usar sprays nasales 24 horas antes.",
+    "interpretacionResultados": {
+      "positivo": "Identifica específicamente cuál(es) virus está presente. Es posible la coinfección por múltiples virus. El tratamiento se ajusta según el resultado.",
+      "negativo": "No se detectaron los 4 virus analizados. Considerar otros patógenos respiratorios."
+    },
+    "notasClinicas": "La coinfección por múltiples virus respiratorios es posible y puede asociarse con mayor gravedad. Este panel cubre los virus más importantes en términos de salud pública."
+  },
+  "metadatos": {"paginaOriginal": 22, "archivoOrigen": "DimogenBiologíaMolecular-23.pdf", "fechaExtraccion": "2025-11-25"}
+}

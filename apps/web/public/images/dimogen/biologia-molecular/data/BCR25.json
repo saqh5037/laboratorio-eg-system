@@ -1,0 +1,39 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "CROMOSOMA FILADELFIA BCR/ABL1 CUALITATIVO",
+    "descripcion": "Detecta la translocación t(9;22) que genera el gen de fusión BCR/ABL1, marcador diagnóstico de leucemia mieloide crónica (LMC) y un subgrupo de leucemia linfoblástica aguda (LLA).",
+    "precio": 3926.00,
+    "moneda": "USD",
+    "codigo": "BCR25",
+    "transcritosDetectados": ["BCR/ABL1 p210 (b2a2, b3a2)", "BCR/ABL1 p190 (e1a2)", "BCR/ABL1 p230 (e19a2)"]
+  },
+  "especificaciones": {
+    "metodologia": "RT-PCR cualitativa",
+    "tipoMuestra": "Sangre periférica con EDTA / Médula ósea con EDTA",
+    "tiempoEntrega": "5 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-51.png"},
+    "recursos": [{
+      "archivo": "assets/BCR25-cromosoma-filadelfia-leucemia.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D mostrando células leucémicas con cromosoma Filadelfia y representación de la translocación t(9;22).",
+      "altText": "Cromosoma Filadelfia leucemia 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "El cromosoma Filadelfia resulta de la translocación recíproca entre los cromosomas 9 y 22, creando el gen de fusión BCR/ABL1. Esta proteína de fusión tiene actividad tirosina quinasa constitutiva que promueve proliferación celular descontrolada. Es el marcador molecular definitorio de LMC y está presente en 25% de LLA en adultos.",
+    "paraQuienEsRecomendada": "Sospecha de leucemia mieloide crónica (LMC). Diagnóstico diferencial de síndromes mieloproliferativos. Leucemia linfoblástica aguda (LLA) al diagnóstico. Crisis blástica de origen desconocido. Trombocitosis o leucocitosis persistente inexplicada.",
+    "preparacion": "No requiere ayuno. Sangre periférica: tubo EDTA (tapa morada). Médula ósea: preferida en caso de pancitopenia.",
+    "interpretacionResultados": {
+      "positivo": "Confirma diagnóstico de LMC en contexto clínico apropiado. En LLA: indica subtipo Ph+ de alto riesgo. Requiere evaluación hematológica completa e inicio de inhibidores de tirosina quinasa (ITK).",
+      "negativo": "Ausencia de translocación BCR/ABL1. No descarta otras neoplasias mieloproliferativas. Considerar otras causas de leucocitosis o trombocitosis."
+    },
+    "notasClinicas": "El transcrito p210 es característico de LMC, mientras p190 es más común en LLA Ph+. La detección cualitativa es para diagnóstico; el seguimiento requiere prueba cuantitativa (BCR26). Los ITK han transformado el pronóstico de LMC de fatal a enfermedad crónica manejable."
+  },
+  "metadatos": {"paginaOriginal": 50, "archivoOrigen": "DimogenBiologíaMolecular-51.pdf", "fechaExtraccion": "2025-11-25"}
+}

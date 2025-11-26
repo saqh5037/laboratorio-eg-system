@@ -1,0 +1,63 @@
+{
+  "categoria": "Microbiología de Alimentos",
+  "subcategoria": "Análisis",
+  "prueba": {
+    "titulo": "ORGANISMOS MESOFÍLICOS AEROBIOS",
+    "descripcion": "Evaluar la calidad microbiológica de alimentos, agua y otros productos. Ayuda a identificar posibles problemas de higiene, contaminación y deterioro de los productos.",
+    "precio": 363.66,
+    "moneda": "MXN",
+    "codigo": "OMA01"
+  },
+  "especificaciones": {
+    "metodologia": "NOM-092-SSA1-1994",
+    "metodologiaDescripcion": "Método para la cuenta de bacterias aerobias en placa",
+    "tipoMuestra": ["Agua", "Alimento", "Superficies vivas e inertes", "Placas ambientales"],
+    "tiempoEntrega": "5 Días hábiles",
+    "temperaturaTransporte": {
+      "alimentosPereceros": "≤10°C",
+      "alimentosCongelados": "≤0°C",
+      "noPereceros": "Temperatura Ambiente",
+      "aguas": "≤10°C",
+      "superficies": "≤10°C"
+    }
+  },
+  "imagenes": {
+    "paginaCompleta": {
+      "archivo": "pages/DimogenMicrobiologiaAlimentos-10.png",
+      "descripcion": "Página de presentación del análisis"
+    },
+    "paginaEspecificaciones": {
+      "archivo": "pages/DimogenMicrobiologiaAlimentos-11.png",
+      "descripcion": "Página de especificaciones técnicas"
+    },
+    "recursos": [
+      {
+        "archivo": "assets/OMA01-colonias-mesofilos-placa.jpg",
+        "tipo": "cultivo-placa",
+        "descripcion": "Imagen de cultivo en placa de agar mostrando colonias de organismos mesofílicos aerobios. Se observan múltiples colonias blancas de diferentes tamaños sobre un medio de cultivo azulado, típico del conteo de bacterias aerobias en placa.",
+        "altText": "Colonias de organismos mesofílicos aerobios en placa de agar",
+        "aptoParaWeb": true
+      }
+    ]
+  },
+  "informacionAdicional": {
+    "queEs": "Los organismos mesofílicos aerobios son microorganismos que crecen a temperaturas moderadas (entre 20°C y 45°C) y requieren oxígeno para su desarrollo. El conteo de estos organismos es uno de los indicadores más utilizados para evaluar la calidad microbiológica general de alimentos, agua y superficies. Un recuento elevado puede indicar materias primas contaminadas, condiciones inadecuadas de tiempo/temperatura durante el almacenamiento, o deficiencias en los procesos de limpieza y desinfección.",
+    "importancia": "Este análisis es fundamental para la industria alimentaria ya que permite evaluar las condiciones higiénicas generales de producción, almacenamiento y transporte de alimentos. Es requerido por la normatividad mexicana para verificar el cumplimiento de los límites microbiológicos establecidos en las Normas Oficiales Mexicanas aplicables a diferentes tipos de alimentos.",
+    "paraQuienEsRecomendada": "Industrias alimentarias, restaurantes, hoteles, hospitales, escuelas, fábricas procesadoras de alimentos, empresas de catering, y cualquier establecimiento que manipule o procese alimentos para consumo humano.",
+    "interpretacionResultados": {
+      "descripcion": "El resultado se expresa en UFC/g o UFC/mL (Unidades Formadoras de Colonias por gramo o mililitro). Los límites aceptables varían según el tipo de alimento y están establecidos en las NOM correspondientes.",
+      "limitesBajos": "Indican buenas prácticas de manufactura, adecuada higiene y correcta conservación del producto.",
+      "limitesAltos": "Pueden indicar contaminación durante el proceso, almacenamiento inadecuado, materia prima de mala calidad o fallas en la cadena de frío."
+    },
+    "normativaAplicable": [
+      "NOM-092-SSA1-1994: Método para la cuenta de bacterias aerobias en placa",
+      "NOM-251-SSA1-2009: Prácticas de higiene para el proceso de alimentos"
+    ]
+  },
+  "metadatos": {
+    "paginaOriginal": 9,
+    "paginaEspecificaciones": 10,
+    "archivoOrigen": "DimogenMicrobiologíaAlimentos-10.pdf",
+    "fechaExtraccion": "2025-11-26"
+  }
+}

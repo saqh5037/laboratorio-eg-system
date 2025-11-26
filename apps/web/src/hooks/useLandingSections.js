@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
+import { config } from '../config/env.js';
 
-const API_BASE_URL = import.meta.env.VITE_CONFIG_API_URL || 'http://localhost:3005';
+const API_BASE_URL = config.VITE_CONFIG_API_URL;
 
 /**
  * Custom Hook para gestionar las secciones de la landing page

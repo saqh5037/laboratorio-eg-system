@@ -2,11 +2,14 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAdminAuth } from '../../../hooks/useAdminAuth';
 import { useCompanyInfo } from '../../../hooks/useCompanyInfo';
+import { useLab } from '../../../contexts/LabContext';
 import { Menu, User, LogOut, Settings, Bell } from 'lucide-react';
+import LabSelector from '../LabSelector';
 
 export default function AdminHeader({ onToggleSidebar }) {
   const { user, logout } = useAdminAuth();
   const { companyInfo } = useCompanyInfo();
+  const { currentLab } = useLab();
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const handleLogout = () => {
@@ -29,11 +32,24 @@ export default function AdminHeader({ onToggleSidebar }) {
           </button>
 
           <Link to="/admin" className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-eg-purple to-eg-pink flex items-center justify-center">
-              <span className="text-white font-bold text-sm">
-                {companyInfo?.short_name?.substring(0, 3) || 'LEG'}
-              </span>
-            </div>
+            {companyInfo?.logo_icon_url ? (
+              <img
+                src={companyInfo.logo_icon_url}
+                alt={companyInfo.logo_alt_text || companyInfo.short_name || 'Admin'}
+                className="w-8 h-8 object-contain"
+              />
+            ) : (
+              <div
+                className="w-8 h-8 rounded-lg flex items-center justify-center"
+                style={{
+                  backgroundImage: `linear-gradient(to bottom right, ${currentLab?.color || '#0047CB'}, ${currentLab?.colorLight || '#00A3E0'})`
+                }}
+              >
+                <span className="text-white font-bold text-sm">
+                  {companyInfo?.short_name?.substring(0, 3) || 'LEG'}
+                </span>
+              </div>
+            )}
             <div className="hidden sm:block">
               <h1 className="text-lg font-semibold text-gray-800">
                 Admin Panel
@@ -43,6 +59,11 @@ export default function AdminHeader({ onToggleSidebar }) {
               </p>
             </div>
           </Link>
+        </div>
+
+        {/* Center: Lab Selector */}
+        <div className="flex-1 flex justify-center px-4">
+          <LabSelector />
         </div>
 
         {/* Right: User menu */}
@@ -63,7 +84,10 @@ export default function AdminHeader({ onToggleSidebar }) {
               onClick={() => setShowUserMenu(!showUserMenu)}
               className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
             >
-              <div className="w-8 h-8 rounded-full bg-eg-purple flex items-center justify-center">
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: currentLab?.color || '#0047CB' }}
+              >
                 <User className="w-4 h-4 text-white" />
               </div>
               <div className="hidden md:block text-left">

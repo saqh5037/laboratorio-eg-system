@@ -18,9 +18,9 @@
   :root {
     /* ==================== COLORES PRINCIPALES ==================== */
     /* Estos valores serán sobrescritos por JavaScript desde theme_config */
-    --color-primary: #7B68A6;           /* Pantone 2665U - Purple principal */
-    --color-secondary: #DDB5D5;         /* Pantone 250U - Pink secundario */
-    --color-accent: #8B8C8E;            /* CoolGray 9U - Gris frío oficial */
+    --color-primary: #0047CB;           /* DIMOGEN - Azul primario oficial */
+    --color-secondary: #00A3E0;         /* DIMOGEN - Cyan secundario */
+    --color-accent: #98CB59;            /* DIMOGEN - Verde Micro-Tec */
 
     --color-text-primary: #231F20;      /* Negro Pantone */
     --color-text-secondary: #8B8C8E;    /* Cool Gray */
@@ -66,13 +66,28 @@
 
     /* ==================== COMPATIBILITY ALIASES ==================== */
     /* Para mantener compatibilidad con código existente */
-    --color-eg-purple: 123 104 166;     /* RGB para Tailwind */
-    --color-eg-pink: 221 181 213;       /* RGB para Tailwind */
+    --color-eg-purple: 0 71 203;        /* RGB para Tailwind (DIMOGEN azul) */
+    --color-eg-pink: 0 163 224;         /* RGB para Tailwind (DIMOGEN cyan) */
     --color-eg-gray: 139 140 142;       /* RGB para Tailwind */
     --color-eg-dark: 35 31 32;          /* RGB para Tailwind */
     --color-eg-black: 35 31 32;
     --color-eg-white: 255 255 255;
     --color-border: 221 181 213;
+
+    /* ==================== DIMOGEN BRAND COLORS ==================== */
+    /* Paleta de colores corporativos de DIMOGEN (Grupo Micro-Tec) */
+    /* Colores oficiales del manual de identidad 2025 */
+    --color-dimogen-blue: #0047CB;        /* Azul primario oficial DIMOGEN */
+    --color-dimogen-cyan: #00A3E0;        /* Cyan (Biología Molecular accent) */
+    --color-dimogen-green: #98CB59;       /* Verde MICRO-TEC (Alimentos accent) */
+    --color-dimogen-dark-blue: #003F92;   /* Azul oscuro */
+    --color-dimogen-light-blue: #E6F0FF;  /* Azul claro background */
+
+    /* RGB versions for Tailwind opacity modifiers */
+    --color-dimogen-blue-rgb: 0 71 203;
+    --color-dimogen-cyan-rgb: 0 163 224;
+    --color-dimogen-green-rgb: 152 203 89;
+    --color-dimogen-dark-blue-rgb: 0 63 146;
 
     /* Design tokens (calculados desde variables principales - DINÁMICOS) */
     --radius: var(--border-radius-md);

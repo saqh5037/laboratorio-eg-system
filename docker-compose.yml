@@ -1,0 +1,277 @@
+# ==========================================
+# Laboratorio EG System - Docker Compose
+# ==========================================
+# Sistema completo de gestión de laboratorio clínico
+# Incluye: Frontend PWA, Config API, Results API, Messaging Bot, Sync Service
+# ==========================================
+
+services:
+  # ==========================================
+  # Sync Service - PostgreSQL to JSON sync
+  # ==========================================
+  sync-service:
+    build:
+      context: ./apps/sync-service
+      dockerfile: Dockerfile
+    container_name: lab-sync-service
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      HTTP_PORT: 3002
+      # Database labsisEG (sync-service uses LABSIS_* variable names)
+      # Production: labsisEGProduccion
+      LABSIS_HOST: ${DB_HOST:-host.docker.internal}
+      LABSIS_PORT: 5432
+      LABSIS_DB: ${DB_NAME_LABSIS:-labsisEG}
+      LABSIS_USER: labsis
+      LABSIS_PASSWORD: ${DB_PASSWORD:-labsis}
+      # Auth
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-24h}
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      - sync-data:/app/data
+      - sync-logs:/app/logs
+    ports:
+      - "3002:3002"
+    networks:
+      - lab-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "import('http').then(http => {http.get('http://localhost:3002/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})})"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ==========================================
+  # Results API - Patient results query service
+  # ==========================================
+  results-api:
+    build:
+      context: ./apps/results-api
+      dockerfile: Dockerfile
+    container_name: lab-results-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3003
+      # Database labsisEG
+      # Production: labsisEGProduccion
+      DB_HOST: ${DB_HOST:-host.docker.internal}
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME_LABSIS:-labsisEG}
+      DB_USER: labsis
+      DB_PASSWORD: ${DB_PASSWORD:-labsis}
+      DB_MAX_CONNECTIONS: ${DB_MAX_CONNECTIONS:-20}
+      DB_SSL: "false"
+      # Auth
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-24h}
+      # CORS
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173,http://localhost}
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      # PDF Generation
+      PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium-browser
+      PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+    volumes:
+      - results-temp:/app/temp
+      - results-logs:/app/logs
+      - results-templates:/app/templates
+    ports:
+      - "3003:3003"
+    networks:
+      - lab-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "import('http').then(http => {http.get('http://localhost:3003/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})})"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ==========================================
+  # Messaging Bot - Telegram & WhatsApp bot
+  # ==========================================
+  messaging-bot:
+    build:
+      context: ./apps/messaging-bot
+      dockerfile: Dockerfile
+    container_name: lab-messaging-bot
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3004
+      # Database lis_bot_comunicacion (Connection String)
+      # Production: lis_bot_comunicacioneg
+      BOT_DATABASE_URL: postgresql://labsis:${DB_PASSWORD:-labsis}@${DB_HOST:-host.docker.internal}:5432/${DB_NAME_BOT:-lis_bot_comunicacion}
+      # Individual vars for compatibility
+      DB_HOST: ${DB_HOST:-host.docker.internal}
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME_BOT:-lis_bot_comunicacion}
+      DB_USER: labsis
+      DB_PASSWORD: ${DB_PASSWORD:-labsis}
+      DB_MAX_CONNECTIONS: ${DB_MAX_CONNECTIONS:-20}
+      DB_SSL: "false"
+      # Labsis Database Connection (Read-Only)
+      # Production: labsisEGProduccion
+      LABSIS_DATABASE_URL: postgresql://labsis:${DB_PASSWORD:-labsis}@${DB_HOST:-host.docker.internal}:5432/${DB_NAME_LABSIS:-labsisEG}
+      # Telegram Bot
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_BOT_USERNAME: ${TELEGRAM_BOT_USERNAME}
+      # WhatsApp (Twilio)
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
+      TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER}
+      # Gemini AI
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      # Auth
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-24h}
+      # Public URL (for webhooks)
+      PUBLIC_URL: ${PUBLIC_URL:-http://localhost:3004}
+      # CORS
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173,http://localhost}
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      - messaging-logs:/app/logs
+      - messaging-data:/app/data
+    ports:
+      - "3004:3004"
+    networks:
+      - lab-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3004/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ==========================================
+  # Config API - Centralized configuration service
+  # ==========================================
+  config-api:
+    build:
+      context: ./apps/config-api
+      dockerfile: Dockerfile
+    container_name: lab-config-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3005
+      # Database lis_bot_comunicacion
+      # Production: lis_bot_comunicacioneg
+      DB_HOST: ${DB_HOST:-host.docker.internal}
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME_BOT:-lis_bot_comunicacion}
+      DB_USER: labsis
+      DB_PASSWORD: ${DB_PASSWORD:-labsis}
+      CONTROL_DB: ${CONTROL_DB:-${DB_NAME_BOT}}
+      DB_MAX_CONNECTIONS: ${DB_MAX_CONNECTIONS:-20}
+      DB_SSL: "false"
+      # Auth
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-8h}
+      # Public URL
+      PUBLIC_URL: ${PUBLIC_URL:-http://localhost:3005}
+      # CORS
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173,http://localhost}
+      # Cache
+      CACHE_TTL_SECONDS: ${CACHE_TTL_SECONDS:-300}
+      CACHE_CHECK_PERIOD_SECONDS: ${CACHE_CHECK_PERIOD_SECONDS:-60}
+      # WebSocket
+      WS_PORT: 3006
+      WS_HEARTBEAT_INTERVAL: ${WS_HEARTBEAT_INTERVAL:-30000}
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_FILE_PATH: logs/config-api.log
+      # Rate Limiting
+      RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-900000}
+      RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS:-100}
+    volumes:
+      - config-logs:/app/logs
+      - config-uploads:/app/uploads
+    ports:
+      - "3005:3005"
+      - "3006:3006"
+    networks:
+      - lab-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3005/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ==========================================
+  # Frontend PWA - React + Vite
+  # ==========================================
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3002/api}
+        VITE_CONFIG_API_URL: ${VITE_CONFIG_API_URL:-http://localhost:3005}
+        VITE_RESULTS_API_URL: ${VITE_RESULTS_API_URL:-http://localhost:3003}
+        VITE_MESSAGING_BOT_API_URL: ${VITE_MESSAGING_BOT_API_URL:-/api/messaging}
+        NODE_ENV: ${NODE_ENV:-production}
+    container_name: lab-web-frontend
+    restart: unless-stopped
+    environment:
+      # Runtime environment variables for entrypoint script
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:3002/api}
+      VITE_CONFIG_API_URL: ${VITE_CONFIG_API_URL:-http://localhost:3005}
+      VITE_RESULTS_API_URL: ${VITE_RESULTS_API_URL:-http://localhost:3003}
+      VITE_MESSAGING_BOT_API_URL: ${VITE_MESSAGING_BOT_API_URL:-/api/messaging}
+    ports:
+      - "${WEB_PORT:-80}:80"
+    networks:
+      - lab-network
+    depends_on:
+      - sync-service
+      - config-api
+      - results-api
+      - messaging-bot
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+# ==========================================
+# Networks
+# ==========================================
+networks:
+  lab-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# ==========================================
+# Volumes
+# ==========================================
+volumes:
+  # Sync Service
+  sync-data:
+    driver: local
+  sync-logs:
+    driver: local
+
+  # Results API
+  results-temp:
+    driver: local
+  results-logs:
+    driver: local
+  results-templates:
+    driver: local
+
+  # Messaging Bot
+  messaging-logs:
+    driver: local
+  messaging-data:
+    driver: local
+
+  # Config API
+  config-logs:
+    driver: local
+  config-uploads:
+    driver: local

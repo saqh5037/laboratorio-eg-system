@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { renderIcon } from '../../../utils/iconMapper';
 import { LOGO_SPECS } from '../../../constants/brandDesignSystem';
 
@@ -20,6 +20,14 @@ const ICON_WRAPPER_STYLES = "bg-gradient-to-br from-eg-purple/20 to-eg-pink/20 r
  * @param {Object} props.content - Todo el contenido de landing
  */
 const NosotrosSection = ({ section, content }) => {
+  // Parallax hooks
+  const sectionRef = useRef(null);
+  const { scrollY } = useScroll();
+  const y1 = useTransform(scrollY, [0, 800], [0, 120]);
+  const y2 = useTransform(scrollY, [0, 800], [0, 60]);
+  const opacity = useTransform(scrollY, [0, 400], [1, 0.8]);
+  const scale = useTransform(scrollY, [0, 400], [1, 1.05]);
+
   // Extraer configuración de layout (si existe)
   const layoutConfig = section.layout_config || {};
   const {
@@ -70,13 +78,17 @@ const NosotrosSection = ({ section, content }) => {
 
   return (
     <section
+      ref={sectionRef}
       id={section.section_key || 'nosotros'}
       className={`w-full min-h-screen bg-${backgroundColor} relative overflow-hidden`}
     >
-      {/* Decorative Blobs */}
+      {/* Decorative Blobs with Parallax */}
       {decorativeBlobs && (
         <>
-          <div className="absolute top-0 left-0 w-[500px] h-[500px] opacity-30 pointer-events-none z-0 animate-blob-float">
+          <motion.div
+            style={{ y: y1, scale }}
+            className="absolute top-0 left-0 w-[500px] h-[500px] opacity-30 pointer-events-none z-0"
+          >
             <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
               <path
                 fill="#DDB5D5"
@@ -84,11 +96,11 @@ const NosotrosSection = ({ section, content }) => {
                 transform="translate(100 100)"
               />
             </svg>
-          </div>
+          </motion.div>
 
-          <div
-            className="absolute bottom-0 right-0 w-[600px] h-[600px] opacity-40 pointer-events-none z-0 animate-blob-float"
-            style={{ animationDelay: '2s' }}
+          <motion.div
+            style={{ y: y2, opacity }}
+            className="absolute bottom-0 right-0 w-[600px] h-[600px] opacity-40 pointer-events-none z-0"
           >
             <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
               <path
@@ -97,31 +109,60 @@ const NosotrosSection = ({ section, content }) => {
                 transform="translate(100 100)"
               />
             </svg>
-          </div>
+          </motion.div>
+
+          {/* Floating decorative elements */}
+          <motion.div
+            className="absolute top-1/4 right-[15%] w-16 h-16 bg-eg-pink/20 rounded-full blur-xl hidden lg:block"
+            animate={{ y: [0, -20, 0], scale: [1, 1.2, 1] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <motion.div
+            className="absolute bottom-1/3 left-[10%] w-12 h-12 bg-eg-purple/20 rounded-full blur-lg hidden lg:block"
+            animate={{ y: [0, 15, 0], scale: [1.1, 1, 1.1] }}
+            transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+          />
+          <motion.div
+            className="absolute top-1/2 right-[8%] w-8 h-8 bg-white/30 rounded-full hidden lg:block"
+            animate={{ y: [0, -12, 0], x: [0, 5, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+          />
         </>
       )}
 
-      {/* Hero Header */}
+      {/* Hero Header with animations */}
       <header className="relative z-10 w-full pt-12 pb-8 text-center px-6 md:px-12 lg:px-24">
         <div className="max-w-[1600px] mx-auto">
-          <h1
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
             className="text-4xl md:text-5xl lg:text-6xl font-normal text-white mb-4 tracking-tight leading-none"
             style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)' }}
           >
             {section.title || nosotrosHeader.title}
-          </h1>
-          <p
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
             className="text-lg md:text-xl lg:text-2xl text-white max-w-4xl mx-auto leading-relaxed mb-3"
             style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.7)' }}
           >
             {section.subtitle || nosotrosHeader.subtitle}
-          </p>
-          <p
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.4 }}
             className="text-base md:text-lg text-white"
             style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.7)' }}
           >
             RIF {LOGO_SPECS.rif} · {nosotrosHeader.badge}
-          </p>
+          </motion.p>
         </div>
       </header>
 
@@ -129,46 +170,70 @@ const NosotrosSection = ({ section, content }) => {
       <div id="historia" className="relative z-10 w-full py-8 md:py-12 scroll-mt-20">
         <div className="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10 mb-12">
-            {/* Content Card */}
+            {/* Content Card with enhanced animations */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+              whileHover={{ y: -8, boxShadow: '0 25px 70px rgba(123,104,166,0.3)' }}
               className={`${CARD_STYLES} rounded-3xl p-10 md:p-14`}
             >
-              <h2 className="text-3xl md:text-4xl font-normal text-eg-purple mb-6 leading-tight">
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-3xl md:text-4xl font-normal text-eg-purple mb-6 leading-tight"
+              >
                 {historiaTitle}
-              </h2>
+              </motion.h2>
               {historiaParagraphs.map((paragraph, index) => (
-                <p
+                <motion.p
                   key={index}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
                   className="text-eg-dark mb-6 text-lg md:text-xl font-normal leading-relaxed last:mb-0"
                 >
                   {paragraph.content}
-                </p>
+                </motion.p>
               ))}
             </motion.div>
 
-            {/* Image Card */}
+            {/* Image Card with enhanced animations */}
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
+              initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="relative"
+              transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="relative group"
             >
-              <div className="w-full h-full min-h-[400px] rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(123,104,166,0.3)] border-4 border-eg-pink/20">
-                <img
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.4 }}
+                className="w-full h-full min-h-[400px] rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(123,104,166,0.3)] border-4 border-eg-pink/20"
+              >
+                <motion.img
                   src={
                     historiaImage?.image_url ||
                     'https://images.unsplash.com/photo-1581595220892-b0739db3ba8c?w=800&h=600&fit=crop'
                   }
                   alt={historiaImage?.content || 'Equipo del laboratorio'}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.7 }}
                 />
-              </div>
-              <div className="absolute -bottom-6 -left-6 bg-gradient-to-r from-eg-purple to-eg-pink text-white px-8 py-6 rounded-2xl shadow-2xl transform rotate-[-5deg] hover:rotate-0 transition-transform duration-300">
+              </motion.div>
+              <motion.div
+                initial={{ rotate: -5, scale: 0.9, opacity: 0 }}
+                whileInView={{ rotate: -5, scale: 1, opacity: 1 }}
+                whileHover={{ rotate: 0, scale: 1.05 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.3, type: 'spring', stiffness: 200 }}
+                className="absolute -bottom-6 -left-6 bg-gradient-to-r from-eg-purple to-eg-pink text-white px-8 py-6 rounded-2xl shadow-2xl"
+              >
                 {historiaBadge.split(' ').length > 2 ? (
                   <>
                     <span className="text-4xl font-normal block">
@@ -181,7 +246,7 @@ const NosotrosSection = ({ section, content }) => {
                 ) : (
                   <span className="text-4xl font-normal block">{historiaBadge}</span>
                 )}
-              </div>
+              </motion.div>
             </motion.div>
           </div>
         </div>
@@ -189,37 +254,72 @@ const NosotrosSection = ({ section, content }) => {
 
       {/* Valores Corporativos - Grid de 5 columnas */}
       <div id="valores" className="relative z-10 w-full py-8 md:py-12 bg-gradient-to-b from-white via-eg-pink/20 to-eg-purple/15 overflow-hidden scroll-mt-20">
+        {/* Decorative floating elements for this section */}
+        <motion.div
+          className="absolute top-20 left-[5%] w-10 h-10 bg-eg-purple/10 rounded-full blur-lg hidden lg:block"
+          animate={{ y: [0, -15, 0], scale: [1, 1.15, 1] }}
+          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute bottom-20 right-[8%] w-14 h-14 bg-eg-pink/15 rounded-full blur-xl hidden lg:block"
+          animate={{ y: [0, 20, 0], scale: [1.1, 1, 1.1] }}
+          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+        />
+
         <div className="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24 relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
             className="text-center mb-8"
           >
-            <h2 className="text-3xl md:text-4xl font-normal text-eg-purple mb-4 leading-tight">
+            <motion.h2
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-3xl md:text-4xl font-normal text-eg-purple mb-4 leading-tight"
+            >
               Nuestros Valores
-            </h2>
-            <p className="text-lg md:text-xl text-eg-dark max-w-3xl mx-auto leading-relaxed">
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="text-lg md:text-xl text-eg-dark max-w-3xl mx-auto leading-relaxed"
+            >
               Los principios que nos guían cada día
-            </p>
+            </motion.p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8">
             {valuesWithIcons.map((value, index) => (
-              <div key={value.id || index} className={`value-card ${CARD_STYLES} text-center`}>
-                <div
-                  className={`${ICON_WRAPPER_STYLES} inline-flex mb-6 animate-float`}
-                  style={{ animationDelay: `${index * 0.2}s` }}
+              <motion.div
+                key={value.id || index}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ y: -10, boxShadow: '0 25px 60px rgba(123,104,166,0.25)' }}
+                className={`value-card ${CARD_STYLES} text-center`}
+              >
+                <motion.div
+                  className={`${ICON_WRAPPER_STYLES} inline-flex mb-6`}
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 3 + index * 0.5, repeat: Infinity, ease: 'easeInOut' }}
+                  whileHover={{ scale: 1.15, rotate: 10 }}
                 >
                   {value.icon}
-                </div>
+                </motion.div>
                 <h3 className="text-2xl font-normal text-eg-purple mb-3 leading-tight">
                   {value.title}
                 </h3>
                 <p className="text-eg-dark text-base font-normal leading-relaxed">
                   {value.description}
                 </p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -227,27 +327,67 @@ const NosotrosSection = ({ section, content }) => {
 
       {/* Propósito - Tarjeta destacada */}
       <div className="relative z-10 w-full py-20 md:py-24 bg-gradient-to-br from-eg-purple/43 via-eg-pink/28 to-eg-purple/38 overflow-hidden">
+        {/* Floating decorative elements */}
+        <motion.div
+          className="absolute top-10 left-[10%] w-20 h-20 bg-white/10 rounded-full blur-xl hidden lg:block"
+          animate={{ y: [0, -25, 0], scale: [1, 1.2, 1] }}
+          transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute bottom-10 right-[10%] w-16 h-16 bg-eg-pink/20 rounded-full blur-lg hidden lg:block"
+          animate={{ y: [0, 20, 0], x: [0, 10, 0] }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+        />
+
         <div className="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24 relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
             className="max-w-5xl mx-auto"
           >
-            <div
+            <motion.div
+              whileHover={{ y: -8, boxShadow: '0 30px 80px rgba(123,104,166,0.35)' }}
+              transition={{ duration: 0.4 }}
               className={`${CARD_STYLES} rounded-3xl p-10 md:p-14 text-center border-2 border-eg-purple/40`}
             >
-              <h2 className="text-4xl md:text-5xl font-normal text-eg-purple mb-8 leading-tight">
+              <motion.h2
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-4xl md:text-5xl font-normal text-eg-purple mb-8 leading-tight"
+              >
                 Nuestro Propósito
-              </h2>
-              <p className="text-xl md:text-2xl text-eg-dark font-normal leading-relaxed mb-6">
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="text-xl md:text-2xl text-eg-dark font-normal leading-relaxed mb-6"
+              >
                 Ser el laboratorio clínico que necesitas, combinando excelencia técnica con calidez
                 humana.
-              </p>
-              <p className="text-2xl md:text-3xl text-eg-purple font-normal leading-relaxed">
-                Nos encanta atenderte con amor ❤️
-              </p>
-            </div>
+              </motion.p>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                className="text-2xl md:text-3xl text-eg-purple font-normal leading-relaxed"
+              >
+                Nos encanta atenderte con amor{' '}
+                <motion.span
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="inline-block"
+                >
+                  ❤️
+                </motion.span>
+              </motion.p>
+            </motion.div>
           </motion.div>
         </div>
       </div>

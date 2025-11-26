@@ -1,4 +1,7 @@
-require('dotenv').config();
+// CRÍTICO: Validar variables de entorno ANTES de importar cualquier cosa
+// Si faltan variables requeridas, el servidor NO arrancará (fail-fast)
+const config = require('./config/env');
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -22,24 +25,33 @@ const navigationRoutes = require('./routes/navigation.routes');
 const pwaRoutes = require('./routes/pwa.routes');
 const backupRoutes = require('./routes/backup.routes');
 const laboratoriesRoutes = require('./routes/laboratories.routes');
+const dimogenRoutes = require('./routes/dimogen.routes');
+const uploadRoutes = require('./routes/upload.routes');
 
 const app = express();
-const PORT = process.env.PORT || 3005;
+const PORT = config.port;
 
 // ========================================
 // MIDDLEWARE
 // ========================================
 
-// Security headers
-app.use(helmet());
+// Trust proxy - Necesario para X-Forwarded-For detrás de Nginx
+app.set('trust proxy', 1);
 
-// CORS
-const corsOrigins = process.env.CORS_ORIGIN
-  ? process.env.CORS_ORIGIN.split(',')
-  : ['http://localhost:5173', 'http://localhost:5174'];
+// Security headers - Configurar CSP para permitir imágenes cross-origin
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      "img-src": ["'self'", "data:", "http:", "https:"],
+    },
+  },
+}));
 
+// CORS - Usar configuración validada
 app.use(cors({
-  origin: corsOrigins,
+  origin: config.cors.origins,
   credentials: true
 }));
 
@@ -47,9 +59,12 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Servir archivos estáticos de uploads
+// Servir archivos estáticos de uploads con CORS
 const path = require('path');
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/uploads', cors({
+  origin: config.cors.origins,
+  credentials: true
+}), express.static(path.join(__dirname, '../uploads')));
 
 // Rate limiting - Configuración más permisiva para desarrollo
 const limiter = rateLimit({
@@ -177,6 +192,8 @@ app.use('/api/navigation', navigationRoutes);
 app.use('/api/pwa', pwaRoutes);
 app.use('/api/backup', backupRoutes);
 app.use('/api/laboratories', laboratoriesRoutes);
+app.use('/api/dimogen', dimogenRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Root
 app.get('/', (req, res) => {
@@ -289,7 +306,7 @@ async function startServer() {
     app.listen(PORT, () => {
       logger.info(`🚀 Config API escuchando en puerto ${PORT}`);
       logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-      logger.info(`CORS origins: ${corsOrigins.join(', ')}`);
+      logger.info(`CORS origins: ${config.cors.origins.join(', ')}`);
       logger.info('');
       logger.info('Endpoints disponibles:');
       logger.info(`  - Health check: http://localhost:${PORT}/health`);

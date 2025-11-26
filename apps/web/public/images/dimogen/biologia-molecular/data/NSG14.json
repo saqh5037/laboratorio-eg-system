@@ -1,0 +1,44 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "PANEL DE 113 ONCOGENES (NGS)",
+    "descripcion": "Panel de secuenciación de nueva generación que analiza 113 genes asociados a cáncer, detectando mutaciones somáticas, inserciones/deleciones, y variantes de número de copias para guiar terapias dirigidas.",
+    "precio": 23032.00,
+    "moneda": "USD",
+    "codigo": "NSG14",
+    "genesIncluidos": {
+      "tiposAlteraciones": ["Mutaciones puntuales (SNVs)", "Inserciones/deleciones (InDels)", "Variantes de número de copias (CNVs)", "Fusiones génicas seleccionadas"],
+      "genesDestacados": ["EGFR", "KRAS", "NRAS", "BRAF", "PIK3CA", "TP53", "BRCA1", "BRCA2", "ALK", "ROS1", "MET", "HER2/ERBB2", "KIT", "PDGFRA", "IDH1", "IDH2", "FLT3", "NPM1", "DNMT3A", "JAK2"],
+      "totalGenes": 113
+    }
+  },
+  "especificaciones": {
+    "metodologia": "Secuenciación de Nueva Generación (NGS)",
+    "tipoMuestra": "Tejido tumoral FFPE / Sangre periférica (biopsia líquida) / Médula ósea",
+    "tiempoEntrega": "10-15 Días hábiles",
+    "temperaturaTransporte": "Temperatura ambiente (FFPE) / Refrigeración 2-8°C (sangre/médula)"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-54.png"},
+    "paginaAdicional": {"archivo": "pages/DimogenBiologiaMolecular-55.png"},
+    "recursos": [{
+      "archivo": "assets/NSG14-panel-oncogenes-113-genes.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D representando secuenciación de ADN y análisis genómico de múltiples oncogenes en cáncer.",
+      "altText": "Panel oncogenes NGS secuenciación 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "El Panel de 113 Oncogenes utiliza tecnología de secuenciación de nueva generación (NGS) para analizar simultáneamente los genes más relevantes en oncología. Permite identificar alteraciones genéticas accionables que determinan elegibilidad para terapias dirigidas, inmunoterapia, y pronóstico del paciente oncológico.",
+    "paraQuienEsRecomendada": "Cáncer de pulmón no microcítico (NSCLC) avanzado. Melanoma metastásico. Cáncer colorrectal metastásico. Cáncer de mama triple negativo o HER2+. Tumores de origen primario desconocido. Neoplasias hematológicas (leucemias, linfomas). Tumores sólidos avanzados sin opciones terapéuticas estándar.",
+    "preparacion": "Tejido FFPE: bloque o 10 cortes de 5μm en láminas sin teñir. Biopsia líquida: 20 mL sangre en tubos especiales cfDNA. Contenido tumoral mínimo requerido: >20%.",
+    "interpretacionResultados": {
+      "positivo": "Mutaciones con terapias aprobadas (Nivel 1): EGFR (osimertinib), BRAF V600E (vemurafenib), ALK/ROS1 fusiones (crizotinib). Mutaciones con evidencia clínica (Nivel 2): PIK3CA (alpelisib), HER2 amplificación. Variantes de significado incierto (VUS): requieren correlación clínica.",
+      "negativo": "Ausencia de variantes patogénicas detectadas. No descarta mutaciones en genes no incluidos o alteraciones epigenéticas."
+    },
+    "notasClinicas": "Los resultados deben interpretarse en junta molecular multidisciplinaria. El reporte incluye clasificación de variantes según AMP/ASCO/CAP y recomendaciones terapéuticas basadas en evidencia. La biopsia líquida es alternativa cuando el tejido es insuficiente pero tiene menor sensibilidad para algunas alteraciones."
+  },
+  "metadatos": {"paginaOriginal": 53, "archivoOrigen": "DimogenBiologíaMolecular-54.pdf", "fechaExtraccion": "2025-11-25"}
+}

@@ -61,7 +61,7 @@ const FavoritesPage = () => {
   const [showExportModal, setShowExportModal] = useState(false);
   const [expandedFolders, setExpandedFolders] = useState(new Set());
   const [newFolderName, setNewFolderName] = useState('');
-  const [newFolderColor, setNewFolderColor] = useState('#7B68A6');
+  const [newFolderColor, setNewFolderColor] = useState('#0047CB');
 
   // Favoritos filtrados y ordenados
   const filteredFavorites = useMemo(() => {
@@ -113,7 +113,7 @@ const FavoritesPage = () => {
     if (newFolderName.trim()) {
       createNewFolder(newFolderName.trim(), newFolderColor);
       setNewFolderName('');
-      setNewFolderColor('#7B68A6');
+      setNewFolderColor('#0047CB');
       setShowCreateFolder(false);
     }
   };
@@ -148,16 +148,16 @@ const FavoritesPage = () => {
 
   // Colores predefinidos para carpetas
   const folderColors = [
-    '#7B68A6', '#E63946', '#F77F00', '#FCBF49', 
-    '#06D6A0', '#118AB2', '#073B4C', '#8B5CF6'
+    '#0047CB', '#00A3E0', '#98CB59', '#E63946',
+    '#F77F00', '#06D6A0', '#118AB2', '#8B5CF6'
   ];
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-eg-purple mx-auto"></div>
-          <p className="mt-4 text-eg-gray">Cargando favoritos...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-gray-600">Cargando favoritos...</p>
         </div>
       </div>
     );

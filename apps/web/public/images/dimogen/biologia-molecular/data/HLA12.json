@@ -1,0 +1,38 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "HLA-B27",
+    "descripcion": "Detecta la expresión del antígeno HLA-B27 en sangre. Su uso se emplea con fines diagnósticos de enfermedades autoinmunes.",
+    "precio": 1306.00,
+    "moneda": "USD",
+    "codigo": "HLA12"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Sangre total con EDTA / Sangre Total con EDTA K2",
+    "tiempoEntrega": "3 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-26.png"},
+    "recursos": [{
+      "archivo": "assets/HLA12-antigenos-hla-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D del sistema inmunológico mostrando antígenos HLA-B27 en la superficie celular interactuando con células del sistema inmune.",
+      "altText": "Antígenos HLA-B27 y sistema inmune 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "HLA-B27 es un antígeno leucocitario humano (proteína de superficie celular) fuertemente asociado con espondiloartropatías, un grupo de enfermedades autoinmunes que afectan principalmente la columna vertebral. Está presente en 90-95% de pacientes con espondilitis anquilosante, pero también en 8% de la población general sana.",
+    "paraQuienEsRecomendada": "Pacientes con dolor de espalda inflamatorio crónico (peor en reposo, mejora con ejercicio). Sospecha de espondilitis anquilosante. Artritis reactiva. Artritis psoriásica. Enfermedad inflamatoria intestinal con síntomas articulares. Uveítis anterior recurrente.",
+    "preparacion": "No requiere ayuno. No hay restricciones especiales.",
+    "interpretacionResultados": {
+      "positivo": "Presencia del alelo HLA-B27. Aumenta la probabilidad de espondiloartropatía en contexto clínico apropiado, pero NO es diagnóstico por sí solo. 8% de personas sanas son HLA-B27 positivas.",
+      "negativo": "Ausencia del alelo HLA-B27. Reduce pero no descarta espondiloartropatía. 5-10% de pacientes con espondilitis anquilosante son HLA-B27 negativos."
+    },
+    "notasClinicas": "El HLA-B27 es un factor de susceptibilidad genética, no una prueba diagnóstica definitiva. Debe interpretarse junto con la clínica, imágenes (radiografía, RMN) y otros marcadores inflamatorios."
+  },
+  "metadatos": {"paginaOriginal": 25, "archivoOrigen": "DimogenBiologíaMolecular-26.pdf", "fechaExtraccion": "2025-11-25"}
+}

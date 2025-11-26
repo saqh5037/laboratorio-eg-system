@@ -3,7 +3,9 @@
  * Maneja la comunicación con el servicio de resultados de laboratorio
  */
 
-const RESULTS_API_URL = import.meta.env.VITE_RESULTS_API_URL || 'http://localhost:3003/api';
+import { config } from '../config/env.js';
+
+const RESULTS_API_URL = config.VITE_RESULTS_API_URL;
 
 class ResultsApiError extends Error {
   constructor(message, code, status) {
@@ -52,7 +54,7 @@ async function fetchApi(endpoint, options = {}) {
  * Autenticar paciente con código de lealtad y fecha de nacimiento
  */
 export async function autenticarPaciente(codigoLealtad, fechaNacimiento) {
-  const data = await fetchApi('/auth/verify', {
+  const data = await fetchApi('/api/auth/verify', {
     method: 'POST',
     body: JSON.stringify({
       codigo_lealtad: codigoLealtad,
@@ -109,7 +111,7 @@ export async function obtenerOrdenes() {
     throw new ResultsApiError('No hay sesión activa', 'NO_AUTH', 401);
   }
 
-  const data = await fetchApi('/resultados/ordenes', {
+  const data = await fetchApi('/api/resultados/ordenes', {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -129,7 +131,7 @@ export async function obtenerResultadosOrden(numeroOrden) {
     throw new ResultsApiError('No hay sesión activa', 'NO_AUTH', 401);
   }
 
-  const data = await fetchApi(`/resultados/orden/${numeroOrden}`, {
+  const data = await fetchApi(`/api/resultados/orden/${numeroOrden}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -149,7 +151,7 @@ export async function obtenerResultadosOrdenConHistorico(numeroOrden) {
     throw new ResultsApiError('No hay sesión activa', 'NO_AUTH', 401);
   }
 
-  const data = await fetchApi(`/resultados/orden/${numeroOrden}/con-historico`, {
+  const data = await fetchApi(`/api/resultados/orden/${numeroOrden}/con-historico`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -241,7 +243,7 @@ export async function getHistoricoResultados(pruebaId, pacienteCi, limit = 10) {
     throw new ResultsApiError('No hay sesión activa', 'NO_AUTH', 401);
   }
 
-  const data = await fetchApi(`/resultados/historico/${pruebaId}/${pacienteCi}?limit=${limit}`, {
+  const data = await fetchApi(`/api/resultados/historico/${pruebaId}/${pacienteCi}?limit=${limit}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -275,7 +277,7 @@ export async function getHistoricoMultiple(pruebaIds, pacienteCi, limit = 10, fe
   if (fechaHasta) queryParams += `&fecha_hasta=${fechaHasta}`;
 
   const data = await fetchApi(
-    `/resultados/historico-multiple/${pacienteCi}?${queryParams}`,
+    `/api/resultados/historico-multiple/${pacienteCi}?${queryParams}`,
     {
       method: 'GET',
       headers: {
@@ -306,7 +308,7 @@ export async function getHeatMapData(pacienteCi, limit = 10, fechaDesde = null, 
   if (fechaDesde) queryParams += `&fecha_desde=${fechaDesde}`;
   if (fechaHasta) queryParams += `&fecha_hasta=${fechaHasta}`;
 
-  const data = await fetchApi(`/resultados/heatmap/${pacienteCi}?${queryParams}`, {
+  const data = await fetchApi(`/api/resultados/heatmap/${pacienteCi}?${queryParams}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,

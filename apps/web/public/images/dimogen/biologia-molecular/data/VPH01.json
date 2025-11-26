@@ -1,0 +1,58 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "DETECCIÓN DE VPH",
+    "descripcion": "Detecta 14 genotipos de alto riesgo por infección del virus del papiloma humano. La prueba hace una genotipificación parcial de los Genotipos 16, 18 y 45 además de una mezcla de alto riesgo que incluye los genotipos (31, 33, 35, 39, 51, 52, 56, 58, 59, 66 y 68).",
+    "precio": 1061.00,
+    "moneda": "USD",
+    "codigo": "VPH01"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Exudado vaginal/uretral",
+    "tiempoEntrega": "1 Día hábil",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {
+      "archivo": "pages/DimogenBiologiaMolecular-11.png",
+      "descripcion": "Página completa del catálogo",
+      "dimensiones": {
+        "width": 2481,
+        "height": 3508
+      }
+    },
+    "recursos": [
+      {
+        "archivo": "assets/VPH01-coilocitos-microscopio.jpg",
+        "tipo": "microscopio",
+        "descripcion": "Imagen microscópica de coilocitos - células epiteliales escamosas con cambios citopáticos característicos de infección por VPH. Se observan células con halos perinucleares (koilocitosis) y núcleos agrandados e irregulares, hallazgos típicos del efecto citopático viral.",
+        "dimensiones": {
+          "width": 1340,
+          "height": 1380
+        },
+        "formato": "jpg",
+        "tamano": "720KB",
+        "altText": "Coilocitos vistos al microscopio - células infectadas por VPH",
+        "aptoParaWeb": true
+      }
+    ]
+  },
+  "informacionAdicional": {
+    "queEs": "El Virus del Papiloma Humano (VPH) es una de las infecciones de transmisión sexual más comunes a nivel mundial. Existen más de 200 tipos de VPH, de los cuales aproximadamente 40 afectan el área genital. Esta prueba detecta específicamente los 14 genotipos clasificados como de alto riesgo oncogénico, es decir, aquellos que tienen mayor probabilidad de causar cambios celulares que pueden evolucionar a cáncer cervicouterino.",
+    "paraQuienEsRecomendada": "Mujeres sexualmente activas mayores de 30 años como parte del tamizaje rutinario de cáncer cervicouterino. Mujeres de cualquier edad con resultados anormales en citología cervical (Papanicolaou). Mujeres con antecedentes de lesiones cervicales previas. Parejas sexuales de personas diagnosticadas con VPH. Hombres con lesiones genitales sospechosas o como parte del seguimiento de parejas.",
+    "preparacion": "No requiere ayuno. Evitar relaciones sexuales 48 horas antes de la toma de muestra. No usar duchas vaginales, óvulos, cremas o medicamentos vaginales 48 horas antes. No realizarse durante la menstruación, esperar al menos 5 días después de que termine el período. Preferiblemente no estar embarazada al momento del estudio.",
+    "interpretacionResultados": {
+      "positivo": "Indica la presencia de uno o más genotipos de VPH de alto riesgo en la muestra. No significa que se tenga cáncer, sino que existe un riesgo aumentado que requiere seguimiento médico. Si se detectan los genotipos 16, 18 o 45, el riesgo es mayor y se recomienda colposcopía. Para otros genotipos de alto riesgo detectados, se sugiere repetir la prueba en 12 meses junto con citología.",
+      "negativo": "No se detectaron genotipos de VPH de alto riesgo en la muestra analizada. Sin embargo, esto no descarta infecciones previas o futuras. Se recomienda repetir la prueba cada 3-5 años como parte del tamizaje de rutina en mujeres mayores de 30 años."
+    },
+    "frecuenciaRecomendada": "En mujeres de 30-65 años: cada 5 años si se realiza junto con citología (co-test), o cada 3 años si se realiza solo la prueba de VPH. Mujeres con resultados previos anormales pueden requerir seguimiento más frecuente según indicación médica.",
+    "notasClinicas": "Los genotipos 16 y 18 son responsables de aproximadamente el 70% de todos los casos de cáncer cervicouterino a nivel mundial. El genotipo 45 se asocia con adenocarcinoma cervical. La vacunación contra VPH no afecta los resultados de esta prueba, ya que detecta infecciones activas. La prueba no determina si la infección es nueva o de larga data. Una infección por VPH puede resolverse espontáneamente en el 90% de los casos dentro de los 2 años siguientes, especialmente en mujeres jóvenes con sistema inmune saludable."
+  },
+  "metadatos": {
+    "paginaOriginal": 10,
+    "archivoOrigen": "DimogenBiologíaMolecular-11.pdf",
+    "fechaExtraccion": "2025-11-25"
+  }
+}

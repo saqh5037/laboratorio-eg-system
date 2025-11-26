@@ -18,7 +18,12 @@ out/
 .env
 .env.local
 .env*.local
-**/env
+apps/*/.env
+apps/**/.env
+!apps/*/.env.example
+!apps/*/.env.production.example
+!.env.example
+!.env.production.example
 
 # Logs
 logs/
@@ -56,3 +61,12 @@ output/
 # Backups SQL grandes
 backups/**/*.backup
 backups/**/*.sql
+
+# Deployment instances (contain secrets)
+deployment/instances/
+
+# Development instances (contain secrets/tokens)
+dev-instances/
+
+# PIDs
+.pids/

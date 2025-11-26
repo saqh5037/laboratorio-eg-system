@@ -1,0 +1,38 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "DETECCIÓN DE HELICOBACTER PYLORI Y RESISTENCIA A CLARITROMICINA",
+    "descripcion": "Detecta simultáneamente el agente común de gastritis crónica Helicobacter pylori y mutaciones de A2143G, A2142G y A2142C en el gen 23S rRNA responsable de la resistencia a la claritromicina de H. pylori.",
+    "precio": 853.00,
+    "moneda": "USD",
+    "codigo": "HPL22"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Heces",
+    "tiempoEntrega": "5 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-25.png"},
+    "recursos": [{
+      "archivo": "assets/HPL22-helicobacter-pylori-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D de la bacteria Helicobacter pylori mostrando su forma helicoidal característica con flagelos que le permiten moverse en el ambiente ácido del estómago.",
+      "altText": "Bacteria Helicobacter pylori 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "Helicobacter pylori es una bacteria que infecta el revestimiento del estómago. Aproximadamente 50% de la población mundial está infectada. Es la principal causa de gastritis crónica, úlcera péptica y está asociada con cáncer gástrico. Esta prueba no solo detecta la bacteria sino también si es resistente a claritromicina, un antibiótico clave en el tratamiento.",
+    "paraQuienEsRecomendada": "Pacientes con síntomas de gastritis crónica o dispepsia. Personas con antecedentes familiares de cáncer gástrico. Pacientes con úlcera péptica. Seguimiento post-tratamiento de erradicación. Pacientes que han fallado tratamiento previo.",
+    "preparacion": "No requiere ayuno. Suspender inhibidores de bomba de protones 2 semanas antes y antibióticos 4 semanas antes de la prueba.",
+    "interpretacionResultados": {
+      "positivo": "H. pylori detectado. Si hay mutaciones de resistencia, se reportan específicamente (A2143G, A2142G, A2142C). La presencia de resistencia indica necesidad de esquema de tratamiento alternativo sin claritromicina.",
+      "negativo": "No se detectó H. pylori ni genes de resistencia. Si hay alta sospecha clínica, considerar repetir o usar método alternativo."
+    },
+    "notasClinicas": "Las mutaciones en el gen 23S rRNA confieren resistencia a claritromicina en 70-100% de los casos. Conocer el perfil de resistencia permite elegir el tratamiento más efectivo y evitar fracasos terapéuticos."
+  },
+  "metadatos": {"paginaOriginal": 24, "archivoOrigen": "DimogenBiologíaMolecular-25.pdf", "fechaExtraccion": "2025-11-25"}
+}

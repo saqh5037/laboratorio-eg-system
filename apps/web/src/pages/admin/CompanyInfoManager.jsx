@@ -1,20 +1,40 @@
 import { useState, useEffect } from 'react';
 import { useCompanyInfo } from '../../hooks/useCompanyInfo';
 import { useAdminAuth } from '../../hooks/useAdminAuth';
+import { useLab } from '../../contexts/LabContext';
 import {
   Building2, Mail, Phone, MapPin, Clock, Share2, Search, Globe,
-  Smartphone, Save, RefreshCw, AlertCircle, CheckCircle, Loader2, Image
+  Smartphone, Save, RefreshCw, AlertCircle, CheckCircle, Loader2, Image, Upload, Trash2
 } from 'lucide-react';
+
+const CONFIG_API_URL = import.meta.env.VITE_CONFIG_API_URL || 'http://localhost:3005';
 
 const CompanyInfoManager = () => {
   const { companyInfo, loading, error, updateCompanyInfo, fetchCompanyInfo } = useCompanyInfo();
   const { token } = useAdminAuth();
+  const { activeLab } = useLab();
 
   const [formData, setFormData] = useState({});
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState(null);
   const [activeTab, setActiveTab] = useState('identity');
   const [hasChanges, setHasChanges] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({});
+
+  // Helper para construir URLs de logos correctamente
+  const getLogoUrl = (url) => {
+    if (!url) return '';
+    // Si la URL empieza con /uploads/, agregarle el CONFIG_API_URL
+    if (url.startsWith('/uploads/')) {
+      return CONFIG_API_URL + url;
+    }
+    // Si ya tiene http:// o https://, devolverla tal cual
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    // Para rutas relativas locales como /Logo.png
+    return url;
+  };
 
   // Cargar datos iniciales
   useEffect(() => {
@@ -54,6 +74,173 @@ const CompanyInfoManager = () => {
     if (companyInfo) {
       setFormData(companyInfo);
       setHasChanges(false);
+    }
+  };
+
+  const handleLogoUpload = async (event, logoType) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validar tamaño (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      setSaveMessage({ type: 'error', text: 'El archivo es muy grande. Máximo 5MB.' });
+      return;
+    }
+
+    // Validar tipo
+    const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml'];
+    if (!validTypes.includes(file.type)) {
+      setSaveMessage({ type: 'error', text: 'Formato no válido. Use PNG, JPG, WebP o SVG.' });
+      return;
+    }
+
+    try {
+      setUploadProgress(prev => ({ ...prev, [logoType]: 0 }));
+
+      const formDataUpload = new FormData();
+      formDataUpload.append('file', file);
+      formDataUpload.append('type', logoType);
+
+      const uploadUrl = activeLab
+        ? `${CONFIG_API_URL}/api/company/logos/upload?lab=${activeLab}`
+        : `${CONFIG_API_URL}/api/company/logos/upload`;
+
+      const response = await fetch(uploadUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formDataUpload
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Error al subir logo');
+      }
+
+      const result = await response.json();
+
+      // Actualizar formData con la nueva URL
+      const fieldMap = {
+        'logo_full': 'logo_full_url',
+        'logo_icon': 'logo_icon_url',
+        'logo_horizontal': 'logo_horizontal_url',
+        'favicon': 'favicon_url'
+      };
+
+      const field = fieldMap[logoType];
+      if (field && result.data?.url) {
+        handleInputChange(field, result.data.url);
+      }
+
+      // Actualizar desde servidor para reflejar cambios
+      await fetchCompanyInfo();
+
+      setUploadProgress(prev => ({ ...prev, [logoType]: 100 }));
+      setSaveMessage({ type: 'success', text: 'Logo subido correctamente' });
+
+      // Limpiar progreso después de 2 segundos
+      setTimeout(() => {
+        setUploadProgress(prev => {
+          const newProgress = { ...prev };
+          delete newProgress[logoType];
+          return newProgress;
+        });
+      }, 2000);
+
+    } catch (err) {
+      console.error('Error uploading logo:', err);
+      setSaveMessage({ type: 'error', text: err.message || 'Error al subir logo' });
+      setUploadProgress(prev => {
+        const newProgress = { ...prev };
+        delete newProgress[logoType];
+        return newProgress;
+      });
+    }
+  };
+
+  const handleLogoDelete = async (logoType) => {
+    const confirmDelete = window.confirm('¿Está seguro de eliminar este logo? Esta acción no se puede deshacer.');
+    if (!confirmDelete) return;
+
+    try {
+      // Mapear tipo de logo a campo de BD y URL actual
+      const fieldMap = {
+        'logo_full': 'logo_full_url',
+        'logo_icon': 'logo_icon_url',
+        'logo_horizontal': 'logo_horizontal_url',
+        'favicon': 'favicon_url'
+      };
+
+      const field = fieldMap[logoType];
+      const currentUrl = formData[field];
+
+      if (!currentUrl) {
+        setSaveMessage({ type: 'error', text: 'No hay logo para eliminar' });
+        return;
+      }
+
+      // Extraer filename de la URL si es una URL local
+      // Formato: http://localhost:3005/uploads/logos/logo-xxx-optimized.webp
+      let filename = null;
+      if (currentUrl.includes('/uploads/logos/')) {
+        filename = currentUrl.split('/uploads/logos/').pop();
+      }
+
+      // Limpiar el campo en la base de datos (set to NULL)
+      const updates = {};
+      updates[field] = '';
+
+      const patchUrl = activeLab
+        ? `${CONFIG_API_URL}/api/company/logos?lab=${activeLab}`
+        : `${CONFIG_API_URL}/api/company/logos`;
+
+      const response = await fetch(patchUrl, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updates)
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Error al eliminar logo de la base de datos');
+      }
+
+      // Si es un archivo local, eliminarlo del filesystem
+      if (filename) {
+        try {
+          const deleteUrl = activeLab
+            ? `${CONFIG_API_URL}/api/company/logos/${encodeURIComponent(filename)}?lab=${activeLab}`
+            : `${CONFIG_API_URL}/api/company/logos/${encodeURIComponent(filename)}`;
+
+          const deleteResponse = await fetch(deleteUrl, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          if (!deleteResponse.ok) {
+            console.warn('No se pudo eliminar el archivo físico, pero el campo fue limpiado en la BD');
+          }
+        } catch (deleteErr) {
+          console.warn('Error eliminando archivo físico:', deleteErr);
+        }
+      }
+
+      // Actualizar formData localmente
+      handleInputChange(field, '');
+
+      // Actualizar desde servidor
+      await fetchCompanyInfo();
+
+      setSaveMessage({ type: 'success', text: 'Logo eliminado correctamente' });
+    } catch (err) {
+      console.error('Error deleting logo:', err);
+      setSaveMessage({ type: 'error', text: err.message || 'Error al eliminar logo' });
     }
   };
 
@@ -236,50 +423,199 @@ const CompanyInfoManager = () => {
               <h3 className="text-lg font-semibold mb-4">Logos e Imágenes</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
+                  {/* Logo Completo */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">URL Logo Completo</label>
-                    <input
-                      type="text"
-                      value={formData.logo_full_url || ''}
-                      onChange={(e) => handleInputChange('logo_full_url', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-                      placeholder="/Logo.png"
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Logo Completo</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={formData.logo_full_url || ''}
+                        onChange={(e) => handleInputChange('logo_full_url', e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                        placeholder="/Logo.png"
+                      />
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                          onChange={(e) => handleLogoUpload(e, 'logo_full')}
+                          className="hidden"
+                        />
+                        <div className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark flex items-center gap-2">
+                          {uploadProgress.logo_full !== undefined ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Upload className="w-4 h-4" />
+                          )}
+                          Subir
+                        </div>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => handleLogoDelete('logo_full')}
+                        disabled={!formData.logo_full_url}
+                        className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2"
+                        title="Eliminar logo"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    {uploadProgress.logo_full !== undefined && (
+                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div
+                          className="bg-primary h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${uploadProgress.logo_full}%` }}
+                        />
+                      </div>
+                    )}
                     <p className="text-xs text-gray-500 mt-1">Logo principal para footer y páginas completas</p>
                   </div>
+
+                  {/* Logo Icono */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">URL Logo Icono</label>
-                    <input
-                      type="text"
-                      value={formData.logo_icon_url || ''}
-                      onChange={(e) => handleInputChange('logo_icon_url', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-                      placeholder="/LogoMicrotec.svg"
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Logo Icono</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={formData.logo_icon_url || ''}
+                        onChange={(e) => handleInputChange('logo_icon_url', e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                        placeholder="/LogoEG.png"
+                      />
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                          onChange={(e) => handleLogoUpload(e, 'logo_icon')}
+                          className="hidden"
+                        />
+                        <div className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark flex items-center gap-2">
+                          {uploadProgress.logo_icon !== undefined ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Upload className="w-4 h-4" />
+                          )}
+                          Subir
+                        </div>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => handleLogoDelete('logo_icon')}
+                        disabled={!formData.logo_icon_url}
+                        className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2"
+                        title="Eliminar logo"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    {uploadProgress.logo_icon !== undefined && (
+                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div
+                          className="bg-primary h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${uploadProgress.logo_icon}%` }}
+                        />
+                      </div>
+                    )}
                     <p className="text-xs text-gray-500 mt-1">Isotipo/icono para header móvil y favicons</p>
                   </div>
+
+                  {/* Logo Horizontal */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">URL Logo Horizontal</label>
-                    <input
-                      type="text"
-                      value={formData.logo_horizontal_url || ''}
-                      onChange={(e) => handleInputChange('logo_horizontal_url', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-                      placeholder="/Logo.png"
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Logo Horizontal</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={formData.logo_horizontal_url || ''}
+                        onChange={(e) => handleInputChange('logo_horizontal_url', e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                        placeholder="/Logo.png"
+                      />
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                          onChange={(e) => handleLogoUpload(e, 'logo_horizontal')}
+                          className="hidden"
+                        />
+                        <div className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark flex items-center gap-2">
+                          {uploadProgress.logo_horizontal !== undefined ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Upload className="w-4 h-4" />
+                          )}
+                          Subir
+                        </div>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => handleLogoDelete('logo_horizontal')}
+                        disabled={!formData.logo_horizontal_url}
+                        className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2"
+                        title="Eliminar logo"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    {uploadProgress.logo_horizontal !== undefined && (
+                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div
+                          className="bg-primary h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${uploadProgress.logo_horizontal}%` }}
+                        />
+                      </div>
+                    )}
                     <p className="text-xs text-gray-500 mt-1">Versión horizontal para header desktop</p>
                   </div>
+
+                  {/* Favicon */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">URL Favicon</label>
-                    <input
-                      type="text"
-                      value={formData.favicon_url || ''}
-                      onChange={(e) => handleInputChange('favicon_url', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
-                      placeholder="/favicon.svg"
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Favicon</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={formData.favicon_url || ''}
+                        onChange={(e) => handleInputChange('favicon_url', e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                        placeholder="/favicon.svg"
+                      />
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                          onChange={(e) => handleLogoUpload(e, 'favicon')}
+                          className="hidden"
+                        />
+                        <div className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark flex items-center gap-2">
+                          {uploadProgress.favicon !== undefined ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Upload className="w-4 h-4" />
+                          )}
+                          Subir
+                        </div>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => handleLogoDelete('favicon')}
+                        disabled={!formData.favicon_url}
+                        className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2"
+                        title="Eliminar favicon"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    {uploadProgress.favicon !== undefined && (
+                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div
+                          className="bg-primary h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${uploadProgress.favicon}%` }}
+                        />
+                      </div>
+                    )}
                     <p className="text-xs text-gray-500 mt-1">Icono del navegador (preferiblemente SVG)</p>
                   </div>
+
+                  {/* Texto Alternativo */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Texto Alternativo del Logo</label>
                     <input
@@ -292,41 +628,78 @@ const CompanyInfoManager = () => {
                     <p className="text-xs text-gray-500 mt-1">Texto para accesibilidad (alt attribute)</p>
                   </div>
                 </div>
+
                 <div className="space-y-4">
                   <h4 className="text-md font-medium text-gray-700">Vista Previa</h4>
                   <div className="bg-gray-50 p-4 rounded-lg space-y-4">
                     <div>
                       <p className="text-xs text-gray-500 mb-2">Logo Completo:</p>
-                      <img
-                        src={formData.logo_full_url || '/Logo.png'}
-                        alt="Logo completo"
-                        className="h-16 object-contain"
-                        onError={(e) => { e.target.style.display = 'none'; }}
-                      />
+                      {formData.logo_full_url ? (
+                        <img
+                          src={getLogoUrl(formData.logo_full_url)}
+                          alt="Logo completo"
+                          className="h-16 object-contain"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                          key={formData.logo_full_url}
+                        />
+                      ) : (
+                        <p className="text-xs text-gray-400 italic">Sin logo</p>
+                      )}
                     </div>
                     <div>
                       <p className="text-xs text-gray-500 mb-2">Logo Icono:</p>
-                      <img
-                        src={formData.logo_icon_url || '/LogoMicrotec.svg'}
-                        alt="Logo icono"
-                        className="h-12 object-contain"
-                        onError={(e) => { e.target.style.display = 'none'; }}
-                      />
+                      {formData.logo_icon_url ? (
+                        <img
+                          src={getLogoUrl(formData.logo_icon_url)}
+                          alt="Logo icono"
+                          className="h-12 object-contain"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                          key={formData.logo_icon_url}
+                        />
+                      ) : (
+                        <p className="text-xs text-gray-400 italic">Sin logo</p>
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 mb-2">Logo Horizontal:</p>
+                      {formData.logo_horizontal_url ? (
+                        <img
+                          src={getLogoUrl(formData.logo_horizontal_url)}
+                          alt="Logo horizontal"
+                          className="h-12 object-contain"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                          key={formData.logo_horizontal_url}
+                        />
+                      ) : (
+                        <p className="text-xs text-gray-400 italic">Sin logo</p>
+                      )}
                     </div>
                     <div>
                       <p className="text-xs text-gray-500 mb-2">Favicon:</p>
-                      <img
-                        src={formData.favicon_url || '/favicon.svg'}
-                        alt="Favicon"
-                        className="h-8 w-8 object-contain"
-                        onError={(e) => { e.target.style.display = 'none'; }}
-                      />
+                      {formData.favicon_url ? (
+                        <img
+                          src={getLogoUrl(formData.favicon_url)}
+                          alt="Favicon"
+                          className="h-8 w-8 object-contain"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                          key={formData.favicon_url}
+                        />
+                      ) : (
+                        <p className="text-xs text-gray-400 italic">Sin favicon</p>
+                      )}
                     </div>
                   </div>
-                  <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-md">
-                    <p className="text-sm text-yellow-800">
-                      <strong>Nota:</strong> Las imágenes deben estar en la carpeta public/ del proyecto web
-                      o ser URLs absolutas válidas.
+                  <div className="bg-blue-50 border border-blue-200 p-3 rounded-md">
+                    <p className="text-sm text-blue-800">
+                      <strong>Instrucciones:</strong> Puede subir logos usando el botón "Subir" o pegar URLs manualmente.
+                      Los logos se optimizarán automáticamente al subirlos.
+                    </p>
+                  </div>
+                  <div className="bg-gray-50 border border-gray-200 p-3 rounded-md">
+                    <p className="text-xs text-gray-600">
+                      <strong>Formatos aceptados:</strong> PNG, JPG, WebP, SVG<br />
+                      <strong>Tamaño máximo:</strong> 5MB<br />
+                      <strong>Recomendado:</strong> 512x512px
                     </p>
                   </div>
                 </div>

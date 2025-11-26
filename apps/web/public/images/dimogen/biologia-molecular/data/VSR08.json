@@ -1,0 +1,38 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "VIRUS RESPIRATORIO SINCICIAL",
+    "descripcion": "Detecta el ARN del virus respiratorio sincitial. El VRS es el virus más común que causa infecciones en los pulmones y vías respiratorias en los bebés y en los niños pequeños.",
+    "precio": 1212.00,
+    "moneda": "USD",
+    "codigo": "VSR08"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Exudado nasofaríngeo",
+    "tiempoEntrega": "1 Día hábil",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-22.png"},
+    "recursos": [{
+      "archivo": "assets/VSR08-virus-sincicial-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D del virus respiratorio sincicial (VRS) mostrando su estructura pleomórfica con glicoproteínas de fusión (F) y de adhesión (G) en la superficie.",
+      "altText": "Modelo 3D del virus respiratorio sincicial VRS",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "El Virus Respiratorio Sincicial (VRS) es la causa más común de bronquiolitis y neumonía en niños menores de 1 año. En adultos mayores e inmunocomprometidos puede causar enfermedad grave. El nombre 'sincicial' proviene de su capacidad de fusionar células infectadas formando sincitios.",
+    "paraQuienEsRecomendada": "Lactantes y niños pequeños con bronquiolitis. Adultos mayores con infección respiratoria baja. Pacientes inmunocomprometidos con síntomas respiratorios. Diagnóstico diferencial en temporada de virus respiratorios.",
+    "preparacion": "No requiere ayuno. No usar sprays nasales 24 horas antes.",
+    "interpretacionResultados": {
+      "positivo": "Indica infección activa por VRS. El manejo es principalmente de soporte. En lactantes de riesgo puede indicarse palivizumab profiláctico en temporadas siguientes.",
+      "negativo": "No se detectó ARN de VRS. Considerar otros virus respiratorios."
+    },
+    "notasClinicas": "El VRS es altamente contagioso. Causa epidemias estacionales (otoño-invierno). Recientemente se aprobaron nuevas vacunas para adultos mayores y anticuerpos monoclonales para lactantes."
+  },
+  "metadatos": {"paginaOriginal": 21, "archivoOrigen": "DimogenBiologíaMolecular-22.pdf", "fechaExtraccion": "2025-11-25"}
+}

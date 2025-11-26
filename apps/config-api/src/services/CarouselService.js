@@ -15,19 +15,20 @@ class CarouselService {
    * Solo retorna slides que estén:
    * - Activos (is_active = true)
    * - Dentro del rango de fechas (si están configuradas)
+   * @param {string} lab - Código del laboratorio (opcional, usa activo si no se especifica)
    */
-  async getActiveSlides() {
-    const cacheKey = `${CACHE_KEY_PREFIX}active`;
+  async getActiveSlides(lab = null) {
+    const cacheKey = `${CACHE_KEY_PREFIX}${lab || 'default'}:active`;
     const cached = CacheService.get(cacheKey);
 
     if (cached) {
-      logger.info('Carousel slides obtenidos desde cache');
+      logger.info(`Carousel slides obtenidos desde cache (lab: ${lab || 'default'})`);
       return cached;
     }
 
     try {
-      // Obtener pool de la DB de configuración del laboratorio activo
-      const pool = await DatabaseRouter.getConfigPool();
+      // Obtener pool de la DB de configuración del laboratorio especificado o activo
+      const pool = await DatabaseRouter.getConfigPool(lab);
 
       const query = `
         SELECT *
@@ -40,7 +41,7 @@ class CarouselService {
 
       const result = await pool.query(query);
 
-      logger.info(`${result.rows.length} slides activos obtenidos desde BD`);
+      logger.info(`${result.rows.length} slides activos obtenidos desde BD (lab: ${lab || 'default'})`);
 
       // Cachear resultado
       CacheService.set(cacheKey, result.rows, CACHE_TTL);
@@ -55,11 +56,12 @@ class CarouselService {
   /**
    * Obtener todos los slides (admin)
    * Incluye slides inactivos y fuera de rango de fechas
+   * @param {string} lab - Código del laboratorio (opcional, usa activo si no se especifica)
    */
-  async getAllSlides() {
+  async getAllSlides(lab = null) {
     try {
-      // Obtener pool de la DB de configuración del laboratorio activo
-      const pool = await DatabaseRouter.getConfigPool();
+      // Obtener pool de la DB de configuración del laboratorio especificado o activo
+      const pool = await DatabaseRouter.getConfigPool(lab);
 
       const query = `
         SELECT *
@@ -69,7 +71,7 @@ class CarouselService {
 
       const result = await pool.query(query);
 
-      logger.info(`${result.rows.length} slides totales obtenidos (admin view)`);
+      logger.info(`${result.rows.length} slides totales obtenidos (admin view, lab: ${lab || 'default'})`);
 
       return result.rows;
     } catch (error) {
@@ -80,17 +82,19 @@ class CarouselService {
 
   /**
    * Obtener un slide por ID
+   * @param {number} id - ID del slide
+   * @param {string} lab - Código del laboratorio (opcional)
    */
-  async getSlideById(id) {
+  async getSlideById(id, lab = null) {
     try {
-      // Obtener pool de la DB de configuración del laboratorio activo
-      const pool = await DatabaseRouter.getConfigPool();
+      // Obtener pool de la DB de configuración del laboratorio especificado o activo
+      const pool = await DatabaseRouter.getConfigPool(lab);
 
       const query = `SELECT * FROM carousel_slides WHERE id = $1`;
       const result = await pool.query(query, [id]);
 
       if (result.rows.length === 0) {
-        logger.warn(`Slide con ID ${id} no encontrado`);
+        logger.warn(`Slide con ID ${id} no encontrado (lab: ${lab || 'default'})`);
         return null;
       }
 
@@ -103,8 +107,10 @@ class CarouselService {
 
   /**
    * Crear nuevo slide
+   * @param {Object} slideData - Datos del slide
+   * @param {string} lab - Código del laboratorio (opcional)
    */
-  async createSlide(slideData) {
+  async createSlide(slideData, lab = null) {
     try {
       const {
         title,
@@ -128,8 +134,8 @@ class CarouselService {
       // Validaciones
       this._validateSlideData(slideData);
 
-      // Obtener pool de la DB de configuración del laboratorio activo
-      const pool = await DatabaseRouter.getConfigPool();
+      // Obtener pool de la DB de configuración del laboratorio especificado o activo
+      const pool = await DatabaseRouter.getConfigPool(lab);
 
       // Obtener el siguiente order_position
       const maxOrderResult = await pool.query(
@@ -176,7 +182,7 @@ class CarouselService {
       logger.info(`Slide creado exitosamente: ID ${newSlide.id}, título "${newSlide.title}"`);
 
       // Invalidar cache
-      this._invalidateCache();
+      this._invalidateCache(lab);
 
       return newSlide;
     } catch (error) {
@@ -187,11 +193,14 @@ class CarouselService {
 
   /**
    * Actualizar slide existente
+   * @param {number} id - ID del slide
+   * @param {Object} slideData - Datos a actualizar
+   * @param {string} lab - Código del laboratorio (opcional)
    */
-  async updateSlide(id, slideData) {
+  async updateSlide(id, slideData, lab = null) {
     try {
       // Verificar que el slide existe
-      const existingSlide = await this.getSlideById(id);
+      const existingSlide = await this.getSlideById(id, lab);
       if (!existingSlide) {
         throw new Error(`Slide con ID ${id} no encontrado`);
       }
@@ -218,8 +227,8 @@ class CarouselService {
       // Validaciones
       this._validateSlideData(slideData);
 
-      // Obtener pool de la DB de configuración del laboratorio activo
-      const pool = await DatabaseRouter.getConfigPool();
+      // Obtener pool de la DB de configuración del laboratorio especificado o activo
+      const pool = await DatabaseRouter.getConfigPool(lab);
 
       const query = `
         UPDATE carousel_slides
@@ -271,7 +280,7 @@ class CarouselService {
       logger.info(`Slide actualizado exitosamente: ID ${id}`);
 
       // Invalidar cache
-      this._invalidateCache();
+      this._invalidateCache(lab);
 
       return updatedSlide;
     } catch (error) {
@@ -282,16 +291,18 @@ class CarouselService {
 
   /**
    * Eliminar slide
+   * @param {number} id - ID del slide
+   * @param {string} lab - Código del laboratorio (opcional)
    */
-  async deleteSlide(id) {
+  async deleteSlide(id, lab = null) {
     try {
-      const slide = await this.getSlideById(id);
+      const slide = await this.getSlideById(id, lab);
       if (!slide) {
         throw new Error(`Slide con ID ${id} no encontrado`);
       }
 
-      // Obtener pool de la DB de configuración del laboratorio activo
-      const pool = await DatabaseRouter.getConfigPool();
+      // Obtener pool de la DB de configuración del laboratorio especificado o activo
+      const pool = await DatabaseRouter.getConfigPool(lab);
 
       const query = 'DELETE FROM carousel_slides WHERE id = $1 RETURNING *';
       const result = await pool.query(query, [id]);
@@ -299,7 +310,7 @@ class CarouselService {
       logger.info(`Slide eliminado: ID ${id}, título "${slide.title}"`);
 
       // Invalidar cache
-      this._invalidateCache();
+      this._invalidateCache(lab);
 
       return result.rows[0];
     } catch (error) {
@@ -310,11 +321,14 @@ class CarouselService {
 
   /**
    * Toggle estado activo/inactivo
+   * @param {number} id - ID del slide
+   * @param {boolean} isActive - Nuevo estado
+   * @param {string} lab - Código del laboratorio (opcional)
    */
-  async toggleActive(id, isActive) {
+  async toggleActive(id, isActive, lab = null) {
     try {
-      // Obtener pool de la DB de configuración del laboratorio activo
-      const pool = await DatabaseRouter.getConfigPool();
+      // Obtener pool de la DB de configuración del laboratorio especificado o activo
+      const pool = await DatabaseRouter.getConfigPool(lab);
 
       const query = `
         UPDATE carousel_slides
@@ -332,7 +346,7 @@ class CarouselService {
       logger.info(`Slide ${id} ${isActive ? 'activado' : 'desactivado'}`);
 
       // Invalidar cache
-      this._invalidateCache();
+      this._invalidateCache(lab);
 
       return result.rows[0];
     } catch (error) {
@@ -343,10 +357,13 @@ class CarouselService {
 
   /**
    * Reordenar slide a nueva posición
+   * @param {number} id - ID del slide
+   * @param {number} newPosition - Nueva posición
+   * @param {string} lab - Código del laboratorio (opcional)
    */
-  async reorderSlide(id, newPosition) {
-    // Obtener pool de la DB de configuración del laboratorio activo
-    const pool = await DatabaseRouter.getConfigPool();
+  async reorderSlide(id, newPosition, lab = null) {
+    // Obtener pool de la DB de configuración del laboratorio especificado o activo
+    const pool = await DatabaseRouter.getConfigPool(lab);
 
     const client = await pool.connect();
 
@@ -395,10 +412,10 @@ class CarouselService {
 
       await client.query('COMMIT');
 
-      logger.info(`Slide ${id} reordenado de posición ${oldPosition} a ${newPosition}`);
+      logger.info(`Slide ${id} reordenado de posición ${oldPosition} a ${newPosition} (lab: ${lab || 'default'})`);
 
       // Invalidar cache
-      this._invalidateCache();
+      this._invalidateCache(lab);
 
       return result.rows[0];
     } catch (error) {
@@ -412,11 +429,12 @@ class CarouselService {
 
   /**
    * Obtener estadísticas de slides
+   * @param {string} lab - Código del laboratorio (opcional)
    */
-  async getStats() {
+  async getStats(lab = null) {
     try {
-      // Obtener pool de la DB de configuración del laboratorio activo
-      const pool = await DatabaseRouter.getConfigPool();
+      // Obtener pool de la DB de configuración del laboratorio especificado o activo
+      const pool = await DatabaseRouter.getConfigPool(lab);
 
       const query = `
         SELECT
@@ -482,11 +500,16 @@ class CarouselService {
 
   /**
    * Invalidar cache del carrusel
+   * @param {string} lab - Código del laboratorio (opcional)
    */
-  _invalidateCache() {
-    const activeKey = `${CACHE_KEY_PREFIX}active`;
+  _invalidateCache(lab = null) {
+    const activeKey = `${CACHE_KEY_PREFIX}${lab || 'default'}:active`;
     CacheService.del(activeKey);
-    logger.info('Cache del carrusel invalidado');
+    // También invalidar el cache default por si acaso
+    if (lab) {
+      CacheService.del(`${CACHE_KEY_PREFIX}default:active`);
+    }
+    logger.info(`Cache del carrusel invalidado (lab: ${lab || 'default'})`);
   }
 }
 

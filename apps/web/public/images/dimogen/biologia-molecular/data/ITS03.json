@@ -1,0 +1,44 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "PANEL DE ITS 4",
+    "descripcion": "Detecta y diferencia 4 de los agentes causales más comunes de infecciones de transmisión sexual.",
+    "precio": 1600.00,
+    "moneda": "USD",
+    "codigo": "ITS03",
+    "patogenosIncluidos": [
+      "Chlamydia trachomatis",
+      "Neisseria gonorrhoeae",
+      "Trichomonas vaginalis",
+      "Mycoplasma genitalium"
+    ]
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Exudado vaginal/uretral",
+    "tiempoEntrega": "3 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-17.png"},
+    "recursos": [{
+      "archivo": "assets/ITS03-panel-its4-patogenos.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D de diversos patógenos de transmisión sexual incluyendo bacterias y protozoarios.",
+      "altText": "Patógenos causantes de ITS",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "El Panel de ITS 4 detecta simultáneamente los cuatro patógenos más comunes de ITS: clamidia, gonorrea, tricomoniasis y Mycoplasma genitalium. Este último es una bacteria emergente reconocida como causa importante de uretritis no gonocócica.",
+    "paraQuienEsRecomendada": "Personas con síntomas de ITS. Tamizaje ampliado en poblaciones de riesgo. Uretritis no gonocócica que no responde a tratamiento estándar. Parejas de casos confirmados.",
+    "preparacion": "No requiere ayuno. Evitar relaciones sexuales 24-48 horas antes. No usar duchas vaginales ni medicamentos vaginales 24 horas antes.",
+    "interpretacionResultados": {
+      "positivo": "Indica qué patógeno(s) específico(s) fueron detectados. El tratamiento se ajusta según los resultados.",
+      "negativo": "No se detectaron los 4 patógenos analizados."
+    },
+    "notasClinicas": "Mycoplasma genitalium presenta resistencia creciente a macrólidos. La coinfección múltiple es posible."
+  },
+  "metadatos": {"paginaOriginal": 16, "archivoOrigen": "DimogenBiologíaMolecular-17.pdf", "fechaExtraccion": "2025-11-25"}
+}

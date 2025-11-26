@@ -1,0 +1,65 @@
+{
+  "categoria": "Microbiología de Alimentos",
+  "subcategoria": "Análisis",
+  "prueba": {
+    "titulo": "COLIFORMES TOTALES, FECALES Y E. COLI (Por Técnica de NMP)",
+    "descripcion": "El grupo coliforme se usa como indicador de la calidad sanitaria del agua o como indicador de las condiciones sanitarias en el proceso de alimentos. Los Coliformes Fecales en alimentos son bacterias indicadoras de contaminación fecal. La presencia de E. coli en alimentos es importante porque ciertos tipos de esta bacteria pueden causar enfermedades graves en el humano.",
+    "precio": 606.00,
+    "moneda": "MXN",
+    "codigo": "NMP06"
+  },
+  "especificaciones": {
+    "metodologia": "NOM-210-SSA1-2014",
+    "metodologiaDescripcion": "Determinación de microorganismos patógenos. Apéndice H Normativo. Método aprobado para la estimación de la densidad de Coliformes Totales, Fecales y E. coli por la técnica del NMP presentes en muestras de alimentos para consumo humano y agua.",
+    "tipoMuestra": ["Agua", "Hielo", "Alimentos"],
+    "tiempoEntrega": "10 Días hábiles",
+    "temperaturaTransporte": {
+      "alimentosPereceros": "≤10°C",
+      "alimentosCongelados": "≤0°C",
+      "noPereceros": "Temperatura Ambiente",
+      "aguas": "≤10°C",
+      "superficies": "≤10°C"
+    }
+  },
+  "imagenes": {
+    "paginaCompleta": {
+      "archivo": "pages/DimogenMicrobiologiaAlimentos-20.png",
+      "descripcion": "Página de presentación del análisis"
+    },
+    "paginaEspecificaciones": {
+      "archivo": "pages/DimogenMicrobiologiaAlimentos-21.png",
+      "descripcion": "Página de especificaciones técnicas"
+    },
+    "recursos": [
+      {
+        "archivo": "assets/NMP06-tubos-nmp-coliformes.jpg",
+        "tipo": "tubos-ensayo",
+        "descripcion": "Imagen de tubos de ensayo utilizados en la técnica del Número Más Probable (NMP). Se observan series de tubos con medio de cultivo líquido, algunos con cambio de color y producción de gas indicando presencia de coliformes.",
+        "altText": "Tubos de ensayo para determinación de coliformes por técnica NMP",
+        "aptoParaWeb": true
+      }
+    ]
+  },
+  "informacionAdicional": {
+    "queEs": "La técnica del Número Más Probable (NMP) es un método estadístico para estimar la densidad de microorganismos en una muestra. Para coliformes, se utilizan series de tubos con medio de cultivo líquido que permite detectar la fermentación de lactosa. Los coliformes fecales crecen a 44.5°C y E. coli se confirma mediante pruebas bioquímicas adicionales.",
+    "importancia": "Esta prueba proporciona una evaluación completa de la calidad microbiológica al detectar tres grupos de indicadores: Coliformes Totales (higiene general), Coliformes Fecales (contaminación fecal reciente) y E. coli (confirmación de contaminación de origen fecal). Es especialmente útil para agua potable y alimentos líquidos.",
+    "paraQuienEsRecomendada": "Plantas purificadoras de agua, embotelladoras de bebidas, fábricas de hielo, industrias de alimentos líquidos, municipios para control de agua potable, y establecimientos que requieran análisis de agua o hielo.",
+    "interpretacionResultados": {
+      "descripcion": "El resultado se expresa como NMP/g, NMP/mL o NMP/100mL según el tipo de muestra.",
+      "coliformesTotales": "Indica la calidad higiénica general del producto. Límites varían según tipo de alimento o agua.",
+      "coliformesFecales": "Su presencia indica contaminación fecal reciente. En agua potable debe ser menor a 2 NMP/100mL.",
+      "ecoli": "Confirmación de contaminación de origen fecal. En agua potable debe ser ausente. Ciertas cepas (como O157:H7) son altamente patógenas."
+    },
+    "normativaAplicable": [
+      "NOM-210-SSA1-2014: Determinación de microorganismos patógenos",
+      "NOM-127-SSA1-1994: Agua para uso y consumo humano",
+      "NOM-201-SSA1-2015: Agua y hielo para consumo humano"
+    ]
+  },
+  "metadatos": {
+    "paginaOriginal": 19,
+    "paginaEspecificaciones": 20,
+    "archivoOrigen": "DimogenMicrobiologíaAlimentos-20.pdf",
+    "fechaExtraccion": "2025-11-26"
+  }
+}

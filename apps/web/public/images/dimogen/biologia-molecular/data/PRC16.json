@@ -1,0 +1,43 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "PANEL RESPIRATORIO COMPLETO",
+    "descripcion": "Detecta y diferencia simultáneamente 22 virus y bacterias asociados con infecciones del tracto respiratorio superior.",
+    "precio": 7091.00,
+    "moneda": "USD",
+    "codigo": "PRC16",
+    "patogenosIncluidos": {
+      "virus": ["SARS-CoV-2", "Influenza A", "Influenza A H1N1 pdm09", "Influenza A H1", "Influenza A H3", "Influenza B", "Bocavirus", "Coronavirus 229E", "Coronavirus HKU1", "Coronavirus NL63", "Coronavirus OC43", "Parainfluenza virus 1", "Parainfluenza virus 2", "Parainfluenza virus 3", "Parainfluenza virus 4", "Adenovirus", "Virus respiratorio sincicial", "Metapneumovirus humano", "Rhinovirus/Enterovirus"],
+      "bacterias": ["Mycoplasma pneumoniae", "Legionella pneumophila", "Bordetella pertussis", "Chlamydophila pneumoniae"]
+    }
+  },
+  "especificaciones": {
+    "metodologia": "PCR anidada",
+    "tipoMuestra": "Exudado nasofaríngeo",
+    "tiempoEntrega": "4 horas",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-38.png"},
+    "paginaAdicional": {"archivo": "pages/DimogenBiologiaMolecular-39.png"},
+    "recursos": [{
+      "archivo": "assets/PRC16-patogenos-respiratorios-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D de patógenos respiratorios mostrando bacterias con estructura helicoidal y partículas en el ambiente.",
+      "altText": "Patógenos respiratorios 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "El Panel Respiratorio Completo es la prueba más exhaustiva para infecciones respiratorias, detectando 22 patógenos incluyendo 19 virus y 4 bacterias atípicas. Utiliza tecnología de PCR anidada con resultados en solo 4 horas, ideal para decisiones clínicas rápidas.",
+    "paraQuienEsRecomendada": "Pacientes hospitalizados con infección respiratoria grave. Neumonía de origen no determinado. Brotes en instituciones cerradas. Pacientes inmunocomprometidos con síntomas respiratorios. Casos donde el diagnóstico rápido es crítico.",
+    "preparacion": "No requiere ayuno. No usar sprays nasales 24 horas antes.",
+    "interpretacionResultados": {
+      "positivo": "Identifica específicamente cada patógeno detectado. Las coinfecciones son frecuentes (hasta 30% de casos). Permite tratamiento dirigido: antivirales para influenza, antibióticos para bacterias atípicas.",
+      "negativo": "No se detectaron los 22 patógenos analizados. Considerar neumonía bacteriana típica u otras causas no infecciosas."
+    },
+    "notasClinicas": "La identificación de Bordetella pertussis permite aislamiento y profilaxis de contactos. Legionella requiere notificación epidemiológica. El panel incluye los 4 coronavirus endémicos además de SARS-CoV-2."
+  },
+  "metadatos": {"paginaOriginal": 37, "archivoOrigen": "DimogenBiologíaMolecular-38.pdf", "fechaExtraccion": "2025-11-25"}
+}

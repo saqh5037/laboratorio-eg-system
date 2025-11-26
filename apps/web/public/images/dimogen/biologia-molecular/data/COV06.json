@@ -1,0 +1,39 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "SARS-CoV-2",
+    "descripcion": "Detecta el ARN del virus SARS-CoV-2 causante de la enfermedad COVID-19. Se utiliza como análisis de diagnóstico confirmatorio para COVID-19.",
+    "precio": 1212.00,
+    "moneda": "USD",
+    "codigo": "COV06"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Exudado nasofaríngeo",
+    "tiempoEntrega": "1 Día hábil",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-20.png"},
+    "recursos": [{
+      "archivo": "assets/COV06-coronavirus-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D del coronavirus SARS-CoV-2 mostrando la estructura característica con proteínas spike (S) en la superficie que le dan apariencia de corona.",
+      "altText": "Modelo 3D del virus SARS-CoV-2 causante de COVID-19",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "La prueba PCR para SARS-CoV-2 detecta el material genético (ARN) del virus causante de COVID-19. Es considerada el estándar de oro para el diagnóstico de infección activa por coronavirus.",
+    "paraQuienEsRecomendada": "Personas con síntomas respiratorios sugestivos de COVID-19. Contactos cercanos de casos confirmados. Requerimiento para viajes o procedimientos médicos. Brotes en instituciones.",
+    "preparacion": "No requiere ayuno. No usar sprays nasales 24 horas antes. No sonarse la nariz inmediatamente antes de la toma.",
+    "interpretacionResultados": {
+      "positivo": "Indica infección activa por SARS-CoV-2. Requiere aislamiento según normativas vigentes. La duración de la positividad varía.",
+      "negativo": "No se detectó ARN viral en la muestra. Un resultado negativo no descarta infección si la muestra fue tomada muy temprano o muy tarde en el curso de la enfermedad."
+    },
+    "frecuenciaRecomendada": "Según síntomas, exposición o requerimientos específicos.",
+    "notasClinicas": "La PCR puede permanecer positiva semanas después de la infección sin indicar contagiosidad. El valor de Ct puede orientar sobre la carga viral."
+  },
+  "metadatos": {"paginaOriginal": 19, "archivoOrigen": "DimogenBiologíaMolecular-20.pdf", "fechaExtraccion": "2025-11-25"}
+}

@@ -1,25 +1,37 @@
 import { useState, useEffect, useCallback } from 'react';
+import { config } from '../config/env.js';
+import { useLab } from '../contexts/LabContext';
 
-const CONFIG_API_URL = import.meta.env.VITE_CONFIG_API_URL || 'http://localhost:3005';
+const CONFIG_API_URL = config.VITE_CONFIG_API_URL;
 
 /**
  * Hook para gestionar información de la empresa
  * Proporciona acceso a datos corporativos, contacto, SEO y PWA
+ * AHORA ES LAB-AWARE: carga la info del laboratorio activo
  */
 export function useCompanyInfo() {
+  // Obtener el laboratorio activo del contexto
+  const { activeLab } = useLab();
+
   const [companyInfo, setCompanyInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   /**
    * Cargar información completa de la empresa
+   * Pasa el parámetro lab para obtener la info del laboratorio correcto
    */
   const fetchCompanyInfo = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`${CONFIG_API_URL}/api/company`);
+      // Construir URL con parámetro lab si está disponible
+      const url = activeLab
+        ? `${CONFIG_API_URL}/api/company?lab=${activeLab}`
+        : `${CONFIG_API_URL}/api/company`;
+
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Error al cargar información de la empresa');
       }
@@ -36,7 +48,7 @@ export function useCompanyInfo() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [activeLab]);
 
   /**
    * Actualizar información de la empresa (requiere token de admin)
@@ -47,7 +59,12 @@ export function useCompanyInfo() {
     try {
       setError(null);
 
-      const response = await fetch(`${CONFIG_API_URL}/api/company`, {
+      // Construir URL con parámetro lab si está disponible
+      const url = activeLab
+        ? `${CONFIG_API_URL}/api/company?lab=${activeLab}`
+        : `${CONFIG_API_URL}/api/company`;
+
+      const response = await fetch(url, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -73,14 +90,18 @@ export function useCompanyInfo() {
       setError(err.message);
       throw err;
     }
-  }, []);
+  }, [activeLab]);
 
   /**
    * Actualizar identidad corporativa
    */
   const updateIdentity = useCallback(async (updates, token) => {
     try {
-      const response = await fetch(`${CONFIG_API_URL}/api/company/identity`, {
+      const url = activeLab
+        ? `${CONFIG_API_URL}/api/company/identity?lab=${activeLab}`
+        : `${CONFIG_API_URL}/api/company/identity`;
+
+      const response = await fetch(url, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -103,14 +124,18 @@ export function useCompanyInfo() {
       setError(err.message);
       throw err;
     }
-  }, []);
+  }, [activeLab]);
 
   /**
    * Actualizar información de contacto
    */
   const updateContact = useCallback(async (updates, token) => {
     try {
-      const response = await fetch(`${CONFIG_API_URL}/api/company/contact`, {
+      const url = activeLab
+        ? `${CONFIG_API_URL}/api/company/contact?lab=${activeLab}`
+        : `${CONFIG_API_URL}/api/company/contact`;
+
+      const response = await fetch(url, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -133,14 +158,18 @@ export function useCompanyInfo() {
       setError(err.message);
       throw err;
     }
-  }, []);
+  }, [activeLab]);
 
   /**
    * Actualizar redes sociales
    */
   const updateSocial = useCallback(async (updates, token) => {
     try {
-      const response = await fetch(`${CONFIG_API_URL}/api/company/social`, {
+      const url = activeLab
+        ? `${CONFIG_API_URL}/api/company/social?lab=${activeLab}`
+        : `${CONFIG_API_URL}/api/company/social`;
+
+      const response = await fetch(url, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -163,14 +192,18 @@ export function useCompanyInfo() {
       setError(err.message);
       throw err;
     }
-  }, []);
+  }, [activeLab]);
 
   /**
    * Actualizar información SEO
    */
   const updateSEO = useCallback(async (updates, token) => {
     try {
-      const response = await fetch(`${CONFIG_API_URL}/api/company/seo`, {
+      const url = activeLab
+        ? `${CONFIG_API_URL}/api/company/seo?lab=${activeLab}`
+        : `${CONFIG_API_URL}/api/company/seo`;
+
+      const response = await fetch(url, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -193,14 +226,18 @@ export function useCompanyInfo() {
       setError(err.message);
       throw err;
     }
-  }, []);
+  }, [activeLab]);
 
   /**
    * Actualizar información PWA
    */
   const updatePWA = useCallback(async (updates, token) => {
     try {
-      const response = await fetch(`${CONFIG_API_URL}/api/company/pwa`, {
+      const url = activeLab
+        ? `${CONFIG_API_URL}/api/company/pwa?lab=${activeLab}`
+        : `${CONFIG_API_URL}/api/company/pwa`;
+
+      const response = await fetch(url, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -223,7 +260,7 @@ export function useCompanyInfo() {
       setError(err.message);
       throw err;
     }
-  }, []);
+  }, [activeLab]);
 
   /**
    * Obtener años de experiencia

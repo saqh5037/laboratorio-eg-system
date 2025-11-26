@@ -1,0 +1,38 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "DETECCIÓN DE CITOMEGALOVIRUS",
+    "descripcion": "Detecta el ADN del citomegalovirus (CMV). Se utiliza como ayuda en el diagnóstico confirmatorio del CMV en pacientes sometidos a trasplantes y otros pacientes inmunodeprimidos.",
+    "precio": 3200.00,
+    "moneda": "USD",
+    "codigo": "CMV21"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Sangre total con EDTA, Sangre con EDTA K2, Plasma EDTA separado",
+    "tiempoEntrega": "3 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-35.png"},
+    "recursos": [{
+      "archivo": "assets/CMV21-citomegalovirus-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D del citomegalovirus mostrando su estructura viral con proyecciones características en la superficie.",
+      "altText": "Citomegalovirus CMV 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "El citomegalovirus (CMV) es un virus herpes común que infecta a la mayoría de adultos sin causar síntomas. Sin embargo, en inmunocomprometidos (trasplantados, VIH, quimioterapia) puede causar enfermedad grave. También es la causa más común de infección congénita.",
+    "paraQuienEsRecomendada": "Receptores de trasplante de órganos o médula ósea. Pacientes con VIH/SIDA. Pacientes en quimioterapia. Evaluación de infección congénita en recién nacidos. Síndrome mononucleósico con anticuerpos negativos para EBV.",
+    "preparacion": "No requiere ayuno. No hay restricciones especiales.",
+    "interpretacionResultados": {
+      "positivo": "ADN de CMV detectado. En inmunocomprometidos indica infección activa que puede requerir tratamiento antiviral (ganciclovir, valganciclovir). En inmunocompetentes puede ser hallazgo incidental.",
+      "negativo": "No se detectó ADN de CMV. No descarta infección latente, solo ausencia de replicación activa detectable."
+    },
+    "notasClinicas": "El monitoreo de CMV es crítico en trasplante. La terapia preventiva guiada por PCR ha reducido significativamente la enfermedad por CMV en trasplantados."
+  },
+  "metadatos": {"paginaOriginal": 34, "archivoOrigen": "DimogenBiologíaMolecular-35.pdf", "fechaExtraccion": "2025-11-25"}
+}

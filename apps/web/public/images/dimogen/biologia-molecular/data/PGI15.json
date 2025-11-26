@@ -1,0 +1,44 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "PANEL GASTROINTESTINAL",
+    "descripcion": "Detecta y diferencia simultáneamente 22 múltiples bacterias, virus y parásitos causantes de signos o síntomas de infección gastrointestinal.",
+    "precio": 7091.00,
+    "moneda": "USD",
+    "codigo": "PGI15",
+    "patogenosIncluidos": {
+      "virus": ["Adenovirus F40/F41", "Astrovirus", "Norovirus GI/GII", "Rotavirus", "Sapovirus"],
+      "bacterias": ["Campylobacter", "Clostridium difficile toxina A/B", "E. coli Enteroagregativa (EAEC)", "E. coli Enteroatogénica (EPEC)", "E. coli Enterotoxigénico (ETEC)", "Plesiomonas shigelloides", "Salmonella", "E. coli productora de toxina Shiga stx1+stx2 (STEC)", "E. coli Enteroinvasiva/Shigella (EIEC)", "Vibrio Cholerae", "Vibrio parahemolyticus", "Vibrio vulnificus", "Yersinia enterocolítica"],
+      "parasitos": ["Cryptosporidium", "Cyclospora cayetanensis", "Entamoeba histolytica", "Giardia lamblia"]
+    }
+  },
+  "especificaciones": {
+    "metodologia": "PCR anidada",
+    "tipoMuestra": "Heces",
+    "tiempoEntrega": "4 horas",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-40.png"},
+    "paginaAdicional": {"archivo": "pages/DimogenBiologiaMolecular-41.png"},
+    "recursos": [{
+      "archivo": "assets/PGI15-sistema-gastrointestinal-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D del sistema gastrointestinal humano mostrando el tracto digestivo con intestinos resaltados.",
+      "altText": "Sistema gastrointestinal humano 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "El Panel Gastrointestinal detecta 22 patógenos causantes de diarrea infecciosa: 5 virus, 13 bacterias y 4 parásitos. Con resultados en 4 horas, supera ampliamente a los métodos tradicionales (cultivo 2-3 días, examen parasitológico variable).",
+    "paraQuienEsRecomendada": "Diarrea aguda severa o con sangre. Diarrea del viajero. Brotes de gastroenteritis. Diarrea en inmunocomprometidos. Diarrea persistente sin diagnóstico. Sospecha de intoxicación alimentaria.",
+    "preparacion": "Recolectar muestra de heces en recipiente estéril. No contaminar con orina. Refrigerar inmediatamente.",
+    "interpretacionResultados": {
+      "positivo": "Identifica cada patógeno específicamente. E. coli STEC (O157:H7) requiere notificación y vigilancia de síndrome urémico hemolítico. Vibrio cholerae requiere notificación epidemiológica.",
+      "negativo": "No se detectaron los 22 patógenos. Considerar causas no infecciosas (enfermedad inflamatoria intestinal, intolerancia alimentaria) o patógenos no incluidos."
+    },
+    "notasClinicas": "C. difficile es la principal causa de diarrea nosocomial. Los norovirus causan la mayoría de brotes en cruceros e instituciones. STEC puede causar síndrome urémico hemolítico, especialmente en niños."
+  },
+  "metadatos": {"paginaOriginal": 39, "archivoOrigen": "DimogenBiologíaMolecular-40.pdf", "fechaExtraccion": "2025-11-25"}
+}

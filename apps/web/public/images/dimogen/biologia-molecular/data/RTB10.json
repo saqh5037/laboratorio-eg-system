@@ -1,0 +1,38 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "DETECCIÓN DE MYCOBACTERIUM TUBERCULOSIS Y GENES DE RESISTENCIA",
+    "descripcion": "Detecta simultáneamente el agente bacteriano causal de tuberculosis: Mycobacterium tuberculosis y su resistencia a medicamentos antituberculosos de primera línea (isoniazida y rifampicina) y fármacos antituberculosis de segunda línea (fluoroquinolonas y fármacos inyectables).",
+    "precio": 3031.00,
+    "moneda": "USD",
+    "codigo": "RTB10"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Orina ocasional, Fluidos, Secreciones purulentas, Tejidos y biopsias, Lavado alveolar y broncoalveolar, Expectoraciones",
+    "tiempoEntrega": "5 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-28.png"},
+    "recursos": [{
+      "archivo": "assets/RTB10-mycobacterium-tuberculosis-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D de Mycobacterium tuberculosis mostrando múltiples bacilos con su característica pared celular cerosa.",
+      "altText": "Mycobacterium tuberculosis bacilos 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "Esta es la prueba más completa para tuberculosis resistente. Además de detectar M. tuberculosis y resistencia a fármacos de primera línea (isoniazida, rifampicina), detecta resistencia a fármacos de segunda línea: fluoroquinolonas (levofloxacino, moxifloxacino) y aminoglucósidos/capreomicina inyectables. Permite identificar TB-XDR (extensamente resistente).",
+    "paraQuienEsRecomendada": "Pacientes con TB-MDR conocida o sospechada. Falla a tratamiento de segunda línea. Contactos de casos de TB-XDR. Pacientes con múltiples tratamientos previos. Pacientes de áreas con alta prevalencia de TB resistente.",
+    "preparacion": "Igual que MTB09. Depende del tipo de muestra. Expectoración matutina preferida.",
+    "interpretacionResultados": {
+      "positivo": "M. tuberculosis detectado con perfil completo de resistencia. TB-MDR: resistente a isoniazida + rifampicina. TB-XDR: TB-MDR + resistencia a fluoroquinolonas + inyectables.",
+      "negativo": "No se detectó M. tuberculosis. Considerar otros métodos diagnósticos si hay alta sospecha clínica."
+    },
+    "notasClinicas": "La TB-XDR tiene mortalidad elevada y requiere tratamientos prolongados con fármacos más tóxicos. La detección temprana de resistencia permite optimizar el tratamiento y reducir transmisión de cepas resistentes."
+  },
+  "metadatos": {"paginaOriginal": 27, "archivoOrigen": "DimogenBiologíaMolecular-28.pdf", "fechaExtraccion": "2025-11-25"}
+}

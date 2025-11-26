@@ -1,0 +1,63 @@
+{
+  "categoria": "Microbiología de Alimentos",
+  "subcategoria": "Análisis",
+  "prueba": {
+    "titulo": "HONGOS Y LEVADURAS",
+    "descripcion": "Indicadores de prácticas sanitarias inadecuadas o de materia prima de baja calidad. Productores de toxinas que causan enfermedades en humanos.",
+    "precio": 363.66,
+    "moneda": "MXN",
+    "codigo": "HOL02"
+  },
+  "especificaciones": {
+    "metodologia": "NOM-111-SSA1-1994",
+    "metodologiaDescripcion": "Método para la cuenta de mohos y levaduras en alimentos",
+    "tipoMuestra": ["Agua", "Alimento", "Superficies vivas e inertes", "Placas ambientales"],
+    "tiempoEntrega": "8 Días hábiles",
+    "temperaturaTransporte": {
+      "alimentosPereceros": "≤10°C",
+      "alimentosCongelados": "≤0°C",
+      "noPereceros": "Temperatura Ambiente",
+      "aguas": "≤10°C",
+      "superficies": "≤10°C"
+    }
+  },
+  "imagenes": {
+    "paginaCompleta": {
+      "archivo": "pages/DimogenMicrobiologiaAlimentos-12.png",
+      "descripcion": "Página de presentación del análisis"
+    },
+    "paginaEspecificaciones": {
+      "archivo": "pages/DimogenMicrobiologiaAlimentos-13.png",
+      "descripcion": "Página de especificaciones técnicas"
+    },
+    "recursos": [
+      {
+        "archivo": "assets/HOL02-hongos-levaduras-placa.jpg",
+        "tipo": "cultivo-placa",
+        "descripcion": "Imagen de cultivo en placa mostrando colonias de hongos y levaduras de diferentes colores y texturas. Se observan colonias de diversos tamaños con morfologías características: colonias algodonosas de mohos en tonos verdes, negros y blancos, junto con colonias cremosas de levaduras.",
+        "altText": "Colonias de hongos y levaduras en placa de cultivo",
+        "aptoParaWeb": true
+      }
+    ]
+  },
+  "informacionAdicional": {
+    "queEs": "Los hongos (mohos) y levaduras son microorganismos eucariotas que pueden crecer en una amplia variedad de alimentos, especialmente aquellos con alta actividad de agua o alto contenido de azúcares. Los mohos son organismos filamentosos que producen esporas y pueden generar micotoxinas peligrosas para la salud. Las levaduras son hongos unicelulares que pueden causar fermentación no deseada en alimentos.",
+    "importancia": "La presencia de hongos y levaduras en alimentos es un indicador importante de la calidad sanitaria del producto y de las condiciones de almacenamiento. Algunos mohos pueden producir micotoxinas (como aflatoxinas, ocratoxinas, patulina) que son cancerígenas y tóxicas. Su control es esencial para garantizar la inocuidad alimentaria.",
+    "paraQuienEsRecomendada": "Industrias de panificación, lácteos, bebidas, frutas y verduras procesadas, cereales, frutos secos, especias, y cualquier industria donde los hongos y levaduras representen un riesgo de deterioro o contaminación.",
+    "interpretacionResultados": {
+      "descripcion": "El resultado se expresa en UFC/g o UFC/mL. Los límites varían según el tipo de alimento.",
+      "limitesBajos": "Indican buenas condiciones de almacenamiento, adecuada hermeticidad del empaque y materia prima de calidad.",
+      "limitesAltos": "Pueden indicar almacenamiento prolongado, humedad excesiva, ruptura de la cadena de frío, o contaminación ambiental."
+    },
+    "normativaAplicable": [
+      "NOM-111-SSA1-1994: Método para la cuenta de mohos y levaduras en alimentos",
+      "NOM-251-SSA1-2009: Prácticas de higiene para el proceso de alimentos"
+    ]
+  },
+  "metadatos": {
+    "paginaOriginal": 11,
+    "paginaEspecificaciones": 12,
+    "archivoOrigen": "DimogenMicrobiologíaAlimentos-12.pdf",
+    "fechaExtraccion": "2025-11-26"
+  }
+}

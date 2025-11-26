@@ -1,0 +1,48 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "TRICHOMONAS VAGINALIS",
+    "descripcion": "Detecta el agente parasitario de las infecciones de transmisión sexual por Trichomonas vaginalis.",
+    "precio": 1455.00,
+    "moneda": "USD",
+    "codigo": "ITS09"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Exudado vaginal/uretral",
+    "tiempoEntrega": "3 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {
+      "archivo": "pages/DimogenBiologiaMolecular-15.png",
+      "descripcion": "Página completa del catálogo"
+    },
+    "recursos": [
+      {
+        "archivo": "assets/ITS09-trichomonas-parasito.jpg",
+        "tipo": "ilustracion",
+        "descripcion": "Ilustración del parásito Trichomonas vaginalis. Muestra la morfología característica del protozoario flagelado con su forma ovalada, cuatro flagelos anteriores, membrana ondulante y axostilo que sobresale posteriormente.",
+        "altText": "Ilustración del parásito Trichomonas vaginalis",
+        "aptoParaWeb": true
+      }
+    ]
+  },
+  "informacionAdicional": {
+    "queEs": "Trichomonas vaginalis es un protozoario flagelado que causa la tricomoniasis, la ITS curable más común en el mundo. En mujeres causa vaginitis con secreción espumosa amarillo-verdosa de olor fétido, prurito y disuria. En hombres generalmente es asintomática pero puede causar uretritis. La infección aumenta el riesgo de adquirir otras ITS incluyendo VIH.",
+    "paraQuienEsRecomendada": "Mujeres con síntomas de vaginitis (secreción anormal, prurito, olor). Parejas sexuales de casos confirmados. Mujeres con otras ITS diagnosticadas. Mujeres VIH positivas (tamizaje anual). Mujeres embarazadas sintomáticas.",
+    "preparacion": "No requiere ayuno. Evitar relaciones sexuales 24-48 horas antes. No usar duchas vaginales, óvulos ni cremas vaginales 24-48 horas antes. No realizarse durante la menstruación.",
+    "interpretacionResultados": {
+      "positivo": "Indica infección activa por Trichomonas vaginalis. Requiere tratamiento con metronidazol o tinidazol. Las parejas sexuales deben ser tratadas simultáneamente. Se recomienda abstinencia sexual durante el tratamiento y hasta que ambos miembros de la pareja hayan completado el tratamiento.",
+      "negativo": "No se detectó ADN de Trichomonas vaginalis en la muestra. Las pruebas moleculares tienen alta sensibilidad, pero si persisten los síntomas considerar otras causas de vaginitis."
+    },
+    "frecuenciaRecomendada": "No hay recomendación de tamizaje rutinario en población general. Tamizaje anual recomendado para mujeres VIH positivas. Repetir prueba a los 3 meses post-tratamiento debido a alta tasa de reinfección.",
+    "notasClinicas": "La tricomoniasis aumenta 2-3 veces el riesgo de adquisición de VIH. En el embarazo se asocia con parto prematuro y bajo peso al nacer. El período de incubación es de 5-28 días. Hasta el 70-85% de los casos son asintomáticos. Los hombres son principalmente reservorios asintomáticos."
+  },
+  "metadatos": {
+    "paginaOriginal": 14,
+    "archivoOrigen": "DimogenBiologíaMolecular-15.pdf",
+    "fechaExtraccion": "2025-11-25"
+  }
+}

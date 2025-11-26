@@ -9,12 +9,12 @@ import { useState, useEffect, useMemo } from 'react';
  */
 export function useThemeColors() {
   const [colors, setColors] = useState({
-    // Fallbacks por defecto (Lab EG)
-    primary: '#7B68A6',
-    secondary: '#DDB5D5',
-    accent: '#8B8C8E',
-    purpleAccent: '#9B88C6',
-    pinkAccent: '#E8C4DD',
+    // Fallbacks por defecto (DIMOGEN)
+    primary: '#0047CB',
+    secondary: '#00A3E0',
+    accent: '#98CB59',
+    purpleAccent: '#0066FF',
+    pinkAccent: '#00A3E0',
     success: '#10B981',
     warning: '#F59E0B',
     error: '#EF4444',
@@ -38,11 +38,11 @@ export function useThemeColors() {
 
       // Convertir a hex si es necesario
       setColors({
-        primary: convertToHex(primary) || '#7B68A6',
-        secondary: convertToHex(secondary) || '#DDB5D5',
-        accent: convertToHex(accent) || '#8B8C8E',
-        purpleAccent: convertToHex(primary) || '#9B88C6', // Derivado del primary con opacidad
-        pinkAccent: convertToHex(secondary) || '#E8C4DD',
+        primary: convertToHex(primary) || '#0047CB',
+        secondary: convertToHex(secondary) || '#00A3E0',
+        accent: convertToHex(accent) || '#98CB59',
+        purpleAccent: convertToHex(primary) || '#0066FF', // Derivado del primary con opacidad
+        pinkAccent: convertToHex(secondary) || '#00A3E0',
         success: convertToHex(success) || '#10B981',
         warning: convertToHex(warning) || '#F59E0B',
         error: convertToHex(error) || '#EF4444',
@@ -123,7 +123,7 @@ export function useChartColors() {
      */
     withAlpha: (colorKey, alpha = 1) => {
       const hex = colors[colorKey];
-      if (!hex) return `rgba(123, 104, 166, ${alpha})`;
+      if (!hex) return `rgba(0, 71, 203, ${alpha})`;
 
       // Convertir hex a rgba
       const r = parseInt(hex.slice(1, 3), 16);

@@ -18,8 +18,9 @@ import {
   Eye,
   X
 } from 'lucide-react';
+import { config } from '../../config/env.js';
 
-const API_BASE = import.meta.env.VITE_CONFIG_API_URL || 'http://localhost:3005';
+const API_BASE = config.VITE_CONFIG_API_URL;
 
 export default function BackupManager() {
   const { token } = useAdminAuth();

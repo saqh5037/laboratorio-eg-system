@@ -140,6 +140,11 @@ async function prepararDatosConDB(orden, resultados) {
 
   // Obtener logo del laboratorio desde DB
   const logoBase64 = await obtenerLogoLaboratorio();
+  logger.info(`[PDF Labsis] Logo obtenido para PDF: ${logoBase64 ? 'SI' : 'NO'}`);
+
+  // Obtener información del laboratorio desde DB
+  const labInfo = await obtenerInfoLaboratorio();
+  logger.info(`[PDF Labsis] Info laboratorio: ${labInfo.nombre}`);
 
   // Generar QR code con URL al portal de resultados (igual que Labsis)
   const portalUrl = process.env.PORTAL_URL || 'http://localhost:5173';
@@ -167,40 +172,150 @@ async function prepararDatosConDB(orden, resultados) {
     qrCodeDataUrl,
     areas: areasProcesadas,
     paginaActual: 1,
-    totalPaginas: 1
+    totalPaginas: 1,
+    // Información del laboratorio
+    labNombre: labInfo.nombre,
+    labDireccion: labInfo.direccion,
+    labTelefono: labInfo.telefono,
+    labRif: labInfo.rif,
+    labEmail: labInfo.email
   };
 }
 
 /**
  * Obtiene el logo del laboratorio desde la base de datos
+ * Si falla, usa logo estático como fallback
  */
 async function obtenerLogoLaboratorio() {
   try {
+    logger.info('[PDF Labsis] Iniciando obtención de logo desde base de datos');
+
     // Consultar el OID del logo
     const result = await pool.query('SELECT logo FROM laboratorio WHERE id = 1');
 
     if (!result.rows[0] || !result.rows[0].logo) {
-      logger.warn('[PDF Labsis] No se encontró logo en la base de datos');
-      return null;
+      logger.warn('[PDF Labsis] No se encontró logo en la base de datos, usando fallback estático');
+      return await obtenerLogoEstatico();
     }
 
     const logoOID = result.rows[0].logo;
+    logger.info(`[PDF Labsis] Logo OID encontrado: ${logoOID}`);
 
     // Exportar el logo a un archivo temporal
     const tempPath = `/tmp/logo-${Date.now()}.png`;
+    logger.info(`[PDF Labsis] Exportando logo a: ${tempPath}`);
     await pool.query(`SELECT lo_export($1, $2)`, [logoOID, tempPath]);
 
     // Leer el archivo y convertirlo a base64
     const logoBuffer = await fs.readFile(tempPath);
+    logger.info(`[PDF Labsis] Logo leído, tamaño: ${logoBuffer.length} bytes`);
+
     const logoBase64 = `data:image/png;base64,${logoBuffer.toString('base64')}`;
+    const base64Length = logoBase64.length;
+    logger.info(`[PDF Labsis] Logo convertido a base64, tamaño: ${base64Length} caracteres`);
 
     // Eliminar archivo temporal
     await fs.unlink(tempPath).catch(() => {});
 
     return logoBase64;
   } catch (error) {
-    logger.error('[PDF Labsis] Error al obtener logo:', error);
+    logger.error('[PDF Labsis] Error al obtener logo desde base de datos:', error);
+    logger.warn('[PDF Labsis] Usando logo estático como fallback');
+    return await obtenerLogoEstatico();
+  }
+}
+
+/**
+ * Obtiene el logo estático desde el directorio de assets
+ * Se usa como fallback cuando no se puede obtener el logo de la base de datos
+ */
+async function obtenerLogoEstatico() {
+  try {
+    const path = require('path');
+    const logoPath = path.join(__dirname, '../assets/logoEG.png');
+    logger.info(`[PDF Labsis] Cargando logo estático desde: ${logoPath}`);
+
+    const logoBuffer = await fs.readFile(logoPath);
+    const logoBase64 = `data:image/png;base64,${logoBuffer.toString('base64')}`;
+
+    logger.info(`[PDF Labsis] Logo estático cargado exitosamente, tamaño: ${logoBuffer.length} bytes`);
+    return logoBase64;
+  } catch (error) {
+    logger.error('[PDF Labsis] Error al cargar logo estático:', error);
+    logger.error('[PDF Labsis] Stack trace:', error.stack);
     return null;
+  }
+}
+
+/**
+ * Obtiene la información del laboratorio desde la base de datos
+ * IMPORTANTE: La base de datos Labsis tiene el campo 'direccion' en formato multilínea:
+ * Línea 1: Dirección física
+ * Línea 2: Teléfonos
+ * Línea 3+: RIF y otros datos
+ */
+async function obtenerInfoLaboratorio() {
+  try {
+    // Consultar SOLO las columnas que existen en el esquema Labsis
+    // NOTA: telefono y email NO existen como columnas separadas
+    const result = await pool.query(`
+      SELECT nombre, direccion, rif
+      FROM laboratorio
+      WHERE id = 1
+    `);
+
+    if (!result.rows[0]) {
+      logger.warn('[PDF Labsis] No se encontró información del laboratorio en la base de datos');
+      return {
+        nombre: 'LABORATORIO',
+        direccion: '',
+        telefono: '',
+        rif: '',
+        email: ''
+      };
+    }
+
+    const lab = result.rows[0];
+
+    // Parsear el campo direccion que contiene:
+    // "Av. Libertador Edf. Majestic Piso 1 Ofc. 18\n     762.05.61 763.59.09 763.66.28\n     Rif. J-40..."
+    let direccionLimpia = lab.direccion || '';
+    let telefono = '';
+
+    // Separar por líneas y limpiar espacios
+    const lines = direccionLimpia.split('\n').map(l => l.trim()).filter(l => l);
+
+    if (lines.length >= 2) {
+      direccionLimpia = lines[0]; // Primera línea: dirección física
+      telefono = lines[1];        // Segunda línea: números de teléfono
+    }
+
+    const labInfo = {
+      nombre: lab.nombre || 'LABORATORIO',
+      direccion: direccionLimpia,
+      telefono: telefono,
+      rif: lab.rif || '',
+      email: '' // No disponible en esquema Labsis original
+    };
+
+    logger.info('[PDF Labsis] Información del laboratorio obtenida exitosamente:', {
+      nombre: labInfo.nombre,
+      direccion: labInfo.direccion,
+      telefono: labInfo.telefono,
+      rif: labInfo.rif
+    });
+
+    return labInfo;
+  } catch (error) {
+    logger.error('[PDF Labsis] Error al obtener información del laboratorio:', error);
+    logger.error('[PDF Labsis] Stack trace:', error.stack);
+    return {
+      nombre: 'LABORATORIO',
+      direccion: '',
+      telefono: '',
+      rif: '',
+      email: ''
+    };
   }
 }
 

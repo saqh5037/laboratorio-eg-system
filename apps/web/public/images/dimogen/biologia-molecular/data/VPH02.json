@@ -1,0 +1,71 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "GENOTIPIFICACIÓN DE VPH",
+    "descripcion": "Detecta individualmente 28 genotipos responsables de la infección del virus de papiloma humano. Diecinueve genotipos de alto riesgo: 16, 18, 31, 45, 33, 35, 66, 58, 51, 59, 39, 52, 56, 68, 26, 69, 73, 82 y 5; y nueve genotipos de bajo riesgo: 6, 11, 40, 42, 43, 44, 54, 61, 70.",
+    "precio": 1818.00,
+    "moneda": "USD",
+    "codigo": "VPH02"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Exudado vaginal/uretral",
+    "tiempoEntrega": "5 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {
+      "archivo": "pages/DimogenBiologiaMolecular-12.png",
+      "descripcion": "Página completa del catálogo",
+      "dimensiones": {
+        "width": 2482,
+        "height": 3510
+      }
+    },
+    "recursos": [
+      {
+        "archivo": "assets/VPH02-virus-vph-3d.jpg",
+        "tipo": "ilustracion-3d",
+        "descripcion": "Ilustración 3D de múltiples partículas del Virus del Papiloma Humano (VPH). Representación molecular de la cápside viral icosaédrica compuesta por proteínas L1 y L2, mostrando la estructura característica del virión con sus 72 capsómeros. Los diferentes colores representan las distintas proteínas estructurales que componen la envoltura del virus.",
+        "dimensiones": {
+          "width": 1122,
+          "height": 1122
+        },
+        "formato": "jpg",
+        "tamano": "448KB",
+        "altText": "Modelo 3D de múltiples partículas del virus del papiloma humano VPH",
+        "aptoParaWeb": true
+      },
+      {
+        "archivo": "assets/VPH02-virus-central-limpio.png",
+        "tipo": "ilustracion-3d",
+        "descripcion": "Ilustración 3D de una partícula individual del Virus del Papiloma Humano (VPH). Imagen aislada y limpia de un solo virión, ideal para uso destacado en la página web.",
+        "dimensiones": {
+          "width": 900,
+          "height": 900
+        },
+        "formato": "png",
+        "tamano": "766KB",
+        "altText": "Modelo 3D de una partícula del virus del papiloma humano VPH",
+        "aptoParaWeb": true
+      }
+    ]
+  },
+  "informacionAdicional": {
+    "queEs": "La genotipificación de VPH es una prueba molecular avanzada que identifica de forma individual cada uno de los 28 genotipos del Virus del Papiloma Humano presentes en la muestra. A diferencia de la detección simple que solo indica presencia o ausencia, esta prueba especifica exactamente qué genotipo(s) está causando la infección, permitiendo una estratificación más precisa del riesgo oncológico.",
+    "paraQuienEsRecomendada": "Pacientes con resultado positivo en prueba de detección de VPH que requieren identificación específica del genotipo. Mujeres con lesiones cervicales de bajo o alto grado (LSIL, HSIL) para guiar el manejo clínico. Seguimiento post-tratamiento de lesiones cervicales para detectar persistencia o nuevas infecciones. Pacientes con verrugas genitales para confirmar genotipos de bajo riesgo. Parejas de personas con infección por VPH conocida.",
+    "preparacion": "No requiere ayuno. Evitar relaciones sexuales 48 horas antes de la toma de muestra. No usar duchas vaginales, óvulos, cremas o medicamentos vaginales 48 horas antes. No realizarse durante la menstruación, esperar al menos 5 días después de que termine el período. Preferiblemente no estar embarazada al momento del estudio.",
+    "interpretacionResultados": {
+      "positivo": "El resultado indica qué genotipo(s) específico(s) están presentes. Los genotipos de alto riesgo (16, 18, 31, 33, 35, 39, 45, 51, 52, 56, 58, 59, 66, 68, 26, 69, 73, 82, 5) requieren seguimiento estrecho y posible colposcopía. Los genotipos 16 y 18 son los de mayor riesgo oncogénico. Los genotipos de bajo riesgo (6, 11, 40, 42, 43, 44, 54, 61, 70) se asocian principalmente con verrugas genitales y tienen bajo potencial oncogénico.",
+      "negativo": "No se detectaron ninguno de los 28 genotipos analizados. Esto indica ausencia de infección activa por los genotipos incluidos en el panel. Se recomienda continuar con tamizaje rutinario según guías clínicas."
+    },
+    "frecuenciaRecomendada": "No es una prueba de tamizaje rutinario. Se realiza según indicación médica específica, generalmente como seguimiento de una prueba de detección positiva o para monitoreo post-tratamiento de lesiones cervicales.",
+    "notasClinicas": "Esta prueba detecta 19 genotipos de alto riesgo y 9 de bajo riesgo. Los genotipos 16 y 18 causan aproximadamente el 70% de los cánceres cervicales. El genotipo 45 es el tercero más frecuente en adenocarcinoma. Los genotipos 6 y 11 causan más del 90% de las verrugas genitales. La coinfección por múltiples genotipos es común y puede indicarse en el resultado. La persistencia del mismo genotipo de alto riesgo por más de 1-2 años aumenta significativamente el riesgo de progresión a lesiones de alto grado."
+  },
+  "metadatos": {
+    "paginaOriginal": 11,
+    "archivoOrigen": "DimogenBiologíaMolecular-12.pdf",
+    "fechaExtraccion": "2025-11-25"
+  }
+}

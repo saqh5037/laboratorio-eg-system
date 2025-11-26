@@ -57,7 +57,9 @@ const availableIcons = {
   ExternalLink: ExternalLink
 };
 
-const API_BASE = import.meta.env.VITE_CONFIG_API_URL || 'http://localhost:3005';
+import { config } from '../../config/env.js';
+
+const API_BASE = config.VITE_CONFIG_API_URL;
 
 export default function NavigationManager() {
   const { token } = useAdminAuth();

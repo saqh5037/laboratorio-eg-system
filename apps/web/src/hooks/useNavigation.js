@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
+import { config } from '../config/env.js';
 
-const CONFIG_API_URL = import.meta.env.VITE_CONFIG_API_URL || 'http://localhost:3005';
+const CONFIG_API_URL = config.VITE_CONFIG_API_URL;
 
 /**
  * Hook para gestionar la navegación dinámica

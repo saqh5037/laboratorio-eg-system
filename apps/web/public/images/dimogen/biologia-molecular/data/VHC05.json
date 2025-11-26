@@ -1,0 +1,39 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "CARGA VIRAL DE HEPATITIS C",
+    "descripcion": "Cuantifica el número de copias del virus por mililitro presentes en la sangre del paciente. Las concentraciones virales de VHC se han utilizado para individualizar la duración del tratamiento, ajustarlo o para determinar y predecir una respuesta virológica.",
+    "precio": 2940.00,
+    "moneda": "USD",
+    "codigo": "VHC05"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Sangre total con EDTA, Sangre con EDTA K2, Plasma EDTA separado",
+    "tiempoEntrega": "3 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-34.png"},
+    "recursos": [{
+      "archivo": "assets/VHC05-hepatitis-c-virus-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D detallada del virus de hepatitis C con glóbulos rojos, mostrando la interacción del virus en el torrente sanguíneo.",
+      "altText": "Virus Hepatitis C y glóbulos rojos 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "La carga viral de VHC cuantifica el ARN viral en sangre. Aunque no predice la gravedad de la enfermedad hepática, es esencial para confirmar infección activa y documentar respuesta virológica sostenida (RVS) post-tratamiento, que define curación.",
+    "paraQuienEsRecomendada": "Evaluación pre-tratamiento (línea base). Monitoreo durante tratamiento. Confirmación de curación (RVS a las 12 semanas post-tratamiento). Sospecha de reinfección.",
+    "preparacion": "No requiere ayuno. No hay restricciones especiales.",
+    "interpretacionResultados": {
+      "positivo": "Se reporta en UI/mL. La carga viral pre-tratamiento puede influir en duración de terapia en algunos esquemas. No correlaciona con gravedad hepática.",
+      "negativo": "ARN indetectable 12 semanas después del tratamiento define Respuesta Virológica Sostenida (RVS) = curación en >99% de casos."
+    },
+    "frecuenciaRecomendada": "Pre-tratamiento, semana 4 de tratamiento (opcional), fin de tratamiento, 12 semanas post-tratamiento (RVS12).",
+    "notasClinicas": "Con los antivirales de acción directa modernos, >95% de pacientes alcanzan RVS. La carga viral alta no significa enfermedad más severa ni peor pronóstico de tratamiento."
+  },
+  "metadatos": {"paginaOriginal": 33, "archivoOrigen": "DimogenBiologíaMolecular-34.pdf", "fechaExtraccion": "2025-11-25"}
+}

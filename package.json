@@ -26,7 +26,13 @@
     "stop:all": "./scripts/stop-dev.sh",
     "stop:config": "./scripts/stop-dev.sh config",
     "stop:backend": "./scripts/stop-dev.sh backend",
-    "stop:frontend": "./scripts/stop-dev.sh frontend"
+    "stop:frontend": "./scripts/stop-dev.sh frontend",
+    "lab:start": "./scripts/start-lab.sh",
+    "lab:stop": "./scripts/stop-lab.sh",
+    "lab:status": "./scripts/status-labs.sh",
+    "lab:eg": "./scripts/start-lab.sh eg",
+    "lab:dimogen": "./scripts/start-lab.sh dimogen",
+    "lab:microtec": "./scripts/start-lab.sh microtec"
   },
   "devDependencies": {
     "turbo": "^1.10.0",

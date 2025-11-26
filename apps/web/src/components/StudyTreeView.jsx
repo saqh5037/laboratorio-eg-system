@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FaSitemap, 
-  FaChevronRight, 
-  FaChevronDown, 
+import {
+  FaSitemap,
+  FaChevronRight,
+  FaChevronDown,
   FaFolder,
   FaFlask,
   FaLayerGroup
 } from 'react-icons/fa';
+import { config } from '../config/env.js';
 
 /**
  * StudyTreeView - Visualizador de árbol jerárquico para grupos de pruebas
@@ -48,10 +49,9 @@ const StudyTreeView = ({ studyId, studyName, studyCode, studyType, pruebas = [],
    */
   const loadGroupTree = useCallback(async (groupId) => {
     try {
-      const apiUrl = window.location.hostname === 'localhost' 
-        ? 'http://localhost:3001' 
-        : `http://${window.location.hostname}:3001`;
-      const response = await fetch(`${apiUrl}/api/grupos/${groupId}`);
+      // Usar configuración validada
+      const apiUrl = config.VITE_API_URL;
+      const response = await fetch(`${apiUrl}/grupos/${groupId}`);
       const data = await response.json();
       
       if (!data.success) return null;

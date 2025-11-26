@@ -17,7 +17,9 @@
  * - GET /api/carousel/uploads/stats - Estadísticas de almacenamiento
  */
 
-const API_BASE_URL = import.meta.env.VITE_CONFIG_API_URL || 'http://localhost:3005';
+import { config } from '../config/env.js';
+
+const API_BASE_URL = config.VITE_CONFIG_API_URL;
 
 /**
  * Helper para obtener el token de admin del localStorage
@@ -84,9 +86,13 @@ export async function getSlideById(id) {
 
 /**
  * Obtener todos los slides (incluidos inactivos) - ADMIN
+ * @param {string} lab - Código del laboratorio (ej: 'eg', 'dimogen', 'microtec')
  */
-export async function getAllSlides() {
-  const response = await fetch(`${API_BASE_URL}/api/carousel?include_inactive=true`, {
+export async function getAllSlides(lab = null) {
+  const params = new URLSearchParams({ include_inactive: 'true' });
+  if (lab) params.append('lab', lab);
+
+  const response = await fetch(`${API_BASE_URL}/api/carousel?${params.toString()}`, {
     method: 'GET',
     headers: getAuthHeaders()
   });
@@ -96,9 +102,12 @@ export async function getAllSlides() {
 
 /**
  * Obtener estadísticas de slides - ADMIN
+ * @param {string} lab - Código del laboratorio
  */
-export async function getCarouselStats() {
-  const response = await fetch(`${API_BASE_URL}/api/carousel/stats`, {
+export async function getCarouselStats(lab = null) {
+  const params = lab ? `?lab=${lab}` : '';
+
+  const response = await fetch(`${API_BASE_URL}/api/carousel/stats${params}`, {
     method: 'GET',
     headers: getAuthHeaders()
   });
@@ -124,9 +133,12 @@ export async function getCarouselStats() {
  * @param {boolean} slideData.is_active - Si está activo
  * @param {string} slideData.start_date - Fecha de inicio (ISO)
  * @param {string} slideData.end_date - Fecha de fin (ISO)
+ * @param {string} lab - Código del laboratorio
  */
-export async function createSlide(slideData) {
-  const response = await fetch(`${API_BASE_URL}/api/carousel`, {
+export async function createSlide(slideData, lab = null) {
+  const params = lab ? `?lab=${lab}` : '';
+
+  const response = await fetch(`${API_BASE_URL}/api/carousel${params}`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(slideData)
@@ -139,9 +151,12 @@ export async function createSlide(slideData) {
  * Actualizar slide existente - ADMIN
  * @param {number} id - ID del slide
  * @param {Object} slideData - Datos a actualizar
+ * @param {string} lab - Código del laboratorio
  */
-export async function updateSlide(id, slideData) {
-  const response = await fetch(`${API_BASE_URL}/api/carousel/${id}`, {
+export async function updateSlide(id, slideData, lab = null) {
+  const params = lab ? `?lab=${lab}` : '';
+
+  const response = await fetch(`${API_BASE_URL}/api/carousel/${id}${params}`, {
     method: 'PUT',
     headers: getAuthHeaders(),
     body: JSON.stringify(slideData)
@@ -153,9 +168,12 @@ export async function updateSlide(id, slideData) {
 /**
  * Eliminar slide - ADMIN
  * @param {number} id - ID del slide
+ * @param {string} lab - Código del laboratorio
  */
-export async function deleteSlide(id) {
-  const response = await fetch(`${API_BASE_URL}/api/carousel/${id}`, {
+export async function deleteSlide(id, lab = null) {
+  const params = lab ? `?lab=${lab}` : '';
+
+  const response = await fetch(`${API_BASE_URL}/api/carousel/${id}${params}`, {
     method: 'DELETE',
     headers: getAuthHeaders()
   });
@@ -167,9 +185,12 @@ export async function deleteSlide(id) {
  * Activar o desactivar slide - ADMIN
  * @param {number} id - ID del slide
  * @param {boolean} isActive - Nuevo estado
+ * @param {string} lab - Código del laboratorio
  */
-export async function toggleSlideActive(id, isActive) {
-  const response = await fetch(`${API_BASE_URL}/api/carousel/${id}/toggle`, {
+export async function toggleSlideActive(id, isActive, lab = null) {
+  const params = lab ? `?lab=${lab}` : '';
+
+  const response = await fetch(`${API_BASE_URL}/api/carousel/${id}/toggle${params}`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify({ is_active: isActive })
@@ -182,9 +203,12 @@ export async function toggleSlideActive(id, isActive) {
  * Reordenar slide a nueva posición - ADMIN
  * @param {number} id - ID del slide
  * @param {number} newPosition - Nueva posición
+ * @param {string} lab - Código del laboratorio
  */
-export async function reorderSlide(id, newPosition) {
-  const response = await fetch(`${API_BASE_URL}/api/carousel/${id}/reorder`, {
+export async function reorderSlide(id, newPosition, lab = null) {
+  const params = lab ? `?lab=${lab}` : '';
+
+  const response = await fetch(`${API_BASE_URL}/api/carousel/${id}/reorder${params}`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify({ new_position: newPosition })

@@ -49,11 +49,17 @@ export default defineConfig({
 
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        // Excluir imágenes de páginas de catálogo (muy grandes, serán cacheadas en runtime)
+        globIgnores: ['**/images/dimogen/**/pages/**'],
+        // Aumentar límite para assets más grandes (5MB)
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
 
         // CRÍTICO: Network-first para JavaScript para evitar cache de versiones antiguas
+        // IMPORTANTE: Usar patrones dinámicos que funcionen en cualquier host (localhost o IP)
         runtimeCaching: [
           {
-            urlPattern: /^https?:\/\/localhost:5173\/.*\.js$/,
+            // Cualquier archivo JS del mismo origen
+            urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.endsWith('.js'),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'js-cache',
@@ -67,7 +73,8 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /^https?:\/\/localhost:5173\/assets\/.*\.js$/,
+            // Archivos JS en /assets del mismo origen
+            urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.includes('/assets/') && url.pathname.endsWith('.js'),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'assets-js-cache',
@@ -78,7 +85,8 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /^https?:\/\/localhost:5173\/assets\/.*\.css$/,
+            // Archivos CSS en /assets del mismo origen
+            urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.includes('/assets/') && url.pathname.endsWith('.css'),
             handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'css-cache',
@@ -111,7 +119,11 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /^https?:\/\/localhost:(3001|3005)\/api\/.*/,
+            // API calls a puertos 3001 y 3005 (cualquier host)
+            urlPattern: ({ url }) => {
+              const port = url.port || (url.protocol === 'https:' ? '443' : '80');
+              return (port === '3001' || port === '3005') && url.pathname.startsWith('/api/');
+            },
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
@@ -139,7 +151,7 @@ export default defineConfig({
         name: 'Sistema de Laboratorio Clínico',
         short_name: 'Lab System',
         description: 'Sistema de gestión de estudios clínicos y análisis de laboratorio',
-        theme_color: '#ffffff',
+        theme_color: '#7B68A6',
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait-primary',
@@ -147,10 +159,22 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
+            src: '/LogoEG.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
+          {
+            src: '/Logo.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
             src: '/favicon.svg',
             sizes: 'any',
             type: 'image/svg+xml',
-            purpose: 'any maskable',
+            purpose: 'any',
           },
         ],
       },

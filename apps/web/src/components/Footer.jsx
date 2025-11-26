@@ -8,6 +8,8 @@ import {
   FaInstagram,
   FaWhatsapp,
   FaTwitter,
+  FaYoutube,
+  FaLinkedin,
   FaFlask,
   FaShieldAlt,
   FaCertificate,
@@ -16,9 +18,19 @@ import {
 import { FooterLogo } from './brand/BrandLogo';
 import { useCompanyInfo } from '../hooks/useCompanyInfo';
 
+// Mapeo de nombres de iconos a componentes
+const iconMap = {
+  FaFacebook: FaFacebook,
+  FaInstagram: FaInstagram,
+  FaTwitter: FaTwitter,
+  FaWhatsapp: FaWhatsapp,
+  FaYoutube: FaYoutube,
+  FaLinkedin: FaLinkedin,
+};
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const { companyInfo } = useCompanyInfo();
+  const { companyInfo, getSocialLinks, getFullAddress, getPhones } = useCompanyInfo();
 
   const quickLinks = [
     { name: 'Estudios', path: '/estudios' },
@@ -40,12 +52,18 @@ const Footer = () => {
     { icon: <FaAward />, name: 'CAP Certified' },
   ];
 
-  const socialLinks = [
-    { icon: <FaFacebook />, href: 'https://facebook.com', label: 'Facebook' },
-    { icon: <FaInstagram />, href: 'https://instagram.com', label: 'Instagram' },
-    { icon: <FaWhatsapp />, href: 'https://wa.me/525551234567', label: 'WhatsApp' },
-    { icon: <FaTwitter />, href: 'https://twitter.com', label: 'Twitter' },
-  ];
+  // Obtener redes sociales desde la API, con fallback vacío
+  const socialLinksData = getSocialLinks();
+  const socialLinks = socialLinksData.length > 0
+    ? socialLinksData.map(social => {
+        const IconComponent = iconMap[social.icon] || FaInstagram;
+        return {
+          icon: <IconComponent />,
+          href: social.url,
+          label: social.name
+        };
+      })
+    : []; // Sin fallback hardcodeado - si no hay datos, no mostrar
 
   return (
     <footer className="bg-eg-black dark:bg-eg-dark-bg text-white dark:text-eg-dark-text transition-colors duration-300">
@@ -57,26 +75,28 @@ const Footer = () => {
             <div className="mb-4">
               <FooterLogo className="mb-2" />
               <p className="text-xs text-eg-gray dark:text-eg-dark-muted mt-2">
-                Laboratorio Clínico Microbiológico
+                {companyInfo?.short_name || companyInfo?.name || 'Laboratorio Clínico'}
               </p>
             </div>
             <p className="text-eg-gray dark:text-eg-dark-muted text-sm mb-4">
-              Servicios de análisis clínicos con los más altos estándares de calidad y precisión.
+              {companyInfo?.description || 'Servicios de análisis clínicos con los más altos estándares de calidad y precisión.'}
             </p>
-            <div className="flex gap-3">
-              {socialLinks.map((social, index) => (
-                <a
-                  key={index}
-                  href={social.href}
-                  aria-label={social.label}
-                  className="w-10 h-10 bg-eg-purple/20 rounded-lg flex items-center justify-center hover:bg-eg-purple transition-colors duration-300 min-w-touch-target min-h-touch-target"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {social.icon}
-                </a>
-              ))}
-            </div>
+            {socialLinks.length > 0 && (
+              <div className="flex gap-3">
+                {socialLinks.map((social, index) => (
+                  <a
+                    key={index}
+                    href={social.href}
+                    aria-label={social.label}
+                    className="w-10 h-10 bg-eg-purple/20 rounded-lg flex items-center justify-center hover:bg-eg-purple transition-colors duration-300 min-w-touch-target min-h-touch-target"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {social.icon}
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Quick Links - NO font-semibold */}
@@ -117,32 +137,44 @@ const Footer = () => {
           <div>
             <h3 className="text-lg mb-4 text-white dark:text-eg-dark-text">Contacto</h3>
             <ul className="space-y-3" role="list">
-              <li className="flex items-start gap-3">
-                <FaMapMarkerAlt className="text-eg-purple mt-1 flex-shrink-0" aria-hidden="true" />
-                <span className="text-eg-gray dark:text-eg-dark-muted text-sm">
-                  Av. Principal #123, Col. Centro, Ciudad de México, 06000
-                </span>
-              </li>
-              <li className="flex items-center gap-3">
-                <FaPhone className="text-eg-purple flex-shrink-0" aria-hidden="true" />
-                <a href="tel:+525551234567" className="text-eg-gray dark:text-eg-dark-muted hover:text-eg-purple transition-colors duration-300 text-sm">
-                  +52 (555) 123-4567
-                </a>
-              </li>
-              <li className="flex items-center gap-3">
-                <FaEnvelope className="text-eg-purple flex-shrink-0" aria-hidden="true" />
-                <a href="mailto:contacto@laboratorioeg.com" className="text-eg-gray dark:text-eg-dark-muted hover:text-eg-purple transition-colors duration-300 text-sm">
-                  contacto@laboratorioeg.com
-                </a>
-              </li>
-              <li className="flex items-start gap-3">
-                <FaClock className="text-eg-purple mt-1 flex-shrink-0" aria-hidden="true" />
-                <div className="text-eg-gray dark:text-eg-dark-muted text-sm">
-                  <p>Lun - Vie: 7:00 AM - 7:00 PM</p>
-                  <p>Sábado: 7:00 AM - 2:00 PM</p>
-                  <p>Domingo: 8:00 AM - 12:00 PM</p>
-                </div>
-              </li>
+              {/* Dirección - desde API */}
+              {getFullAddress() && (
+                <li className="flex items-start gap-3">
+                  <FaMapMarkerAlt className="text-eg-purple mt-1 flex-shrink-0" aria-hidden="true" />
+                  <span className="text-eg-gray dark:text-eg-dark-muted text-sm">
+                    {getFullAddress()}
+                  </span>
+                </li>
+              )}
+              {/* Teléfonos - desde API */}
+              {getPhones().length > 0 && (
+                <li className="flex items-center gap-3">
+                  <FaPhone className="text-eg-purple flex-shrink-0" aria-hidden="true" />
+                  <a href={`tel:${getPhones()[0]}`} className="text-eg-gray dark:text-eg-dark-muted hover:text-eg-purple transition-colors duration-300 text-sm">
+                    {getPhones()[0]}
+                  </a>
+                </li>
+              )}
+              {/* Email - desde API */}
+              {companyInfo?.email && (
+                <li className="flex items-center gap-3">
+                  <FaEnvelope className="text-eg-purple flex-shrink-0" aria-hidden="true" />
+                  <a href={`mailto:${companyInfo.email}`} className="text-eg-gray dark:text-eg-dark-muted hover:text-eg-purple transition-colors duration-300 text-sm">
+                    {companyInfo.email}
+                  </a>
+                </li>
+              )}
+              {/* Horarios - desde API si disponible */}
+              {companyInfo?.schedule_weekdays && (
+                <li className="flex items-start gap-3">
+                  <FaClock className="text-eg-purple mt-1 flex-shrink-0" aria-hidden="true" />
+                  <div className="text-eg-gray dark:text-eg-dark-muted text-sm">
+                    {companyInfo.schedule_weekdays && <p>{companyInfo.schedule_weekdays}</p>}
+                    {companyInfo.schedule_saturday && <p>{companyInfo.schedule_saturday}</p>}
+                    {companyInfo.schedule_sunday && <p>{companyInfo.schedule_sunday}</p>}
+                  </div>
+                </li>
+              )}
             </ul>
           </div>
         </div>

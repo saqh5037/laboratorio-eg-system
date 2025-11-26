@@ -1,0 +1,39 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "CARGA VIRAL DE VIH",
+    "descripcion": "Cuantifica el número de copias del virus de inmunodeficiencia humana (VIH) por mililitro presentes en la sangre del paciente. Las concentraciones virales se pueden utilizar para monitorear el pronóstico de la enfermedad y la respuesta al tratamiento antirretroviral.",
+    "precio": 2182.00,
+    "moneda": "USD",
+    "codigo": "VIH03"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Sangre total con EDTA, Sangre con EDTA K2, Plasma EDTA separado",
+    "tiempoEntrega": "3 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-30.png"},
+    "recursos": [{
+      "archivo": "assets/VIH03-vih-virus-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D detallada del virus VIH mostrando partículas virales con sus proteínas de superficie características en tonos amarillo-naranja.",
+      "altText": "Virus VIH partículas 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "La carga viral cuantifica el número exacto de copias de ARN del VIH por mililitro de sangre. Es el marcador principal para evaluar la replicación viral y la efectividad del tratamiento antirretroviral. El objetivo del tratamiento es alcanzar carga viral 'indetectable' (<20-50 copias/mL según el ensayo).",
+    "paraQuienEsRecomendada": "Monitoreo de pacientes VIH positivos en tratamiento (cada 3-6 meses). Evaluación inicial al diagnóstico (línea base). Sospecha de falla virológica. Cambio de esquema antirretroviral. Embarazadas VIH positivas.",
+    "preparacion": "No requiere ayuno. Idealmente tomar la muestra antes de la dosis de antirretrovirales del día.",
+    "interpretacionResultados": {
+      "positivo": "Se reporta el número de copias/mL. Indetectable (<20-50): excelente control, bajo riesgo de transmisión. <1,000: supresión parcial. >10,000: replicación activa significativa. >100,000: alta carga viral, mayor riesgo de progresión.",
+      "negativo": "Carga viral indetectable indica supresión viral efectiva. 'Indetectable = Intransmisible' (I=I) en relaciones sexuales."
+    },
+    "frecuenciaRecomendada": "Al diagnóstico, a las 4-8 semanas de iniciar/cambiar tratamiento, luego cada 3-4 meses el primer año, y cada 6 meses si está estable e indetectable.",
+    "notasClinicas": "Los 'blips' son elevaciones transitorias de carga viral (<200 copias/mL) que no indican falla virológica. La falla virológica se define como carga viral >200 copias/mL en dos mediciones consecutivas estando en tratamiento."
+  },
+  "metadatos": {"paginaOriginal": 29, "archivoOrigen": "DimogenBiologíaMolecular-30.pdf", "fechaExtraccion": "2025-11-25"}
+}
