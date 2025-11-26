@@ -11,7 +11,8 @@ export default defineConfig([
     'build',
     'public/sw.js',
     'server/**',
-    'node_modules'
+    'node_modules',
+    'src/_archived/**'
   ]),
   {
     files: ['**/*.{js,jsx}'],

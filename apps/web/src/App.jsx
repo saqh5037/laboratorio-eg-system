@@ -9,7 +9,7 @@ import MainLayout from './layouts/MainLayout';
 import PWAWrapper from './components/PWAComponents';
 import LoadingSpinner from './components/LoadingSpinner';
 import ErrorBoundary from './components/ErrorBoundary';
-import pwaManager from './utils/pwa';
+// import pwaManager from './utils/pwa'; // Temporarily disabled
 import { useSystemConfig } from './hooks/useSystemConfig';
 import { useThemeColors } from './hooks/useThemeColors';
 
