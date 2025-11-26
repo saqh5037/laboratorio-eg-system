@@ -1,0 +1,22 @@
+# Build outputs
+dist/
+dev-dist/
+build/
+
+# Service workers
+public/sw.js
+sw.js
+
+# Server files (use different environment)
+server/
+
+# Node modules
+node_modules/
+
+# Static assets
+public/images/
+public/icons/
+public/*.json
+
+# Vite config (uses process.env)
+vite.config.js
