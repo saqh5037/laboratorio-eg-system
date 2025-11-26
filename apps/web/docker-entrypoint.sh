@@ -32,6 +32,7 @@ window.__ENV__ = {
   VITE_CONFIG_API_URL: "PLACEHOLDER_VITE_CONFIG_API_URL",
   VITE_RESULTS_API_URL: "PLACEHOLDER_VITE_RESULTS_API_URL",
   VITE_MESSAGING_BOT_API_URL: "PLACEHOLDER_VITE_MESSAGING_BOT_API_URL",
+  VITE_LAB_CODE: "PLACEHOLDER_VITE_LAB_CODE",
   MODE: "PLACEHOLDER_NODE_ENV"
 };
 ENVEOF
@@ -41,6 +42,7 @@ sed -i "s|PLACEHOLDER_VITE_API_URL|${VITE_API_URL:-http://localhost:3002/api}|g"
 sed -i "s|PLACEHOLDER_VITE_CONFIG_API_URL|${VITE_CONFIG_API_URL:-http://localhost:3005}|g" /usr/share/nginx/html/env-config.js
 sed -i "s|PLACEHOLDER_VITE_RESULTS_API_URL|${VITE_RESULTS_API_URL:-http://localhost:3003}|g" /usr/share/nginx/html/env-config.js
 sed -i "s|PLACEHOLDER_VITE_MESSAGING_BOT_API_URL|${VITE_MESSAGING_BOT_API_URL:-/api/messaging}|g" /usr/share/nginx/html/env-config.js
+sed -i "s|PLACEHOLDER_VITE_LAB_CODE|${VITE_LAB_CODE:-eg}|g" /usr/share/nginx/html/env-config.js
 sed -i "s|PLACEHOLDER_NODE_ENV|${NODE_ENV:-production}|g" /usr/share/nginx/html/env-config.js
 
 # Verify env-config.js was created successfully
@@ -68,6 +70,7 @@ echo "📍 VITE_API_URL: ${VITE_API_URL:-http://localhost:3002/api}"
 echo "📍 VITE_CONFIG_API_URL: ${VITE_CONFIG_API_URL:-http://localhost:3005}"
 echo "📍 VITE_RESULTS_API_URL: ${VITE_RESULTS_API_URL:-http://localhost:3003}"
 echo "📍 VITE_MESSAGING_BOT_API_URL: ${VITE_MESSAGING_BOT_API_URL:-/api/messaging}"
+echo "📍 VITE_LAB_CODE: ${VITE_LAB_CODE:-eg}"
 echo "📍 NODE_ENV: ${NODE_ENV:-production}"
 echo "============================================"
 echo ""

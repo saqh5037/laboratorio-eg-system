@@ -52,7 +52,17 @@ const DimogenTestimonialsManager = lazy(() => import('./pages/admin/dimogen/Dimo
 const DimogenCarouselManager = lazy(() => import('./pages/admin/dimogen/DimogenCarouselManager'));
 
 // Lab instance identification from environment
-const LAB_CODE = import.meta.env.VITE_LAB_CODE || 'eg';
+// Support both build-time (import.meta.env) and runtime (window.__ENV__) configuration
+const getLabCode = () => {
+  // First check runtime config (Docker/production)
+  if (typeof window !== 'undefined' && window.__ENV__?.VITE_LAB_CODE) {
+    return window.__ENV__.VITE_LAB_CODE;
+  }
+  // Fallback to build-time config (local development)
+  return import.meta.env.VITE_LAB_CODE || 'eg';
+};
+
+const LAB_CODE = getLabCode();
 const IS_DIMOGEN = LAB_CODE === 'dimogen';
 
 function AppRoutes() {
