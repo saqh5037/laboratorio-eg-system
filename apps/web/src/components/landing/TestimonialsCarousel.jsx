@@ -26,6 +26,17 @@ const TestimonialsCarousel = ({ section, content }) => {
   const testimonials = content[dataSource] || [];
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Autoplay - MUST be before any conditional returns (React hooks rules)
+  useEffect(() => {
+    if (!autoplay || testimonials.length <= 1) return;
+
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [autoplay, interval, testimonials.length]);
+
   // Si no hay testimonios, no renderizar
   if (testimonials.length === 0) {
     if (import.meta.env.DEV) {
@@ -43,17 +54,6 @@ const TestimonialsCarousel = ({ section, content }) => {
   }
 
   const currentTestimonial = testimonials[currentIndex];
-
-  // Autoplay
-  useEffect(() => {
-    if (!autoplay || testimonials.length <= 1) return;
-
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-    }, interval);
-
-    return () => clearInterval(timer);
-  }, [autoplay, interval, testimonials.length]);
 
   // Navegación
   const goToNext = () => {
