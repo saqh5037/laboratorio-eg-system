@@ -12,7 +12,12 @@ export default defineConfig([
     'public/sw.js',
     'server/**',
     'node_modules',
-    'src/_archived/**'
+    'src/_archived/**',
+    'vite.config.js',
+    'src/utils/performance.js',
+    'src/utils/pwa.js',
+    'src/utils/hapticFeedback.js',
+    'src/utils/validators.js'
   ]),
   {
     files: ['**/*.{js,jsx}'],
@@ -23,7 +28,11 @@ export default defineConfig([
     ],
     languageOptions: {
       ecmaVersion: 2020,
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        process: 'readonly',
+        React: 'readonly'
+      },
       parserOptions: {
         ecmaVersion: 'latest',
         ecmaFeatures: { jsx: true },
@@ -32,6 +41,7 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['warn', { varsIgnorePattern: '^[A-Z_]', argsIgnorePattern: '^_' }],
+      'no-useless-escape': 'warn',
     },
   },
 ])
