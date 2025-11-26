@@ -1,0 +1,38 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "MYCOBACTERIUM TUBERCULOSIS",
+    "descripcion": "Detecta simultáneamente el agente bacteriano causal de tuberculosis Mycobacterium tuberculosis y su resistencia a medicamentos antituberculosos de primera línea (isoniazida y rifampicina).",
+    "precio": 2121.00,
+    "moneda": "USD",
+    "codigo": "MTB09"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Orina ocasional, Fluidos, Secreciones purulentas, Tejidos y biopsias, Lavado alveolar y broncoalveolar, Expectoraciones",
+    "tiempoEntrega": "3 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-27.png"},
+    "recursos": [{
+      "archivo": "assets/MTB09-mycobacterium-tuberculosis-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D de Mycobacterium tuberculosis mostrando su forma de bacilo característico con pared celular rica en ácidos micólicos.",
+      "altText": "Mycobacterium tuberculosis bacteria 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "La tuberculosis (TB) es una enfermedad infecciosa causada por Mycobacterium tuberculosis que afecta principalmente los pulmones pero puede atacar cualquier órgano. La TB multidrogorresistente (MDR-TB) es resistente a isoniazida y rifampicina, los dos fármacos más potentes. Esta prueba detecta tanto la bacteria como las mutaciones de resistencia.",
+    "paraQuienEsRecomendada": "Sospecha de tuberculosis pulmonar o extrapulmonar. Pacientes VIH positivos con síntomas respiratorios. Contactos de casos de TB. Falla al tratamiento antituberculoso. Sospecha de TB resistente. Inmunocomprometidos con síntomas sugestivos.",
+    "preparacion": "Depende del tipo de muestra. Expectoración: primera muestra de la mañana, antes de enjuague bucal. Otras muestras según indicación médica.",
+    "interpretacionResultados": {
+      "positivo": "M. tuberculosis detectado. Se reporta presencia o ausencia de mutaciones de resistencia a isoniazida y rifampicina. Resistencia a ambos indica TB-MDR.",
+      "negativo": "No se detectó M. tuberculosis. Un resultado negativo no descarta TB, especialmente en formas paucibacilares o muestras inadecuadas."
+    },
+    "notasClinicas": "La PCR es más rápida que el cultivo (días vs semanas) y puede detectar resistencia sin esperar antibiograma. Es especialmente útil en formas extrapulmonares y pacientes VIH+."
+  },
+  "metadatos": {"paginaOriginal": 26, "archivoOrigen": "DimogenBiologíaMolecular-27.pdf", "fechaExtraccion": "2025-11-25"}
+}

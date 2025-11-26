@@ -11,10 +11,11 @@ const logger = require('../utils/logger');
  *
  * Query params:
  * - include_inactive: true (solo admin)
+ * - lab: string (código del laboratorio, ej: 'eg', 'dimogen')
  */
 router.get('/', async (req, res) => {
   try {
-    const { include_inactive } = req.query;
+    const { include_inactive, lab } = req.query;
 
     // Si solicita inactivos, verificar que sea admin
     if (include_inactive === 'true') {
@@ -28,22 +29,24 @@ router.get('/', async (req, res) => {
       }
 
       // Aquí puedes agregar validación de token JWT
-      const slides = await CarouselService.getAllSlides();
+      const slides = await CarouselService.getAllSlides(lab || null);
 
       return res.json({
         success: true,
         data: slides,
-        total: slides.length
+        total: slides.length,
+        lab: lab || 'default'
       });
     }
 
     // Obtener solo slides activos (público)
-    const slides = await CarouselService.getActiveSlides();
+    const slides = await CarouselService.getActiveSlides(lab || null);
 
     res.json({
       success: true,
       data: slides,
-      total: slides.length
+      total: slides.length,
+      lab: lab || 'default'
     });
   } catch (error) {
     logger.error('Error en GET /api/carousel:', error);
@@ -57,14 +60,19 @@ router.get('/', async (req, res) => {
 /**
  * GET /api/carousel/stats
  * Obtener estadísticas de slides (admin)
+ *
+ * Query params:
+ * - lab: string (código del laboratorio)
  */
 router.get('/stats', authenticateAdmin, async (req, res) => {
   try {
-    const stats = await CarouselService.getStats();
+    const { lab } = req.query;
+    const stats = await CarouselService.getStats(lab || null);
 
     res.json({
       success: true,
-      data: stats
+      data: stats,
+      lab: lab || 'default'
     });
   } catch (error) {
     logger.error('Error en GET /api/carousel/stats:', error);
@@ -78,12 +86,16 @@ router.get('/stats', authenticateAdmin, async (req, res) => {
 /**
  * GET /api/carousel/:id
  * Obtener un slide específico por ID
+ *
+ * Query params:
+ * - lab: string (código del laboratorio)
  */
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
+    const { lab } = req.query;
 
-    const slide = await CarouselService.getSlideById(parseInt(id));
+    const slide = await CarouselService.getSlideById(parseInt(id), lab || null);
 
     if (!slide) {
       return res.status(404).json({
@@ -109,6 +121,9 @@ router.get('/:id', async (req, res) => {
  * POST /api/carousel
  * Crear nuevo slide (requiere autenticación admin)
  *
+ * Query params:
+ * - lab: string (código del laboratorio)
+ *
  * Body:
  * {
  *   title: string (requerido),
@@ -130,14 +145,15 @@ router.get('/:id', async (req, res) => {
  */
 router.post('/', authenticateAdmin, async (req, res) => {
   try {
+    const { lab } = req.query;
     const slideData = {
       ...req.body,
       created_by: req.user?.username || 'admin'
     };
 
-    const newSlide = await CarouselService.createSlide(slideData);
+    const newSlide = await CarouselService.createSlide(slideData, lab || null);
 
-    logger.info(`Slide creado por ${slideData.created_by}:`, {
+    logger.info(`Slide creado por ${slideData.created_by} (lab: ${lab || 'default'}):`, {
       id: newSlide.id,
       title: newSlide.title
     });
@@ -159,18 +175,22 @@ router.post('/', authenticateAdmin, async (req, res) => {
 /**
  * PUT /api/carousel/:id
  * Actualizar slide existente (requiere autenticación admin)
+ *
+ * Query params:
+ * - lab: string (código del laboratorio)
  */
 router.put('/:id', authenticateAdmin, async (req, res) => {
   try {
     const { id } = req.params;
+    const { lab } = req.query;
     const slideData = {
       ...req.body,
       updated_by: req.user?.username || 'admin'
     };
 
-    const updatedSlide = await CarouselService.updateSlide(parseInt(id), slideData);
+    const updatedSlide = await CarouselService.updateSlide(parseInt(id), slideData, lab || null);
 
-    logger.info(`Slide ${id} actualizado por ${slideData.updated_by}`);
+    logger.info(`Slide ${id} actualizado por ${slideData.updated_by} (lab: ${lab || 'default'})`);
 
     res.json({
       success: true,
@@ -189,14 +209,18 @@ router.put('/:id', authenticateAdmin, async (req, res) => {
 /**
  * DELETE /api/carousel/:id
  * Eliminar slide (requiere autenticación admin)
+ *
+ * Query params:
+ * - lab: string (código del laboratorio)
  */
 router.delete('/:id', authenticateAdmin, async (req, res) => {
   try {
     const { id } = req.params;
+    const { lab } = req.query;
 
-    const deletedSlide = await CarouselService.deleteSlide(parseInt(id));
+    const deletedSlide = await CarouselService.deleteSlide(parseInt(id), lab || null);
 
-    logger.info(`Slide ${id} eliminado por ${req.user?.username || 'admin'}`);
+    logger.info(`Slide ${id} eliminado por ${req.user?.username || 'admin'} (lab: ${lab || 'default'})`);
 
     res.json({
       success: true,
@@ -216,6 +240,9 @@ router.delete('/:id', authenticateAdmin, async (req, res) => {
  * POST /api/carousel/:id/toggle
  * Activar/desactivar slide (requiere autenticación admin)
  *
+ * Query params:
+ * - lab: string (código del laboratorio)
+ *
  * Body:
  * {
  *   is_active: boolean
@@ -224,6 +251,7 @@ router.delete('/:id', authenticateAdmin, async (req, res) => {
 router.post('/:id/toggle', authenticateAdmin, async (req, res) => {
   try {
     const { id } = req.params;
+    const { lab } = req.query;
     const { is_active } = req.body;
 
     if (typeof is_active !== 'boolean') {
@@ -233,9 +261,9 @@ router.post('/:id/toggle', authenticateAdmin, async (req, res) => {
       });
     }
 
-    const updatedSlide = await CarouselService.toggleActive(parseInt(id), is_active);
+    const updatedSlide = await CarouselService.toggleActive(parseInt(id), is_active, lab || null);
 
-    logger.info(`Slide ${id} ${is_active ? 'activado' : 'desactivado'} por ${req.user?.username || 'admin'}`);
+    logger.info(`Slide ${id} ${is_active ? 'activado' : 'desactivado'} por ${req.user?.username || 'admin'} (lab: ${lab || 'default'})`);
 
     res.json({
       success: true,
@@ -255,6 +283,9 @@ router.post('/:id/toggle', authenticateAdmin, async (req, res) => {
  * POST /api/carousel/:id/reorder
  * Cambiar orden del slide (requiere autenticación admin)
  *
+ * Query params:
+ * - lab: string (código del laboratorio)
+ *
  * Body:
  * {
  *   new_position: number
@@ -263,6 +294,7 @@ router.post('/:id/toggle', authenticateAdmin, async (req, res) => {
 router.post('/:id/reorder', authenticateAdmin, async (req, res) => {
   try {
     const { id } = req.params;
+    const { lab } = req.query;
     const { new_position } = req.body;
 
     if (typeof new_position !== 'number' || new_position < 0) {
@@ -272,9 +304,9 @@ router.post('/:id/reorder', authenticateAdmin, async (req, res) => {
       });
     }
 
-    const updatedSlide = await CarouselService.reorderSlide(parseInt(id), new_position);
+    const updatedSlide = await CarouselService.reorderSlide(parseInt(id), new_position, lab || null);
 
-    logger.info(`Slide ${id} reordenado a posición ${new_position} por ${req.user?.username || 'admin'}`);
+    logger.info(`Slide ${id} reordenado a posición ${new_position} por ${req.user?.username || 'admin'} (lab: ${lab || 'default'})`);
 
     res.json({
       success: true,

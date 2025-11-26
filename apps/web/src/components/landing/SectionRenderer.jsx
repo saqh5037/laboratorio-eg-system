@@ -6,6 +6,13 @@ import GridSection from './GridSection';
 import CompositeSection from './CompositeSection';
 import TestimonialsCarousel from './TestimonialsCarousel';
 
+// ===== DIMOGEN Components =====
+import HeroDimogen from './dimogen/HeroDimogen';
+import LineasNegocioSection from './dimogen/LineasNegocioSection';
+import SobreDimogenSection from './dimogen/SobreDimogenSection';
+import ServiciosAlimentosSection from './dimogen/ServiciosAlimentosSection';
+import ContactoDimogenSection from './dimogen/ContactoDimogenSection';
+
 /**
  * SectionRenderer Component
  * Master renderer que mapea section_type a componentes React
@@ -27,6 +34,8 @@ const SectionRenderer = ({ section, content }) => {
       // Hero Carousel o Testimonials Carousel
       if (layout_config.component === 'HeroCarouselEG') {
         return <HeroCarouselEG />;
+      } else if (layout_config.component === 'HeroDimogen') {
+        return <HeroDimogen section={section} content={content} />;
       } else if (layout_config.component === 'TestimonialsCarousel') {
         return <TestimonialsCarousel section={section} content={content} />;
       }
@@ -53,6 +62,22 @@ const SectionRenderer = ({ section, content }) => {
     case 'footer':
       // Footer dinámico
       return <DynamicFooter />;
+
+    // ===== DIMOGEN SPECIFIC SECTIONS =====
+    case 'dimogen_hero':
+      return <HeroDimogen section={section} content={content} />;
+
+    case 'dimogen_lineas_negocio':
+      return <LineasNegocioSection section={section} content={content} />;
+
+    case 'dimogen_sobre':
+      return <SobreDimogenSection section={section} content={content} />;
+
+    case 'dimogen_servicios_alimentos':
+      return <ServiciosAlimentosSection section={section} content={content} />;
+
+    case 'dimogen_contacto':
+      return <ContactoDimogenSection section={section} content={content} />;
 
     default:
       // Tipo de sección no reconocido

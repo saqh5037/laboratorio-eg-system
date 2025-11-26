@@ -29,16 +29,52 @@ router.get('/manifest', async (req, res) => {
 
       icons: [
         {
-          src: companyInfo.logo_icon_url || '/LogoEG.png',
+          src: '/icons/dimogen/icon-72x72.png',
+          sizes: '72x72',
+          type: 'image/png',
+          purpose: 'any'
+        },
+        {
+          src: '/icons/dimogen/icon-96x96.png',
+          sizes: '96x96',
+          type: 'image/png',
+          purpose: 'any'
+        },
+        {
+          src: '/icons/dimogen/icon-128x128.png',
+          sizes: '128x128',
+          type: 'image/png',
+          purpose: 'any'
+        },
+        {
+          src: '/icons/dimogen/icon-144x144.png',
+          sizes: '144x144',
+          type: 'image/png',
+          purpose: 'any'
+        },
+        {
+          src: '/icons/dimogen/icon-152x152.png',
+          sizes: '152x152',
+          type: 'image/png',
+          purpose: 'any'
+        },
+        {
+          src: '/icons/dimogen/icon-192x192.png',
           sizes: '192x192',
           type: 'image/png',
           purpose: 'any maskable'
         },
         {
-          src: companyInfo.logo_full_url || '/Logo.png',
-          sizes: '512x512',
+          src: '/icons/dimogen/icon-384x384.png',
+          sizes: '384x384',
           type: 'image/png',
           purpose: 'any'
+        },
+        {
+          src: '/icons/dimogen/icon-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'any maskable'
         }
       ],
 
@@ -48,14 +84,14 @@ router.get('/manifest', async (req, res) => {
           short_name: 'Estudios',
           description: 'Ver directorio de estudios',
           url: '/estudios',
-          icons: [{ src: companyInfo.logo_icon_url || '/LogoEG.png', sizes: '192x192' }]
+          icons: [{ src: '/icons/dimogen/icon-192x192.png', sizes: '192x192' }]
         },
         {
           name: 'Resultados',
           short_name: 'Resultados',
           description: 'Consultar resultados',
           url: '/resultados',
-          icons: [{ src: companyInfo.logo_icon_url || '/LogoEG.png', sizes: '192x192' }]
+          icons: [{ src: '/icons/dimogen/icon-192x192.png', sizes: '192x192' }]
         }
       ],
 

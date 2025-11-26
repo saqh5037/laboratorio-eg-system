@@ -1,0 +1,63 @@
+{
+  "categoria": "Microbiología de Alimentos",
+  "subcategoria": "Análisis",
+  "prueba": {
+    "titulo": "COLIFORMES TOTALES (Vaciado en placa)",
+    "descripcion": "Indicador de prácticas higiénicas inadecuadas, mala higiene en la manipulación o procesamiento, limpieza inadecuada o condiciones insalubres.",
+    "precio": 363.66,
+    "moneda": "MXN",
+    "codigo": "COL03"
+  },
+  "especificaciones": {
+    "metodologia": "NOM-113-SSA1-1994",
+    "metodologiaDescripcion": "Método para la cuenta de microorganismos coliformes totales en placa",
+    "tipoMuestra": ["Agua", "Alimento", "Superficies vivas e inertes"],
+    "tiempoEntrega": "3 Días hábiles",
+    "temperaturaTransporte": {
+      "alimentosPereceros": "≤10°C",
+      "alimentosCongelados": "≤0°C",
+      "noPereceros": "Temperatura Ambiente",
+      "aguas": "≤10°C",
+      "superficies": "≤10°C"
+    }
+  },
+  "imagenes": {
+    "paginaCompleta": {
+      "archivo": "pages/DimogenMicrobiologiaAlimentos-14.png",
+      "descripcion": "Página de presentación del análisis"
+    },
+    "paginaEspecificaciones": {
+      "archivo": "pages/DimogenMicrobiologiaAlimentos-15.png",
+      "descripcion": "Página de especificaciones técnicas"
+    },
+    "recursos": [
+      {
+        "archivo": "assets/COL03-coliformes-totales-placa.jpg",
+        "tipo": "cultivo-placa",
+        "descripcion": "Imagen de cultivo en placa de agar mostrando colonias características de coliformes totales. Se observan colonias de color rojo/rosado sobre medio selectivo, típico de la fermentación de lactosa por bacterias coliformes.",
+        "altText": "Colonias de coliformes totales en placa de agar selectivo",
+        "aptoParaWeb": true
+      }
+    ]
+  },
+  "informacionAdicional": {
+    "queEs": "Los coliformes totales son un grupo de bacterias gram negativas, en forma de bastón, que fermentan la lactosa produciendo gas a 35-37°C. Incluyen géneros como Escherichia, Enterobacter, Klebsiella y Citrobacter. Aunque no todos son patógenos, su presencia indica posible contaminación fecal o deficiencias en el proceso de producción.",
+    "importancia": "El conteo de coliformes totales es un indicador fundamental de las condiciones higiénicas generales durante la producción, almacenamiento y distribución de alimentos. Un recuento elevado sugiere que el alimento ha sido expuesto a condiciones que podrían permitir la presencia de patógenos entéricos.",
+    "paraQuienEsRecomendada": "Industrias de alimentos procesados, plantas purificadoras de agua, restaurantes, hoteles, hospitales, laboratorios de control de calidad, y autoridades sanitarias para verificación del cumplimiento normativo.",
+    "interpretacionResultados": {
+      "descripcion": "El resultado se expresa en UFC/g o UFC/mL. Los límites aceptables están definidos en las NOM específicas para cada tipo de alimento.",
+      "limitesBajos": "Indican buenas prácticas de manufactura y adecuada higiene en el proceso.",
+      "limitesAltos": "Sugieren contaminación post-proceso, manipulación inadecuada, o deficiencias en la limpieza y sanitización."
+    },
+    "normativaAplicable": [
+      "NOM-113-SSA1-1994: Método para la cuenta de microorganismos coliformes totales en placa",
+      "NOM-127-SSA1-1994: Agua para uso y consumo humano"
+    ]
+  },
+  "metadatos": {
+    "paginaOriginal": 13,
+    "paginaEspecificaciones": 14,
+    "archivoOrigen": "DimogenMicrobiologíaAlimentos-14.pdf",
+    "fechaExtraccion": "2025-11-26"
+  }
+}

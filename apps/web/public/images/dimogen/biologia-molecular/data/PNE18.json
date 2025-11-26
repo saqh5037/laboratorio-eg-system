@@ -1,0 +1,45 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "PANEL DE NEUMONÍA",
+    "descripcion": "Detecta y diferencia simultáneamente 26 agentes virales y bacterianos respiratorios, así como 7 determinados genes de resistencia a los antibióticos asociados a infecciones de las vías respiratorias inferiores.",
+    "precio": 7091.00,
+    "moneda": "USD",
+    "codigo": "PNE18",
+    "patogenosIncluidos": {
+      "virus": ["Coronavirus", "Influenza A", "Influenza B", "Virus Parainfluenza", "Adenovirus", "Virus respiratorio sincicial", "Metapneumovirus humano", "Rinovirus/Enterovirus"],
+      "bacteriasComunes": ["Complejo Acinetobacter calcoaceticus-baumannii", "Klebsiella oxytoca", "Serratia marcescens", "Complejo Enterobacter cloacae", "Grupo Klebsiella pneumoniae", "Staphylococcus aureus", "Escherichia coli", "Moraxella catarrhalis", "Streptococcus agalactiae", "Haemophilus influenzae", "Proteus spp.", "Streptococcus pneumoniae", "Klebsiella aerogenes", "Pseudomonas aeruginosa", "Streptococcus pyogenes"],
+      "bacteriasAtipicas": ["Chlamydia pneumoniae", "Legionella pneumophila", "Mycoplasma pneumoniae"],
+      "genesResistencia": ["CTX-M (BLEE)", "IMP", "KPC", "NDM", "OXA-48", "VIM (carbapenems)", "MecA/C y MREJ (MRSA)"]
+    }
+  },
+  "especificaciones": {
+    "metodologia": "PCR anidada",
+    "tipoMuestra": "Expectoraciones y lavado alveolar",
+    "tiempoEntrega": "4 horas",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-44.png"},
+    "paginaAdicional": {"archivo": "pages/DimogenBiologiaMolecular-45.png"},
+    "recursos": [{
+      "archivo": "assets/PNE18-pulmones-neumonia-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D de pulmones mostrando neumonía con áreas de consolidación en rojo indicando infección.",
+      "altText": "Pulmones con neumonía 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "El Panel de Neumonía es el más completo para infecciones del tracto respiratorio inferior. Detecta 26 patógenos más 7 genes de resistencia antibiótica, incluyendo carbapenemasas (KPC, NDM, OXA-48) y MRSA. Ideal para neumonías severas y asociadas a ventilador.",
+    "paraQuienEsRecomendada": "Neumonía adquirida en la comunidad grave. Neumonía asociada a ventilador (NAV). Neumonía nosocomial. Pacientes en UCI con infección respiratoria. Falla a tratamiento antibiótico empírico.",
+    "preparacion": "Expectoración: muestra matutina antes de enjuague bucal. Lavado broncoalveolar: procedimiento realizado por broncoscopista.",
+    "interpretacionResultados": {
+      "positivo": "Identifica patógenos específicos Y genes de resistencia. Permite selección de antibióticos activos evitando resistencias. Carbapenemasas (KPC, NDM, VIM, OXA-48) indican bacterias multirresistentes.",
+      "negativo": "No se detectaron los patógenos analizados. Considerar otros agentes, muestra inadecuada o causa no infecciosa."
+    },
+    "notasClinicas": "La detección de genes de resistencia permite ajuste de tratamiento antes del antibiograma convencional (24-48 hrs). MRSA y carbapenemasas requieren aislamiento y medidas de control de infecciones."
+  },
+  "metadatos": {"paginaOriginal": 43, "archivoOrigen": "DimogenBiologíaMolecular-44.pdf", "fechaExtraccion": "2025-11-25"}
+}

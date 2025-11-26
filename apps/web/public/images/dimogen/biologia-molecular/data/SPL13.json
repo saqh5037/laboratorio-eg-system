@@ -1,0 +1,40 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "SUBPOBLACIÓN DE LINFOCITOS T",
+    "descripcion": "Determina los porcentajes y recuentos absolutos de las subpoblaciones de linfocitos para la evaluación inmunológica de individuos normales y pacientes con inmunodeficiencia o sospecha de ella.",
+    "precio": 1370.00,
+    "moneda": "USD",
+    "codigo": "SPL13",
+    "marcadoresIncluidos": ["Linfocitos T (CD3)", "Linfocitos cooperadores/inductores (CD3+CD4+)", "Linfocitos T citotóxicos (CD3+CD8+)"]
+  },
+  "especificaciones": {
+    "metodologia": "Citometría de flujo",
+    "tipoMuestra": "Sangre total con EDTA / Sangre Total con EDTA K2",
+    "tiempoEntrega": "3 Días hábiles",
+    "temperaturaTransporte": "Temperatura ambiente"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-48.png"},
+    "recursos": [{
+      "archivo": "assets/SPL13-linfocitos-microscopio.jpg",
+      "tipo": "microscopia",
+      "descripcion": "Imagen de microscopía mostrando linfocitos T en frotis sanguíneo con tinción, células grandes con núcleo prominente.",
+      "altText": "Linfocitos T en microscopio",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "El conteo de subpoblaciones de linfocitos T mide las células del sistema inmune adaptativo. Los CD4+ (cooperadores) coordinan la respuesta inmune, mientras los CD8+ (citotóxicos) destruyen células infectadas. El conteo de CD4 es el marcador principal para estadificación y seguimiento del VIH.",
+    "paraQuienEsRecomendada": "Pacientes con VIH/SIDA (seguimiento cada 3-6 meses). Sospecha de inmunodeficiencia primaria. Evaluación pre-trasplante. Monitoreo de terapias inmunosupresoras. Linfocitosis o linfopenia a estudio.",
+    "preparacion": "No requiere ayuno. Evitar ejercicio intenso 24 horas antes. Muestra debe procesarse dentro de 48 horas.",
+    "interpretacionResultados": {
+      "positivo": "CD4 <200 células/μL: inmunosupresión severa, riesgo de infecciones oportunistas. CD4 200-500: inmunosupresión moderada. >500: función inmune preservada. Relación CD4/CD8 normal: 1.5-2.0.",
+      "negativo": "N/A - es una prueba cuantitativa, no cualitativa."
+    },
+    "frecuenciaRecomendada": "En VIH: cada 3-6 meses según estado clínico. Puede espaciarse en pacientes estables con carga viral indetectable.",
+    "notasClinicas": "El nadir de CD4 (valor más bajo alcanzado) predice riesgo a largo plazo incluso tras recuperación. La relación CD4/CD8 invertida persiste en muchos pacientes con VIH tratados."
+  },
+  "metadatos": {"paginaOriginal": 47, "archivoOrigen": "DimogenBiologíaMolecular-48.pdf", "fechaExtraccion": "2025-11-25"}
+}

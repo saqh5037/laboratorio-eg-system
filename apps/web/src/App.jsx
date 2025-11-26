@@ -3,6 +3,7 @@ import { Suspense, lazy, useEffect } from 'react';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { UnifiedAppProvider } from './contexts/UnifiedAppContext';
 import { AdminAuthProvider } from './contexts/AdminAuthContext';
+import { LabProvider } from './contexts/LabContext';
 import { Toaster } from 'react-hot-toast';
 import MainLayout from './layouts/MainLayout';
 import PWAWrapper from './components/PWAComponents';
@@ -18,9 +19,15 @@ import AdminLayout from './components/admin/layout/AdminLayout';
 
 // Lazy loading de páginas para code splitting
 const LandingPageUnified = lazy(() => import('./pages/LandingPageUnified'));
+const LandingDimogen = lazy(() => import('./pages/LandingDimogen'));
 const Estudios = lazy(() => import('./pages/Estudios'));
 const Resultados = lazy(() => import('./pages/Resultados'));
 const FavoritesPage = lazy(() => import('./pages/FavoritesPage'));
+
+// Dimogen service pages
+const BiologiaMolecularPage = lazy(() => import('./pages/dimogen/BiologiaMolecularPage'));
+const SaludIntegralPage = lazy(() => import('./pages/dimogen/SaludIntegralPage'));
+const MicrobiologiaAlimentosPage = lazy(() => import('./pages/dimogen/MicrobiologiaAlimentosPage'));
 
 // Admin pages
 const AdminLogin = lazy(() => import('./pages/admin/Login'));
@@ -35,6 +42,18 @@ const AdminCompanyInfo = lazy(() => import('./pages/admin/CompanyInfoManager'));
 const AdminNavigationManager = lazy(() => import('./pages/admin/NavigationManager'));
 const AdminBackupManager = lazy(() => import('./pages/admin/BackupManager'));
 const AdminMaintenance = lazy(() => import('./pages/admin/Maintenance'));
+
+// DIMOGEN Admin pages
+const DimogenCompanyInfoManager = lazy(() => import('./pages/admin/dimogen/DimogenCompanyInfoManager'));
+const DimogenFAQManager = lazy(() => import('./pages/admin/dimogen/DimogenFAQManager'));
+const DimogenServicesManager = lazy(() => import('./pages/admin/dimogen/DimogenServicesManager'));
+const DimogenAboutManager = lazy(() => import('./pages/admin/dimogen/DimogenAboutManager'));
+const DimogenTestimonialsManager = lazy(() => import('./pages/admin/dimogen/DimogenTestimonialsManager'));
+const DimogenCarouselManager = lazy(() => import('./pages/admin/dimogen/DimogenCarouselManager'));
+
+// Lab instance identification from environment
+const LAB_CODE = import.meta.env.VITE_LAB_CODE || 'eg';
+const IS_DIMOGEN = LAB_CODE === 'dimogen';
 
 function AppRoutes() {
   const { isPageEnabled, isMaintenanceMode, getMaintenanceMessage, getConfigValue } = useSystemConfig();
@@ -76,14 +95,30 @@ function AppRoutes() {
                 <Route path="/navigation" element={<AdminNavigationManager />} />
                 <Route path="/backups" element={<AdminBackupManager />} />
                 <Route path="/maintenance" element={<AdminMaintenance />} />
+
+                {/* DIMOGEN Admin Routes */}
+                <Route path="/dimogen/company" element={<DimogenCompanyInfoManager />} />
+                <Route path="/dimogen/faqs" element={<DimogenFAQManager />} />
+                <Route path="/dimogen/services" element={<DimogenServicesManager />} />
+                <Route path="/dimogen/about" element={<DimogenAboutManager />} />
+                <Route path="/dimogen/testimonials" element={<DimogenTestimonialsManager />} />
+                <Route path="/dimogen/carousel" element={<DimogenCarouselManager />} />
               </Routes>
             </AdminLayout>
           </ProtectedAdminRoute>
         }
       />
 
-      {/* Landing Page siempre disponible */}
-      <Route path="/" element={<LandingPageUnified />} />
+      {/* Landing Page - Condicional según LAB_CODE */}
+      <Route path="/" element={IS_DIMOGEN ? <LandingDimogen /> : <LandingPageUnified />} />
+
+      {/* Ruta /dimogen disponible para testing (siempre) */}
+      <Route path="/dimogen" element={<LandingDimogen />} />
+
+      {/* Dimogen Service Pages */}
+      <Route path="/dimogen/servicios/biologia-molecular" element={<BiologiaMolecularPage />} />
+      <Route path="/dimogen/servicios/salud-integral" element={<SaludIntegralPage />} />
+      <Route path="/dimogen/servicios/microbiologia-alimentos" element={<MicrobiologiaAlimentosPage />} />
 
       {/* Directorio de Estudios - Condicional */}
       {isPageEnabled('estudios') ? (
@@ -118,13 +153,18 @@ function AppRoutes() {
 function ConditionalLayout({ children }) {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isDimogenRoute = location.pathname.startsWith('/dimogen');
 
-  // Si es ruta de admin, NO usar MainLayout
-  if (isAdminRoute) {
+  // Si es instancia DIMOGEN y estamos en root, también excluir MainLayout
+  const isDimogenInstance = IS_DIMOGEN && location.pathname === '/';
+
+  // Si es ruta de admin, DIMOGEN específica, o instancia DIMOGEN en root, NO usar MainLayout
+  // DIMOGEN tiene su propio NavbarDimogen y FooterDimogen
+  if (isAdminRoute || isDimogenRoute || isDimogenInstance) {
     return children;
   }
 
-  // Si es ruta pública, usar MainLayout
+  // Si es ruta pública de EG, usar MainLayout
   return <MainLayout>{children}</MainLayout>;
 }
 
@@ -143,6 +183,7 @@ function App() {
       <ThemeProvider>
         <UnifiedAppProvider>
           <AdminAuthProvider>
+            <LabProvider>
             <Router>
             {/* Toast notifications */}
             <Toaster
@@ -178,6 +219,7 @@ function App() {
               </ConditionalLayout>
             </PWAWrapper>
             </Router>
+            </LabProvider>
           </AdminAuthProvider>
         </UnifiedAppProvider>
       </ThemeProvider>

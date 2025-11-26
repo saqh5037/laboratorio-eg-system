@@ -1,0 +1,39 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "PANEL RESPIRATORIO 8",
+    "descripcion": "Detecta y diferencia 8 virus contagiosos más comunes en infecciones respiratorias.",
+    "precio": 1750.00,
+    "moneda": "USD",
+    "codigo": "PVR26",
+    "patogenosIncluidos": ["SARS-CoV-2", "Influenza A", "Influenza B", "Virus Parainfluenza", "Adenovirus", "Virus Respiratorio Sincicial", "Metapneumovirus humano", "Rinovirus"]
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Exudado nasofaríngeo",
+    "tiempoEntrega": "48 horas",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-24.png"},
+    "recursos": [{
+      "archivo": "assets/PVR26-virus-respiratorios.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D de virus respiratorios mostrando la estructura filamentosa característica de algunos virus como el parainfluenza y metapneumovirus.",
+      "altText": "Virus respiratorios 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "El Panel Respiratorio 8 es el más completo para virus respiratorios, detectando los 8 principales patógenos virales causantes de infecciones del tracto respiratorio. Incluye virus de alta relevancia clínica y epidemiológica.",
+    "paraQuienEsRecomendada": "Evaluación completa de infecciones respiratorias virales. Pacientes hospitalizados con neumonía. Brotes en instituciones. Inmunocomprometidos con síntomas respiratorios. Niños con bronquiolitis o neumonía.",
+    "preparacion": "No requiere ayuno. No usar sprays nasales 24 horas antes.",
+    "interpretacionResultados": {
+      "positivo": "Identifica específicamente cuál(es) virus está(n) presente(s). La coinfección es posible. Permite tratamiento dirigido y medidas de aislamiento apropiadas.",
+      "negativo": "No se detectaron los 8 virus analizados. Considerar etiología bacteriana u otros virus no incluidos."
+    },
+    "notasClinicas": "El rinovirus es la causa más común de resfriado común. Los adenovirus pueden causar conjuntivitis además de síntomas respiratorios. El metapneumovirus es similar al VRS en presentación clínica."
+  },
+  "metadatos": {"paginaOriginal": 23, "archivoOrigen": "DimogenBiologíaMolecular-24.pdf", "fechaExtraccion": "2025-11-25"}
+}

@@ -8,14 +8,19 @@ const { upload, LogoUploadService } = require('../services/LogoUploadService');
 /**
  * GET /api/company
  * Obtener información completa de la empresa (público)
+ *
+ * Query params:
+ * - lab: string (código del laboratorio, ej: 'eg', 'dimogen')
  */
 router.get('/', async (req, res) => {
   try {
-    const companyInfo = await CompanyService.getCompanyInfo();
+    const { lab } = req.query;
+    const companyInfo = await CompanyService.getCompanyInfo(lab || null);
 
     res.json({
       success: true,
-      data: companyInfo
+      data: companyInfo,
+      lab: lab || 'default'
     });
   } catch (error) {
     logger.error('Error en GET /api/company:', error);
@@ -29,10 +34,14 @@ router.get('/', async (req, res) => {
 /**
  * GET /api/company/contact
  * Obtener solo información de contacto (público)
+ *
+ * Query params:
+ * - lab: string (código del laboratorio)
  */
 router.get('/contact', async (req, res) => {
   try {
-    const contactInfo = await CompanyService.getContactInfo();
+    const { lab } = req.query;
+    const contactInfo = await CompanyService.getContactInfo(lab || null);
 
     res.json({
       success: true,
@@ -50,10 +59,14 @@ router.get('/contact', async (req, res) => {
 /**
  * GET /api/company/seo
  * Obtener información SEO (público)
+ *
+ * Query params:
+ * - lab: string (código del laboratorio)
  */
 router.get('/seo', async (req, res) => {
   try {
-    const seoInfo = await CompanyService.getSEOInfo();
+    const { lab } = req.query;
+    const seoInfo = await CompanyService.getSEOInfo(lab || null);
 
     res.json({
       success: true,
@@ -71,10 +84,14 @@ router.get('/seo', async (req, res) => {
 /**
  * GET /api/company/pwa
  * Obtener información para PWA manifest (público)
+ *
+ * Query params:
+ * - lab: string (código del laboratorio)
  */
 router.get('/pwa', async (req, res) => {
   try {
-    const pwaInfo = await CompanyService.getPWAInfo();
+    const { lab } = req.query;
+    const pwaInfo = await CompanyService.getPWAInfo(lab || null);
 
     res.json({
       success: true,
@@ -92,9 +109,13 @@ router.get('/pwa', async (req, res) => {
 /**
  * PUT /api/company
  * Actualizar información de la empresa (admin only)
+ *
+ * Query params:
+ * - lab: string (código del laboratorio)
  */
 router.put('/', authenticateAdmin, async (req, res) => {
   try {
+    const { lab } = req.query;
     const updates = req.body;
 
     if (!updates || Object.keys(updates).length === 0) {
@@ -104,9 +125,9 @@ router.put('/', authenticateAdmin, async (req, res) => {
       });
     }
 
-    const updatedInfo = await CompanyService.updateCompanyInfo(updates);
+    const updatedInfo = await CompanyService.updateCompanyInfo(updates, lab || null);
 
-    logger.info(`Company info actualizado por ${req.user.username}`, {
+    logger.info(`Company info actualizado por ${req.user.username} (lab: ${lab || 'default'})`, {
       fields: Object.keys(updates)
     });
 
@@ -127,9 +148,13 @@ router.put('/', authenticateAdmin, async (req, res) => {
 /**
  * PATCH /api/company/identity
  * Actualizar solo identidad corporativa (admin only)
+ *
+ * Query params:
+ * - lab: string (código del laboratorio)
  */
 router.patch('/identity', authenticateAdmin, async (req, res) => {
   try {
+    const { lab } = req.query;
     const { name, full_name, short_name, slogan, founded_year, rif } = req.body;
     const updates = {};
 
@@ -147,7 +172,7 @@ router.patch('/identity', authenticateAdmin, async (req, res) => {
       });
     }
 
-    const updatedInfo = await CompanyService.updateCompanyInfo(updates);
+    const updatedInfo = await CompanyService.updateCompanyInfo(updates, lab || null);
 
     res.json({
       success: true,
@@ -166,9 +191,13 @@ router.patch('/identity', authenticateAdmin, async (req, res) => {
 /**
  * PATCH /api/company/contact
  * Actualizar solo información de contacto (admin only)
+ *
+ * Query params:
+ * - lab: string (código del laboratorio)
  */
 router.patch('/contact', authenticateAdmin, async (req, res) => {
   try {
+    const { lab } = req.query;
     const {
       email, phone_main, phone_secondary, phone_tertiary,
       whatsapp, whatsapp_link,
@@ -203,7 +232,7 @@ router.patch('/contact', authenticateAdmin, async (req, res) => {
       });
     }
 
-    const updatedInfo = await CompanyService.updateCompanyInfo(updates);
+    const updatedInfo = await CompanyService.updateCompanyInfo(updates, lab || null);
 
     res.json({
       success: true,
@@ -222,9 +251,13 @@ router.patch('/contact', authenticateAdmin, async (req, res) => {
 /**
  * PATCH /api/company/social
  * Actualizar redes sociales (admin only)
+ *
+ * Query params:
+ * - lab: string (código del laboratorio)
  */
 router.patch('/social', authenticateAdmin, async (req, res) => {
   try {
+    const { lab } = req.query;
     const {
       social_instagram, social_instagram_handle,
       social_twitter, social_twitter_handle,
@@ -248,7 +281,7 @@ router.patch('/social', authenticateAdmin, async (req, res) => {
       });
     }
 
-    const updatedInfo = await CompanyService.updateCompanyInfo(updates);
+    const updatedInfo = await CompanyService.updateCompanyInfo(updates, lab || null);
 
     res.json({
       success: true,
@@ -267,9 +300,13 @@ router.patch('/social', authenticateAdmin, async (req, res) => {
 /**
  * PATCH /api/company/seo
  * Actualizar información SEO (admin only)
+ *
+ * Query params:
+ * - lab: string (código del laboratorio)
  */
 router.patch('/seo', authenticateAdmin, async (req, res) => {
   try {
+    const { lab } = req.query;
     const {
       seo_title, seo_description, seo_keywords, seo_author,
       og_image_url, og_type, og_locale
@@ -292,7 +329,7 @@ router.patch('/seo', authenticateAdmin, async (req, res) => {
       });
     }
 
-    const updatedInfo = await CompanyService.updateCompanyInfo(updates);
+    const updatedInfo = await CompanyService.updateCompanyInfo(updates, lab || null);
 
     res.json({
       success: true,
@@ -311,9 +348,13 @@ router.patch('/seo', authenticateAdmin, async (req, res) => {
 /**
  * PATCH /api/company/pwa
  * Actualizar información PWA (admin only)
+ *
+ * Query params:
+ * - lab: string (código del laboratorio)
  */
 router.patch('/pwa', authenticateAdmin, async (req, res) => {
   try {
+    const { lab } = req.query;
     const { pwa_name, pwa_short_name, pwa_description } = req.body;
 
     const updates = {};
@@ -329,7 +370,7 @@ router.patch('/pwa', authenticateAdmin, async (req, res) => {
       });
     }
 
-    const updatedInfo = await CompanyService.updateCompanyInfo(updates);
+    const updatedInfo = await CompanyService.updateCompanyInfo(updates, lab || null);
 
     res.json({
       success: true,
@@ -348,14 +389,18 @@ router.patch('/pwa', authenticateAdmin, async (req, res) => {
 /**
  * POST /api/company/cache/invalidate
  * Invalidar caché de company info (admin only)
+ *
+ * Query params:
+ * - lab: string (código del laboratorio)
  */
 router.post('/cache/invalidate', authenticateAdmin, async (req, res) => {
   try {
-    CompanyService.invalidateCache();
+    const { lab } = req.query;
+    CompanyService.invalidateCache(lab || null);
 
     res.json({
       success: true,
-      message: 'Caché de información de empresa invalidado'
+      message: `Caché de información de empresa invalidado (lab: ${lab || 'default'})`
     });
   } catch (error) {
     logger.error('Error en POST /api/company/cache/invalidate:', error);
@@ -370,9 +415,14 @@ router.post('/cache/invalidate', authenticateAdmin, async (req, res) => {
  * POST /api/company/logos/upload
  * Upload de logos (admin only)
  * Soporta: logo_full, logo_icon, logo_horizontal, favicon
+ *
+ * Query params:
+ * - lab: string (código del laboratorio)
  */
 router.post('/logos/upload', authenticateAdmin, upload, async (req, res) => {
   try {
+    const { lab } = req.query;
+
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -388,7 +438,8 @@ router.post('/logos/upload', authenticateAdmin, upload, async (req, res) => {
       type: logoType,
       filename,
       size: req.file.size,
-      mimetype: req.file.mimetype
+      mimetype: req.file.mimetype,
+      lab: lab || 'default'
     });
 
     // Validar logo
@@ -430,9 +481,9 @@ router.post('/logos/upload', authenticateAdmin, upload, async (req, res) => {
     const updates = {};
     updates[field] = publicUrl;
 
-    const updatedInfo = await CompanyService.updateCompanyInfo(updates);
+    const updatedInfo = await CompanyService.updateCompanyInfo(updates, lab || null);
 
-    logger.info(`Logo ${logoType} actualizado por ${req.user.username}`, {
+    logger.info(`Logo ${logoType} actualizado por ${req.user.username} (lab: ${lab || 'default'})`, {
       url: publicUrl,
       filename: optimized.filename
     });
@@ -472,9 +523,13 @@ router.post('/logos/upload', authenticateAdmin, upload, async (req, res) => {
  * PATCH /api/company/logos
  * Actualizar URLs de logos manualmente (admin only)
  * Para cuando el usuario quiere usar URLs externas
+ *
+ * Query params:
+ * - lab: string (código del laboratorio)
  */
 router.patch('/logos', authenticateAdmin, async (req, res) => {
   try {
+    const { lab } = req.query;
     const { logo_full_url, logo_icon_url, logo_horizontal_url, favicon_url, logo_alt_text } = req.body;
 
     const updates = {};
@@ -492,9 +547,9 @@ router.patch('/logos', authenticateAdmin, async (req, res) => {
       });
     }
 
-    const updatedInfo = await CompanyService.updateCompanyInfo(updates);
+    const updatedInfo = await CompanyService.updateCompanyInfo(updates, lab || null);
 
-    logger.info(`URLs de logos actualizados por ${req.user.username}`, {
+    logger.info(`URLs de logos actualizados por ${req.user.username} (lab: ${lab || 'default'})`, {
       fields: Object.keys(updates)
     });
 

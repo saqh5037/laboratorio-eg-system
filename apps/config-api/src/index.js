@@ -25,6 +25,8 @@ const navigationRoutes = require('./routes/navigation.routes');
 const pwaRoutes = require('./routes/pwa.routes');
 const backupRoutes = require('./routes/backup.routes');
 const laboratoriesRoutes = require('./routes/laboratories.routes');
+const dimogenRoutes = require('./routes/dimogen.routes');
+const uploadRoutes = require('./routes/upload.routes');
 
 const app = express();
 const PORT = config.port;
@@ -190,6 +192,8 @@ app.use('/api/navigation', navigationRoutes);
 app.use('/api/pwa', pwaRoutes);
 app.use('/api/backup', backupRoutes);
 app.use('/api/laboratories', laboratoriesRoutes);
+app.use('/api/dimogen', dimogenRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Root
 app.get('/', (req, res) => {

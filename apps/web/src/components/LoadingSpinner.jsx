@@ -32,7 +32,7 @@ const LoadingSpinner = ({ size = 'large', message = 'Cargando...', className = '
         <div className="absolute inset-0 border-4 border-gray-200 rounded-full"></div>
         
         {/* Círculo de progreso */}
-        <div className="absolute inset-0 border-4 border-transparent border-t-eg-purple rounded-full"></div>
+        <div className="absolute inset-0 border-4 border-transparent border-t-primary rounded-full"></div>
 
         {/* Icono central */}
         <div className="absolute inset-0 flex items-center justify-center">
@@ -44,7 +44,7 @@ const LoadingSpinner = ({ size = 'large', message = 'Cargando...', className = '
               ease: "easeInOut"
             }}
           >
-            <FaFlask className="text-eg-purple text-lg" />
+            <FaFlask className="text-primary text-lg" />
           </motion.div>
         </div>
       </motion.div>
@@ -54,7 +54,7 @@ const LoadingSpinner = ({ size = 'large', message = 'Cargando...', className = '
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="text-eg-gray font-medium text-center"
+        className="text-gray-600 font-medium text-center"
       >
         {message}
       </motion.p>
@@ -69,7 +69,7 @@ const LoadingSpinner = ({ size = 'large', message = 'Cargando...', className = '
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}
-            className="w-2 h-2 bg-eg-purple rounded-full"
+            className="w-2 h-2 bg-primary rounded-full"
             animate={{
               scale: [1, 1.2, 1],
               opacity: [0.3, 1, 0.3]
@@ -88,22 +88,33 @@ const LoadingSpinner = ({ size = 'large', message = 'Cargando...', className = '
 };
 
 // Spinner en pantalla completa para cargas iniciales
-export const FullScreenLoader = ({ message = 'Iniciando Laboratorio EG...' }) => {
+// Props dinámicas: logoUrl, labName - si no se pasan, usa valores genéricos
+export const FullScreenLoader = ({
+  message = 'Cargando...',
+  logoUrl = null,
+  labName = 'Laboratorio'
+}) => {
   return (
     <div className="fixed inset-0 bg-white z-50 flex items-center justify-center">
       <div className="text-center">
-        {/* Logo */}
+        {/* Logo - dinámico o icono genérico */}
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.5 }}
           className="mb-8"
         >
-          <img
-            src="/LogoMicrotec.svg"
-            alt="MICRO-TEC"
-            className="w-24 h-24 mx-auto rounded-full shadow-lg"
-          />
+          {logoUrl ? (
+            <img
+              src={logoUrl}
+              alt={labName}
+              className="w-24 h-24 mx-auto rounded-full shadow-lg object-contain"
+            />
+          ) : (
+            <div className="w-24 h-24 mx-auto rounded-full shadow-lg bg-primary/10 flex items-center justify-center">
+              <FaFlask className="w-12 h-12 text-primary" />
+            </div>
+          )}
         </motion.div>
 
         {/* Spinner */}
@@ -116,8 +127,8 @@ export const FullScreenLoader = ({ message = 'Iniciando Laboratorio EG...' }) =>
           transition={{ delay: 1 }}
           className="mt-8 text-center"
         >
-          <p className="text-sm text-eg-gray">
-            Preparando tu experiencia médica digital
+          <p className="text-sm text-gray-500">
+            Preparando tu experiencia
           </p>
         </motion.div>
       </div>

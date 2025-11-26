@@ -1,0 +1,65 @@
+{
+  "categoria": "Microbiología de Alimentos",
+  "subcategoria": "Análisis",
+  "prueba": {
+    "titulo": "DETECCIÓN DE SALMONELLA SPP.",
+    "descripcion": "Los análisis de Salmonella son necesarios ya que la salmonelosis es una enfermedad normalmente transmitida por consumo de alimentos o contacto con alimentos crudos contaminados con la bacteria Salmonella que causa diarrea, fiebre y dolor abdominal.",
+    "precio": 818.23,
+    "moneda": "MXN",
+    "codigo": "SAL04"
+  },
+  "especificaciones": {
+    "metodologia": "NOM-210-SSA1-2014",
+    "metodologiaDescripcion": "Determinación de microorganismos patógenos. Apéndice A Normativo. Método de referencia para el aislamiento de Salmonella spp.",
+    "tipoMuestra": ["Alimentos", "Materia prima", "Agua para uso y consumo humano", "Superficies vivas e inertes"],
+    "tiempoEntrega": "10 Días hábiles",
+    "temperaturaTransporte": {
+      "alimentosPereceros": "≤10°C",
+      "alimentosCongelados": "≤0°C",
+      "noPereceros": "Temperatura Ambiente",
+      "aguas": "≤10°C",
+      "superficies": "≤10°C"
+    }
+  },
+  "imagenes": {
+    "paginaCompleta": {
+      "archivo": "pages/DimogenMicrobiologiaAlimentos-16.png",
+      "descripcion": "Página de presentación del análisis"
+    },
+    "paginaEspecificaciones": {
+      "archivo": "pages/DimogenMicrobiologiaAlimentos-17.png",
+      "descripcion": "Página de especificaciones técnicas"
+    },
+    "recursos": [
+      {
+        "archivo": "assets/SAL04-salmonella-cultivo-xld.jpg",
+        "tipo": "cultivo-placa",
+        "descripcion": "Imagen de cultivo en placa de agar XLD (Xilosa Lisina Desoxicolato) mostrando colonias características de Salmonella. Se observan colonias negras con centro negro debido a la producción de sulfuro de hidrógeno, rodeadas de zonas de color rosa/rojo típicas de este agar selectivo.",
+        "altText": "Colonias de Salmonella en agar XLD con centro negro característico",
+        "aptoParaWeb": true
+      }
+    ]
+  },
+  "informacionAdicional": {
+    "queEs": "Salmonella es un género de bacterias gram negativas perteneciente a la familia Enterobacteriaceae. Son patógenos que causan salmonelosis, una de las enfermedades transmitidas por alimentos más comunes a nivel mundial. Existen más de 2,500 serotipos de Salmonella, siendo S. typhimurium y S. enteritidis los más frecuentes en infecciones humanas.",
+    "importancia": "La detección de Salmonella es crítica en la industria alimentaria debido a su capacidad de causar brotes masivos de enfermedad. Los alimentos más frecuentemente asociados incluyen huevos, aves, carnes, productos lácteos y vegetales frescos. La normatividad mexicana establece ausencia de Salmonella en 25g de alimento como requisito para la mayoría de los productos.",
+    "paraQuienEsRecomendada": "Industrias avícolas, procesadoras de carne, plantas de huevo, industrias lácteas, restaurantes, servicios de catering, hoteles, hospitales, y cualquier establecimiento que procese alimentos de origen animal o vegetales que se consuman crudos.",
+    "interpretacionResultados": {
+      "descripcion": "El resultado se reporta como Presencia/Ausencia en 25g de muestra.",
+      "negativo": "Ausencia de Salmonella spp. en 25g - El alimento cumple con los requisitos microbiológicos y es seguro para consumo.",
+      "positivo": "Presencia de Salmonella spp. en 25g - El alimento NO es apto para consumo humano. Se requiere retiro del producto, investigación de la fuente de contaminación y acciones correctivas inmediatas."
+    },
+    "sintomas": "La salmonelosis causa diarrea, fiebre, dolor abdominal, náuseas y vómitos. Los síntomas aparecen 6-72 horas después de la ingestión y duran 4-7 días. Puede ser grave en niños, ancianos e inmunocomprometidos.",
+    "normativaAplicable": [
+      "NOM-210-SSA1-2014: Determinación de microorganismos patógenos",
+      "NOM-251-SSA1-2009: Prácticas de higiene para el proceso de alimentos",
+      "NOM-213-SSA1-2018: Productos cárnicos procesados"
+    ]
+  },
+  "metadatos": {
+    "paginaOriginal": 15,
+    "paginaEspecificaciones": 16,
+    "archivoOrigen": "DimogenMicrobiologíaAlimentos-16.pdf",
+    "fechaExtraccion": "2025-11-26"
+  }
+}

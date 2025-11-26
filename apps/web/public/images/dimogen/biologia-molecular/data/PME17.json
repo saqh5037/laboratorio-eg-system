@@ -1,0 +1,44 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "PANEL DE MENINGITIS",
+    "descripcion": "Detecta y diferencia simultáneamente 14 múltiples bacterias, virus y levaduras asociados a signos o síntomas de meningitis o encefalitis.",
+    "precio": 7091.00,
+    "moneda": "USD",
+    "codigo": "PME17",
+    "patogenosIncluidos": {
+      "virus": ["Citomegalovirus", "Enterovirus", "Virus del herpes simple tipo 1", "Virus del herpes simple tipo 2", "Virus del herpes simple tipo 6", "Parechovirus humano", "Virus varicela-zóster"],
+      "bacterias": ["Escherichia coli K1", "Haemophilus influenzae", "Listeria monocytogenes", "Neisseria meningitidis (encapsulada)", "Streptococcus agalactiae", "Streptococcus pneumoniae"],
+      "levaduras": ["Cryptococcus neoformans/gattii"]
+    }
+  },
+  "especificaciones": {
+    "metodologia": "PCR anidada",
+    "tipoMuestra": "Líquido cefalorraquídeo",
+    "tiempoEntrega": "4 horas",
+    "temperaturaTransporte": "Temperatura ambiente"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-42.png"},
+    "paginaAdicional": {"archivo": "pages/DimogenBiologiaMolecular-43.png"},
+    "recursos": [{
+      "archivo": "assets/PME17-cerebro-meninges-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D anatómica del cerebro y cráneo humano mostrando las estructuras meníngeas afectadas en meningitis.",
+      "altText": "Cerebro y meninges anatomía 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "El Panel de Meningitis detecta 14 patógenos causantes de meningitis y encefalitis en líquido cefalorraquídeo. La meningitis es una emergencia médica donde cada hora de retraso en el tratamiento aumenta la mortalidad. Resultados en 4 horas permiten tratamiento dirigido rápido.",
+    "paraQuienEsRecomendada": "Sospecha clínica de meningitis (fiebre, rigidez de nuca, cefalea severa, alteración del estado mental). Encefalitis. Recién nacidos con sepsis. Pacientes inmunocomprometidos con síntomas neurológicos. Meningitis recurrente.",
+    "preparacion": "La muestra de LCR es obtenida por punción lumbar por personal médico. No requiere preparación del paciente específica para la prueba.",
+    "interpretacionResultados": {
+      "positivo": "Identifica el patógeno específico. Bacterias: requieren antibióticos inmediatos. Virus herpes: aciclovir. Cryptococcus: antifúngicos. El tratamiento se ajusta al patógeno identificado.",
+      "negativo": "No se detectaron los 14 patógenos analizados. Considerar meningitis tuberculosa, autoinmune, neoplásica u otros agentes no incluidos. El tratamiento empírico puede continuar según clínica."
+    },
+    "notasClinicas": "La meningitis bacteriana no tratada tiene mortalidad >50%. N. meningitidis requiere profilaxis de contactos cercanos. HSV encefalitis sin tratamiento tiene alta mortalidad y secuelas neurológicas."
+  },
+  "metadatos": {"paginaOriginal": 41, "archivoOrigen": "DimogenBiologíaMolecular-42.pdf", "fechaExtraccion": "2025-11-25"}
+}

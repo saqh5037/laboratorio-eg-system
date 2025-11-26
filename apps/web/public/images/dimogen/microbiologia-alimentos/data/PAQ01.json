@@ -1,0 +1,67 @@
+{
+  "categoria": "Microbiología de Alimentos",
+  "subcategoria": "Paquetes",
+  "prueba": {
+    "titulo": "PAQUETE I",
+    "descripcion": "Paquete básico de análisis microbiológicos que incluye los tres indicadores principales de calidad sanitaria en alimentos.",
+    "precio": 969.76,
+    "moneda": "MXN",
+    "codigo": "PAQ01",
+    "analisisIncluidos": [
+      {
+        "codigo": "OMA01",
+        "nombre": "Organismos Mesofílicos Aerobios"
+      },
+      {
+        "codigo": "HOL02",
+        "nombre": "Hongos y Levaduras"
+      },
+      {
+        "codigo": "COL03",
+        "nombre": "Coliformes Totales (Vaciado en placa)"
+      }
+    ],
+    "ahorro": "11% de descuento vs análisis individuales"
+  },
+  "especificaciones": {
+    "tiempoEntrega": "8 Días hábiles",
+    "temperaturaTransporte": {
+      "alimentosPereceros": "≤10°C",
+      "alimentosCongelados": "≤0°C",
+      "noPereceros": "Temperatura Ambiente",
+      "aguas": "≤10°C",
+      "superficies": "≤10°C"
+    }
+  },
+  "imagenes": {
+    "paginaCompleta": {
+      "archivo": "pages/DimogenMicrobiologiaAlimentos-22.png",
+      "descripcion": "Página del paquete con los análisis incluidos"
+    },
+    "recursos": [
+      {
+        "archivo": "assets/PAQ01-paquete-placas-cultivo.jpg",
+        "tipo": "cultivo-multiple",
+        "descripcion": "Imagen de múltiples placas de Petri con diferentes medios de cultivo, representando los tres análisis incluidos en el paquete: mesofílicos aerobios, hongos y levaduras, y coliformes totales.",
+        "altText": "Conjunto de placas de cultivo para análisis microbiológico básico",
+        "aptoParaWeb": true
+      }
+    ]
+  },
+  "informacionAdicional": {
+    "queEs": "El Paquete I es una combinación de los tres análisis microbiológicos básicos más solicitados para evaluar la calidad sanitaria general de alimentos. Incluye indicadores de higiene (mesofílicos), deterioro (hongos y levaduras) y contaminación (coliformes).",
+    "importancia": "Este paquete proporciona una evaluación integral de la calidad microbiológica de un alimento a un costo reducido. Es ideal para verificaciones rutinarias de calidad en la industria alimentaria y para cumplir con los requisitos básicos de la normatividad mexicana.",
+    "paraQuienEsRecomendada": "Pequeñas y medianas empresas de alimentos, restaurantes, comedores industriales, escuelas, hoteles, y cualquier establecimiento que requiera un monitoreo básico de calidad microbiológica.",
+    "ventajas": [
+      "Precio preferencial comparado con análisis individuales",
+      "Evaluación integral de calidad microbiológica",
+      "Cumplimiento de requisitos normativos básicos",
+      "Ideal para monitoreo rutinario"
+    ]
+  },
+  "metadatos": {
+    "paginaOriginal": 21,
+    "archivoOrigen": "DimogenMicrobiologíaAlimentos-22.pdf",
+    "fechaExtraccion": "2025-11-26"
+  }
+}

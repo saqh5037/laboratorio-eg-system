@@ -49,6 +49,10 @@ export default defineConfig({
 
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        // Excluir imágenes de páginas de catálogo (muy grandes, serán cacheadas en runtime)
+        globIgnores: ['**/images/dimogen/**/pages/**'],
+        // Aumentar límite para assets más grandes (5MB)
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
 
         // CRÍTICO: Network-first para JavaScript para evitar cache de versiones antiguas
         // IMPORTANTE: Usar patrones dinámicos que funcionen en cualquier host (localhost o IP)

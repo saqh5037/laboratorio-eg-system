@@ -1,0 +1,38 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "DETECCIÓN DE HEPATITIS C",
+    "descripcion": "Detecta el ARN del virus de la hepatitis C (VHC) en la sangre del paciente. Se utiliza como análisis de diagnóstico confirmatorio de una infección activa por el VHC.",
+    "precio": 2424.00,
+    "moneda": "USD",
+    "codigo": "VHC06"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Sangre total con EDTA, Sangre con EDTA K2, Plasma EDTA separado",
+    "tiempoEntrega": "3 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-33.png"},
+    "recursos": [{
+      "archivo": "assets/VHC06-hepatitis-c-virus-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D del virus de hepatitis C mostrando partículas virales con glóbulos rojos en el fondo representando la infección en sangre.",
+      "altText": "Virus Hepatitis C en sangre 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "La hepatitis C es una infección viral del hígado transmitida principalmente por sangre. A diferencia de la hepatitis B, no existe vacuna, pero los nuevos antivirales de acción directa (AAD) curan >95% de los casos. La detección de ARN confirma infección activa.",
+    "paraQuienEsRecomendada": "Confirmación tras anticuerpos anti-VHC positivos. Evaluación pre-tratamiento. Personas nacidas entre 1945-1965 (baby boomers). Usuarios de drogas inyectables. Receptores de transfusiones antes de 1992. Pacientes en hemodiálisis.",
+    "preparacion": "No requiere ayuno. No hay restricciones especiales.",
+    "interpretacionResultados": {
+      "positivo": "ARN de VHC detectado. Confirma infección activa. Requiere genotipificación y evaluación hepática para planificar tratamiento.",
+      "negativo": "No se detectó ARN. Si anticuerpos son positivos, indica infección resuelta (espontánea o post-tratamiento). Si anticuerpos negativos, descarta infección."
+    },
+    "notasClinicas": "~15-45% de infecciones agudas se resuelven espontáneamente. El resto cronifica. La hepatitis C crónica es curable con 8-12 semanas de antivirales orales."
+  },
+  "metadatos": {"paginaOriginal": 32, "archivoOrigen": "DimogenBiologíaMolecular-33.pdf", "fechaExtraccion": "2025-11-25"}
+}

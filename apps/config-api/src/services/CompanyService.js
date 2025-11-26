@@ -2,25 +2,29 @@ const DatabaseRouter = require('./DatabaseRouter');
 const logger = require('../utils/logger');
 const CacheService = require('./CacheService');
 
-const CACHE_KEY = 'company_info';
+const CACHE_KEY_PREFIX = 'company_info:';
 const CACHE_TTL = 3600; // 1 hora
 
 class CompanyService {
   /**
    * Obtener información de la empresa
+   * @param {string} lab - Código del laboratorio (opcional, usa activo si no se especifica)
    * @returns {Object} Información corporativa completa
    */
-  static async getCompanyInfo() {
+  static async getCompanyInfo(lab = null) {
     try {
+      // Cache key específico por laboratorio
+      const cacheKey = `${CACHE_KEY_PREFIX}${lab || 'default'}`;
+
       // Verificar caché
-      const cached = CacheService.get(CACHE_KEY);
+      const cached = CacheService.get(cacheKey);
       if (cached) {
-        logger.info('Company info servido desde caché');
+        logger.info(`Company info servido desde caché (lab: ${lab || 'default'})`);
         return cached;
       }
 
-      // Obtener pool de la DB de configuración del laboratorio activo
-      const pool = await DatabaseRouter.getConfigPool();
+      // Obtener pool de la DB de configuración del laboratorio especificado o activo
+      const pool = await DatabaseRouter.getConfigPool(lab);
 
       const query = 'SELECT * FROM company_info WHERE id = 1';
       const result = await pool.query(query);
@@ -35,10 +39,10 @@ class CompanyService {
       const currentYear = new Date().getFullYear();
       companyInfo.years_of_experience = currentYear - companyInfo.founded_year;
 
-      // Guardar en caché
-      CacheService.set(CACHE_KEY, companyInfo, CACHE_TTL);
+      // Guardar en caché (con key específico por lab)
+      CacheService.set(cacheKey, companyInfo, CACHE_TTL);
 
-      logger.info('Company info cargado desde base de datos');
+      logger.info(`Company info cargado desde base de datos (lab: ${lab || 'default'})`);
       return companyInfo;
     } catch (error) {
       logger.error('Error al obtener company info:', error);
@@ -49,9 +53,10 @@ class CompanyService {
   /**
    * Actualizar información de la empresa
    * @param {Object} updates - Campos a actualizar
+   * @param {string} lab - Código del laboratorio (opcional, usa activo si no se especifica)
    * @returns {Object} Información actualizada
    */
-  static async updateCompanyInfo(updates) {
+  static async updateCompanyInfo(updates, lab = null) {
     try {
       // Filtrar campos válidos
       const allowedFields = [
@@ -95,8 +100,8 @@ class CompanyService {
         paramIndex++;
       }
 
-      // Obtener pool de la DB de configuración del laboratorio activo
-      const pool = await DatabaseRouter.getConfigPool();
+      // Obtener pool de la DB de configuración del laboratorio especificado o activo
+      const pool = await DatabaseRouter.getConfigPool(lab);
 
       const query = `
         UPDATE company_info
@@ -117,14 +122,21 @@ class CompanyService {
       const currentYear = new Date().getFullYear();
       updatedInfo.years_of_experience = currentYear - updatedInfo.founded_year;
 
+      // Cache key específico por laboratorio
+      const cacheKey = `${CACHE_KEY_PREFIX}${lab || 'default'}`;
+
       // Invalidar caché
-      CacheService.del(CACHE_KEY);
-      logger.info('Caché de company info invalidado');
+      CacheService.del(cacheKey);
+      // También invalidar el cache default por si acaso
+      if (lab) {
+        CacheService.del(`${CACHE_KEY_PREFIX}default`);
+      }
+      logger.info(`Caché de company info invalidado (lab: ${lab || 'default'})`);
 
       // Guardar nuevo valor en caché
-      CacheService.set(CACHE_KEY, updatedInfo, CACHE_TTL);
+      CacheService.set(cacheKey, updatedInfo, CACHE_TTL);
 
-      logger.info('Company info actualizado', { fields: Object.keys(filteredUpdates) });
+      logger.info(`Company info actualizado (lab: ${lab || 'default'})`, { fields: Object.keys(filteredUpdates) });
       return updatedInfo;
     } catch (error) {
       logger.error('Error al actualizar company info:', error);
@@ -134,11 +146,12 @@ class CompanyService {
 
   /**
    * Obtener solo información de contacto
+   * @param {string} lab - Código del laboratorio (opcional)
    * @returns {Object} Datos de contacto
    */
-  static async getContactInfo() {
+  static async getContactInfo(lab = null) {
     try {
-      const companyInfo = await this.getCompanyInfo();
+      const companyInfo = await this.getCompanyInfo(lab);
       return {
         email: companyInfo.email,
         phone_main: companyInfo.phone_main,
@@ -178,11 +191,12 @@ class CompanyService {
 
   /**
    * Obtener solo información SEO
+   * @param {string} lab - Código del laboratorio (opcional)
    * @returns {Object} Datos SEO
    */
-  static async getSEOInfo() {
+  static async getSEOInfo(lab = null) {
     try {
-      const companyInfo = await this.getCompanyInfo();
+      const companyInfo = await this.getCompanyInfo(lab);
       return {
         title: companyInfo.seo_title,
         description: companyInfo.seo_description,
@@ -203,11 +217,12 @@ class CompanyService {
 
   /**
    * Obtener información PWA
+   * @param {string} lab - Código del laboratorio (opcional)
    * @returns {Object} Datos para PWA manifest
    */
-  static async getPWAInfo() {
+  static async getPWAInfo(lab = null) {
     try {
-      const companyInfo = await this.getCompanyInfo();
+      const companyInfo = await this.getCompanyInfo(lab);
       return {
         name: companyInfo.pwa_name,
         short_name: companyInfo.pwa_short_name,
@@ -221,10 +236,16 @@ class CompanyService {
 
   /**
    * Invalidar caché de company info
+   * @param {string} lab - Código del laboratorio (opcional)
    */
-  static invalidateCache() {
-    CacheService.del(CACHE_KEY);
-    logger.info('Caché de company info invalidado manualmente');
+  static invalidateCache(lab = null) {
+    const cacheKey = `${CACHE_KEY_PREFIX}${lab || 'default'}`;
+    CacheService.del(cacheKey);
+    // También invalidar el cache default por si acaso
+    if (lab) {
+      CacheService.del(`${CACHE_KEY_PREFIX}default`);
+    }
+    logger.info(`Caché de company info invalidado manualmente (lab: ${lab || 'default'})`);
   }
 }
 

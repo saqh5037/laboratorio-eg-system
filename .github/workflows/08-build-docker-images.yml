@@ -1,0 +1,389 @@
+name: 08 - Build and Push Docker Images
+
+# ==========================================
+# Multi-Lab Docker Image Builder
+# ==========================================
+# Builds Docker images for all services and pushes them to
+# GitHub Container Registry (ghcr.io)
+#
+# Images are generic - lab-specific config is applied at runtime
+# via environment variables
+# ==========================================
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/**'
+      - 'packages/**'
+      - '.github/workflows/08-build-docker-images.yml'
+    tags:
+      - 'v*'
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/**'
+
+  workflow_dispatch:
+    inputs:
+      services:
+        description: 'Services to build (comma-separated or "all")'
+        required: true
+        default: 'all'
+        type: string
+      push_images:
+        description: 'Push images to registry'
+        required: true
+        default: true
+        type: boolean
+      tag_override:
+        description: 'Custom image tag (optional)'
+        required: false
+        type: string
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ${{ github.repository_owner }}/lab
+
+jobs:
+  # ==========================================
+  # Determine which services changed
+  # ==========================================
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      web: ${{ steps.filter.outputs.web }}
+      config-api: ${{ steps.filter.outputs.config-api }}
+      results-api: ${{ steps.filter.outputs.results-api }}
+      messaging-bot: ${{ steps.filter.outputs.messaging-bot }}
+      sync-service: ${{ steps.filter.outputs.sync-service }}
+      packages: ${{ steps.filter.outputs.packages }}
+      build_all: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.services == 'all' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect Changes
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            web:
+              - 'apps/web/**'
+              - 'packages/**'
+            config-api:
+              - 'apps/config-api/**'
+            results-api:
+              - 'apps/results-api/**'
+            messaging-bot:
+              - 'apps/messaging-bot/**'
+            sync-service:
+              - 'apps/sync-service/**'
+            packages:
+              - 'packages/**'
+
+  # ==========================================
+  # Build Web Frontend
+  # ==========================================
+  build-web:
+    name: Build Web Frontend
+    runs-on: ubuntu-latest
+    needs: changes
+    if: |
+      needs.changes.outputs.web == 'true' ||
+      needs.changes.outputs.packages == 'true' ||
+      needs.changes.outputs.build_all == 'true' ||
+      startsWith(github.ref, 'refs/tags/')
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-web
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix=
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=${{ github.event.inputs.tag_override }},enable=${{ github.event.inputs.tag_override != '' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/web
+          push: ${{ github.event_name != 'pull_request' && (github.event.inputs.push_images != 'false') }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NODE_ENV=production
+            VITE_API_URL=%VITE_API_URL%
+            VITE_CONFIG_API_URL=%VITE_CONFIG_API_URL%
+            VITE_RESULTS_API_URL=%VITE_RESULTS_API_URL%
+
+  # ==========================================
+  # Build Config API
+  # ==========================================
+  build-config-api:
+    name: Build Config API
+    runs-on: ubuntu-latest
+    needs: changes
+    if: |
+      needs.changes.outputs.config-api == 'true' ||
+      needs.changes.outputs.build_all == 'true' ||
+      startsWith(github.ref, 'refs/tags/')
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-config-api
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix=
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=${{ github.event.inputs.tag_override }},enable=${{ github.event.inputs.tag_override != '' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/config-api
+          push: ${{ github.event_name != 'pull_request' && (github.event.inputs.push_images != 'false') }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ==========================================
+  # Build Results API
+  # ==========================================
+  build-results-api:
+    name: Build Results API
+    runs-on: ubuntu-latest
+    needs: changes
+    if: |
+      needs.changes.outputs.results-api == 'true' ||
+      needs.changes.outputs.build_all == 'true' ||
+      startsWith(github.ref, 'refs/tags/')
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-results-api
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix=
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=${{ github.event.inputs.tag_override }},enable=${{ github.event.inputs.tag_override != '' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/results-api
+          push: ${{ github.event_name != 'pull_request' && (github.event.inputs.push_images != 'false') }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ==========================================
+  # Build Messaging Bot
+  # ==========================================
+  build-messaging-bot:
+    name: Build Messaging Bot
+    runs-on: ubuntu-latest
+    needs: changes
+    if: |
+      needs.changes.outputs.messaging-bot == 'true' ||
+      needs.changes.outputs.build_all == 'true' ||
+      startsWith(github.ref, 'refs/tags/')
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-messaging-bot
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix=
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=${{ github.event.inputs.tag_override }},enable=${{ github.event.inputs.tag_override != '' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/messaging-bot
+          push: ${{ github.event_name != 'pull_request' && (github.event.inputs.push_images != 'false') }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ==========================================
+  # Build Sync Service
+  # ==========================================
+  build-sync-service:
+    name: Build Sync Service
+    runs-on: ubuntu-latest
+    needs: changes
+    if: |
+      needs.changes.outputs.sync-service == 'true' ||
+      needs.changes.outputs.build_all == 'true' ||
+      startsWith(github.ref, 'refs/tags/')
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-sync-service
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix=
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=${{ github.event.inputs.tag_override }},enable=${{ github.event.inputs.tag_override != '' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/sync-service
+          push: ${{ github.event_name != 'pull_request' && (github.event.inputs.push_images != 'false') }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ==========================================
+  # Summary
+  # ==========================================
+  summary:
+    name: Build Summary
+    runs-on: ubuntu-latest
+    needs: [build-web, build-config-api, build-results-api, build-messaging-bot, build-sync-service]
+    if: always()
+
+    steps:
+      - name: Summary
+        run: |
+          echo "## Docker Image Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Service | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Web Frontend | ${{ needs.build-web.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Config API | ${{ needs.build-config-api.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Results API | ${{ needs.build-results-api.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Messaging Bot | ${{ needs.build-messaging-bot.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Sync Service | ${{ needs.build-sync-service.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Registry:** \`${{ env.REGISTRY }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Tag:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY

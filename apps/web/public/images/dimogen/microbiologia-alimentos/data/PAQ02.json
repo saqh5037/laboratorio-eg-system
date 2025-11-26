@@ -1,0 +1,76 @@
+{
+  "categoria": "Microbiología de Alimentos",
+  "subcategoria": "Paquetes",
+  "prueba": {
+    "titulo": "PAQUETE II",
+    "descripcion": "Paquete completo de análisis microbiológicos que incluye indicadores de calidad sanitaria más detección de patógenos críticos.",
+    "precio": 2303.18,
+    "moneda": "MXN",
+    "codigo": "PAQ02",
+    "analisisIncluidos": [
+      {
+        "codigo": "OMA01",
+        "nombre": "Organismos Mesofílicos Aerobios"
+      },
+      {
+        "codigo": "HOL02",
+        "nombre": "Hongos y Levaduras"
+      },
+      {
+        "codigo": "COL03",
+        "nombre": "Coliformes Totales (Vaciado en placa)"
+      },
+      {
+        "codigo": "SAL04",
+        "nombre": "Salmonella spp"
+      },
+      {
+        "codigo": "SAU05",
+        "nombre": "Staphylococcus aureus"
+      }
+    ],
+    "ahorro": "23% de descuento vs análisis individuales"
+  },
+  "especificaciones": {
+    "tiempoEntrega": "10 Días hábiles",
+    "temperaturaTransporte": {
+      "alimentosPereceros": "≤10°C",
+      "alimentosCongelados": "≤0°C",
+      "noPereceros": "Temperatura Ambiente",
+      "aguas": "≤10°C",
+      "superficies": "≤10°C"
+    }
+  },
+  "imagenes": {
+    "paginaCompleta": {
+      "archivo": "pages/DimogenMicrobiologiaAlimentos-23.png",
+      "descripcion": "Página del paquete con los análisis incluidos"
+    },
+    "recursos": [
+      {
+        "archivo": "assets/PAQ02-paquete-completo-cultivos.jpg",
+        "tipo": "cultivo-multiple",
+        "descripcion": "Imagen de múltiples placas de Petri con diferentes medios de cultivo selectivos, representando los cinco análisis incluidos en el paquete completo: indicadores de calidad más patógenos críticos.",
+        "altText": "Conjunto completo de placas de cultivo para análisis microbiológico integral",
+        "aptoParaWeb": true
+      }
+    ]
+  },
+  "informacionAdicional": {
+    "queEs": "El Paquete II es la combinación más completa de análisis microbiológicos, incluyendo los tres indicadores básicos de calidad (mesofílicos, hongos/levaduras, coliformes) más la detección de dos patógenos críticos (Salmonella y S. aureus).",
+    "importancia": "Este paquete proporciona la evaluación microbiológica más completa disponible, combinando indicadores de higiene con detección de patógenos. Es esencial para industrias con alto riesgo microbiológico y para cumplir con certificaciones de calidad internacionales.",
+    "paraQuienEsRecomendada": "Industrias de alimentos de origen animal, plantas procesadoras de carne y pollo, industrias lácteas, exportadores de alimentos, empresas con certificaciones de calidad (ISO, HACCP, SQF), y establecimientos que requieran máxima garantía de inocuidad.",
+    "ventajas": [
+      "Máximo ahorro comparado con análisis individuales (23%)",
+      "Evaluación completa de calidad e inocuidad",
+      "Detección de patógenos críticos incluida",
+      "Cumplimiento de requisitos para certificaciones internacionales",
+      "Ideal para liberación de lotes de producción"
+    ]
+  },
+  "metadatos": {
+    "paginaOriginal": 22,
+    "archivoOrigen": "DimogenMicrobiologíaAlimentos-23.pdf",
+    "fechaExtraccion": "2025-11-26"
+  }
+}

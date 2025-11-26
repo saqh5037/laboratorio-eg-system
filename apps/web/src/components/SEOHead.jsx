@@ -40,7 +40,7 @@ const SEOHead = ({
     updateMetaTag('author', companyInfo.seo_author || defaultName);
 
     // Theme color
-    updateMetaTag('theme-color', companyInfo.theme_color || '#7B68A6');
+    updateMetaTag('theme-color', companyInfo.theme_color || '#0047CB');
 
     // Open Graph
     updateMetaTag('og:title', title, 'property');

@@ -1,0 +1,48 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "PANEL DE ITS ÚLCERAS",
+    "descripcion": "Detecta y diferencia 7 de los agentes causales de las infecciones de transmisión sexual causantes de úlceras genitales.",
+    "precio": 1725.00,
+    "moneda": "USD",
+    "codigo": "ITS08",
+    "patogenosIncluidos": [
+      "Herpes simplex virus tipo 1 (HSV-1)",
+      "Herpes simplex virus tipo 2 (HSV-2)",
+      "Haemophilus ducreyi (Chancroide)",
+      "Cytomegalovirus (CMV)",
+      "Lymphogranuloma venereum (LGV)",
+      "Chlamydia trachomatis serovar L",
+      "Treponema pallidum (Sífilis)",
+      "Varicella-zoster virus (VZV)"
+    ]
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Exudado vaginal/uretral",
+    "tiempoEntrega": "5 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-19.png"},
+    "recursos": [{
+      "archivo": "assets/ITS08-panel-ulceras-herpes.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D de virus herpes y otros patógenos causantes de úlceras genitales.",
+      "altText": "Virus herpes y patógenos de úlceras genitales",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "Panel especializado para el diagnóstico diferencial de úlceras genitales. Las úlceras genitales tienen múltiples causas infecciosas y este panel permite identificar el agente causal específico para un tratamiento dirigido.",
+    "paraQuienEsRecomendada": "Pacientes con úlceras genitales activas. Lesiones vesiculares o ulceradas en área genital. Sospecha de herpes genital. Lesiones atípicas que no responden a tratamiento empírico.",
+    "preparacion": "La muestra debe tomarse directamente de la lesión ulcerada activa. No limpiar la lesión antes de la toma.",
+    "interpretacionResultados": {
+      "positivo": "Identifica el agente causal específico. HSV-2 es la causa más común de úlceras genitales recurrentes. Treponema pallidum indica sífilis primaria.",
+      "negativo": "No se detectaron los patógenos analizados. Considerar causas no infecciosas o patógenos no incluidos."
+    },
+    "notasClinicas": "El herpes genital (HSV-2) es incurable y requiere manejo crónico. La sífilis requiere notificación obligatoria. El chancroide es raro en países desarrollados pero común en regiones tropicales."
+  },
+  "metadatos": {"paginaOriginal": 18, "archivoOrigen": "DimogenBiologíaMolecular-19.pdf", "fechaExtraccion": "2025-11-25"}
+}

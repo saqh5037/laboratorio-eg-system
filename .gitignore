@@ -61,3 +61,12 @@ output/
 # Backups SQL grandes
 backups/**/*.backup
 backups/**/*.sql
+
+# Deployment instances (contain secrets)
+deployment/instances/
+
+# Development instances (contain secrets/tokens)
+dev-instances/
+
+# PIDs
+.pids/

@@ -1,0 +1,39 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "CARGA VIRAL DE EPSTEIN BARR",
+    "descripcion": "Cuantifica el número de copias del virus de Epstein Barr (VEB) por mililitro presentes en la sangre del paciente. La monitorización cuantitativa de la carga vírica del VEB es uno de los métodos de apoyo más eficaces para la gestión clínica tanto de pacientes de trasplantes como de cáncer.",
+    "precio": 4243.00,
+    "moneda": "USD",
+    "codigo": "EBV21"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Sangre total con EDTA, Sangre con EDTA K2, Plasma EDTA separado",
+    "tiempoEntrega": "3 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-37.png"},
+    "recursos": [{
+      "archivo": "assets/EBV21-epstein-barr-virus-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D del virus de Epstein-Barr mostrando su estructura de herpesvirus con proyecciones características en tonos verdes y azules.",
+      "altText": "Virus Epstein-Barr 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "El virus de Epstein-Barr (VEB) es un herpesvirus que infecta a más del 90% de adultos. Causa mononucleosis infecciosa y está asociado con linfomas (Burkitt, Hodgkin), carcinoma nasofaríngeo y enfermedad linfoproliferativa post-trasplante (PTLD). La carga viral es clave para monitorear pacientes de alto riesgo.",
+    "paraQuienEsRecomendada": "Receptores de trasplante de órganos sólidos o médula ósea. Pacientes con VIH. Sospecha de PTLD. Monitoreo de linfomas asociados a VEB. Mononucleosis infecciosa complicada.",
+    "preparacion": "No requiere ayuno. No hay restricciones especiales.",
+    "interpretacionResultados": {
+      "positivo": "Se reporta en copias/mL. Cargas virales elevadas o en aumento en trasplantados sugieren riesgo de PTLD. El umbral de intervención varía según protocolo institucional y tipo de trasplante.",
+      "negativo": "Carga viral indetectable indica ausencia de replicación activa significativa. No descarta infección latente (presente en >90% de adultos)."
+    },
+    "frecuenciaRecomendada": "En trasplante: semanal a quincenal en período de alto riesgo, luego mensual. En seguimiento de PTLD: según respuesta clínica.",
+    "notasClinicas": "La PTLD es una complicación grave en trasplantados. La detección temprana de carga viral elevada permite reducción de inmunosupresión antes de que se desarrolle enfermedad clínica."
+  },
+  "metadatos": {"paginaOriginal": 36, "archivoOrigen": "DimogenBiologíaMolecular-37.pdf", "fechaExtraccion": "2025-11-25"}
+}

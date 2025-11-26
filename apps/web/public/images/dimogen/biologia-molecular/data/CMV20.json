@@ -1,0 +1,39 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "CARGA VIRAL DE CITOMEGALOVIRUS",
+    "descripcion": "Cuantifica el número de copias del virus por mililitro presentes en la sangre del paciente. Las concentraciones virales de CMV se han utilizado como ayuda en la monitorización de la respuesta vírica al tratamiento antivírico.",
+    "precio": 3120.00,
+    "moneda": "USD",
+    "codigo": "CMV20"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Sangre total con EDTA, Sangre con EDTA K2, Plasma EDTA separado",
+    "tiempoEntrega": "3 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-36.png"},
+    "recursos": [{
+      "archivo": "assets/CMV20-citomegalovirus-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D detallada del citomegalovirus mostrando partículas virales con su estructura de herpesvirus característica.",
+      "altText": "Citomegalovirus partículas 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "La carga viral de CMV cuantifica el ADN viral en sangre. Es fundamental en el manejo de pacientes trasplantados para decidir inicio de tratamiento antiviral preventivo (terapia anticipada) y monitorear respuesta al tratamiento.",
+    "paraQuienEsRecomendada": "Monitoreo semanal en post-trasplante temprano. Seguimiento durante tratamiento antiviral. Pacientes con VIH y CD4 bajo. Evaluación de resistencia antiviral.",
+    "preparacion": "No requiere ayuno. No hay restricciones especiales.",
+    "interpretacionResultados": {
+      "positivo": "Se reporta en copias/mL o UI/mL. Cargas virales en aumento sugieren replicación activa. Umbrales para iniciar tratamiento varían según tipo de trasplante y protocolo institucional.",
+      "negativo": "Carga viral indetectable indica ausencia de replicación activa o supresión viral efectiva con tratamiento."
+    },
+    "frecuenciaRecomendada": "En trasplante: semanal primeros 3 meses, quincenal hasta 6 meses, mensual hasta 1 año. Durante tratamiento: semanal hasta negativización.",
+    "notasClinicas": "La enfermedad por CMV incluye síndrome viral, neumonitis, colitis, hepatitis y retinitis. La detección temprana mediante carga viral permite tratamiento preventivo antes de enfermedad sintomática."
+  },
+  "metadatos": {"paginaOriginal": 35, "archivoOrigen": "DimogenBiologíaMolecular-36.pdf", "fechaExtraccion": "2025-11-25"}
+}

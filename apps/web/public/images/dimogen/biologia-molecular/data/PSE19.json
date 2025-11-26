@@ -1,0 +1,45 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "PANEL DE SEPSIS",
+    "descripcion": "Detecta y diferencia simultáneamente 30 agentes bacterianos y levaduras asociados comúnmente a bacteriemias, fungemias y el desarrollo de sepsis, así como 9 determinantes genéticos asociados a la resistencia a los antibióticos.",
+    "precio": 7091.00,
+    "moneda": "USD",
+    "codigo": "PSE19",
+    "patogenosIncluidos": {
+      "levaduras": ["Candida albicans", "Candida krusei", "Cryptococcus neoformans/gattii", "Candida auris", "Candida parapsilosis", "Candida glabrata", "Candida tropicalis"],
+      "bacteriasGrampositivas": ["Enterococcus faecalis", "Enterococcus faecium", "Listeria monocytogenes", "Staphylococcus spp.", "Streptococcus spp.", "Streptococcus agalactiae", "Streptococcus pneumoniae", "Streptococcus pyogenes"],
+      "bacteriasGramnegativas": ["Complejo Acinetobacter calcoaceticus-baumannii", "Bacteroides fragilis", "Haemophilus influenzae", "Neisseria meningitidis", "Pseudomonas aeruginosa", "Stenotrophomonas maltophilia", "Complejo Enterobacter cloacae", "Escherichia coli", "Klebsiella aerogenes", "Klebsiella oxytoca", "Grupo Klebsiella pneumoniae", "Proteus spp.", "Salmonella spp.", "Serratia marcescens"],
+      "genesResistencia": ["CTX-M (BLEE)", "IMP", "KPC", "NDM", "OXA-48", "VIM (carbapenems)", "Mcr-1 (colistina)", "VanA/B (vancomicina)", "mecA/C y MREJ (MRSA)"]
+    }
+  },
+  "especificaciones": {
+    "metodologia": "PCR anidada",
+    "tipoMuestra": "Botella de hemocultivo positivo",
+    "tiempoEntrega": "4 horas",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-46.png"},
+    "paginaAdicional": {"archivo": "pages/DimogenBiologiaMolecular-47.png"},
+    "recursos": [{
+      "archivo": "assets/PSE19-bacterias-sepsis-gram.jpg",
+      "tipo": "microscopia",
+      "descripcion": "Imagen de microscopía con tinción Gram mostrando bacterias causantes de sepsis en muestra de hemocultivo.",
+      "altText": "Bacterias en hemocultivo tinción Gram",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "El Panel de Sepsis identifica rápidamente el agente causal en hemocultivos positivos. La sepsis es una emergencia donde cada hora de tratamiento inapropiado aumenta la mortalidad 7.6%. Este panel reduce el tiempo de identificación de 24-72 hrs a solo 4 hrs.",
+    "paraQuienEsRecomendada": "Todo hemocultivo positivo. Sepsis y shock séptico. Bacteriemia de cualquier origen. Candidemia. Endocarditis infecciosa. Infecciones de catéter vascular.",
+    "preparacion": "Se requiere hemocultivo positivo (detectado por el sistema automatizado). El panel se realiza directamente de la botella positiva.",
+    "interpretacionResultados": {
+      "positivo": "Identifica el patógeno específico y genes de resistencia. Candida auris requiere aislamiento estricto. VRE (VanA/B) y MRSA requieren precauciones de contacto. Carbapenemasas limitan severamente las opciones terapéuticas.",
+      "negativo": "Patógeno no incluido en el panel o crecimiento polimicrobiano complejo. Continuar con identificación convencional."
+    },
+    "notasClinicas": "La identificación de Candida auris es crítica por su multirresistencia y capacidad de transmisión nosocomial. Enterococcus con VanA/B requiere aislamiento y optimización de tratamiento."
+  },
+  "metadatos": {"paginaOriginal": 45, "archivoOrigen": "DimogenBiologíaMolecular-46.pdf", "fechaExtraccion": "2025-11-25"}
+}

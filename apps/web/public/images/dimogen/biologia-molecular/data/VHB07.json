@@ -1,0 +1,38 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "DETECCIÓN DE HEPATITIS B",
+    "descripcion": "Detecta el ADN del virus de la hepatitis B (VHB) en la sangre del paciente. Se utiliza como análisis de diagnóstico confirmatorio de una infección activa por el VHB.",
+    "precio": 2940.00,
+    "moneda": "USD",
+    "codigo": "VHB07"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Sangre total con EDTA, Sangre con EDTA K2, Plasma EDTA separado, Suero, Suero sin aditivos",
+    "tiempoEntrega": "3 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-31.png"},
+    "recursos": [{
+      "archivo": "assets/VHB07-hepatitis-b-virus-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D del virus de la hepatitis B mostrando su estructura esférica con antígeno de superficie (HBsAg) característico.",
+      "altText": "Virus Hepatitis B 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "La hepatitis B es una infección viral que ataca el hígado y puede causar enfermedad aguda y crónica. La detección del ADN viral por PCR confirma infección activa con replicación viral, a diferencia de las pruebas serológicas que detectan anticuerpos o antígenos.",
+    "paraQuienEsRecomendada": "Confirmación de infección activa tras serología positiva. Monitoreo de hepatitis B crónica. Evaluación antes de inmunosupresión. Embarazadas con HBsAg positivo. Donantes de órganos y sangre. Exposición ocupacional reciente.",
+    "preparacion": "No requiere ayuno. No hay restricciones especiales.",
+    "interpretacionResultados": {
+      "positivo": "ADN de VHB detectado. Confirma replicación viral activa. Requiere evaluación hepática completa y consideración de tratamiento antiviral.",
+      "negativo": "No se detectó ADN de VHB. Puede indicar infección resuelta, infección latente sin replicación, o niveles por debajo del límite de detección."
+    },
+    "notasClinicas": "La hepatitis B crónica afecta a ~300 millones de personas mundialmente. La detección temprana y tratamiento previenen cirrosis y carcinoma hepatocelular."
+  },
+  "metadatos": {"paginaOriginal": 30, "archivoOrigen": "DimogenBiologíaMolecular-31.pdf", "fechaExtraccion": "2025-11-25"}
+}

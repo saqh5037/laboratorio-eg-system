@@ -1,48 +1,48 @@
+/**
+ * LAB_INFO - Valores por defecto genéricos
+ * IMPORTANTE: Estos son solo fallbacks cuando la API no responde.
+ * Los datos reales se cargan desde config-api via useCompanyInfo()
+ */
 export const LAB_INFO = {
   name: 'Laboratorio',
   fullName: 'Laboratorio Clínico',
   slogan: 'Tu salud, nuestra prioridad',
   foundedYear: null,
   rif: '',
-  email: 'contacto@laboratorioeg.com',
-  phone: '+52 (555) 123-4567',
-  whatsapp: '+52 (555) 987-6543',
+  email: '', // Se carga desde API
+  phone: '', // Se carga desde API
+  whatsapp: '', // Se carga desde API
   address: {
-    street: 'Av. Principal #123',
-    colony: 'Col. Centro',
-    city: 'Ciudad de México',
-    state: 'CDMX',
-    zipCode: '06000',
-    country: 'México',
+    street: '',
+    colony: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    country: '',
   },
   social: {
-    facebook: 'https://facebook.com/laboratorioeg',
-    instagram: 'https://instagram.com/laboratorioeg',
-    twitter: 'https://twitter.com/laboratorioeg',
+    facebook: '',
+    instagram: '',
+    twitter: '',
   },
   schedule: {
     weekdays: {
       days: 'Lunes - Viernes',
-      open: '7:00 AM',
-      close: '7:00 PM',
+      open: '',
+      close: '',
     },
     saturday: {
       days: 'Sábado',
-      open: '7:00 AM',
-      close: '2:00 PM',
+      open: '',
+      close: '',
     },
     sunday: {
       days: 'Domingo',
-      open: '8:00 AM',
-      close: '12:00 PM',
+      open: '',
+      close: '',
     },
   },
-  certifications: [
-    'ISO 9001:2015',
-    'ISO 15189:2012',
-    'CAP (College of American Pathologists)',
-    'COFEPRIS',
-  ],
+  certifications: [],
 };
 
 export const STUDY_CATEGORIES = {
@@ -148,10 +148,14 @@ export const ROUTES = {
   precios: '/precios',
 };
 
+/**
+ * META_TAGS - Valores por defecto genéricos para SEO
+ * Los valores reales se cargan dinámicamente desde config-api
+ */
 export const META_TAGS = {
-  title: 'Laboratorio - Sistema de Análisis Clínicos',
-  description: 'Sistema profesional de análisis clínicos. Resultados confiables, tecnología de vanguardia y atención personalizada.',
-  keywords: 'laboratorio clínico, análisis de sangre, estudios médicos, química sanguínea, hematología, microbiología',
-  author: 'Sistema de Laboratorio',
+  title: 'Laboratorio Clínico',
+  description: 'Sistema profesional de análisis clínicos.',
+  keywords: 'laboratorio clínico, análisis de sangre, estudios médicos',
+  author: 'Laboratorio',
   ogImage: '/og-image.jpg',
 };

@@ -95,6 +95,50 @@ export default {
         // Color de fondo claro
         'eg-light-gray': '#F5F5F5',
 
+        // ===== DIMOGEN BRAND COLORS =====
+        // Paleta de colores corporativos de DIMOGEN (Grupo Micro-Tec)
+        'dimogen-blue': {
+          DEFAULT: 'var(--color-dimogen-blue)',
+          50: '#E6F0FF',
+          100: '#CCE0FF',
+          200: '#99C2FF',
+          300: '#66A3FF',
+          400: '#3385FF',
+          500: '#0052CC',  // Primary
+          600: '#0047B3',
+          700: '#003D99',
+          800: '#003280',
+          900: '#002866',
+        },
+        'dimogen-cyan': {
+          DEFAULT: 'var(--color-dimogen-cyan)',
+          50: '#E6F9FF',
+          100: '#CCF3FF',
+          200: '#99E7FF',
+          300: '#66DBFF',
+          400: '#33CFFF',
+          500: '#00A3E0',  // Primary
+          600: '#0092C7',
+          700: '#0077B6',
+          800: '#005C8F',
+          900: '#004166',
+        },
+        'dimogen-green': {
+          DEFAULT: 'var(--color-dimogen-green)',
+          50: '#E6FFF5',
+          100: '#CCFFEB',
+          200: '#99FFD6',
+          300: '#66FFC2',
+          400: '#33FFAD',
+          500: '#00875A',  // Primary
+          600: '#00754E',
+          700: '#006344',
+          800: '#005239',
+          900: '#00402E',
+        },
+        'dimogen-dark-blue': 'var(--color-dimogen-dark-blue)',
+        'dimogen-light-blue': 'var(--color-dimogen-light-blue)',
+
         // ===== MODO OSCURO (TONOS FRÍOS) =====
         // Temperatura fría: azules oscuros en lugar de grises
         'eg-dark-bg': 'var(--color-dark-bg)',

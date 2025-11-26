@@ -323,3 +323,157 @@ export async function invalidateCache() {
     throw error;
   }
 }
+
+/**
+ * Subir una imagen de contenido (requiere autenticación)
+ * @param {FormData} formData - FormData con 'file' y 'category'
+ * @param {Object} options - Opciones adicionales (onUploadProgress)
+ * @returns {Promise<{success: boolean, data?: Object, error?: string}>}
+ */
+export async function uploadImage(formData, options = {}) {
+  try {
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    const xhr = new XMLHttpRequest();
+
+    return new Promise((resolve, reject) => {
+      xhr.open('POST', `${CONFIG_API_URL}/api/upload/image`);
+      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+
+      // Progress callback
+      if (options.onUploadProgress) {
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            options.onUploadProgress({
+              loaded: event.loaded,
+              total: event.total
+            });
+          }
+        };
+      }
+
+      xhr.onload = () => {
+        try {
+          const response = JSON.parse(xhr.responseText);
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(response);
+          } else {
+            resolve({
+              success: false,
+              error: response.error || 'Error al subir imagen'
+            });
+          }
+        } catch (e) {
+          reject(new Error('Error parsing response'));
+        }
+      };
+
+      xhr.onerror = () => {
+        reject(new Error('Error de red al subir imagen'));
+      };
+
+      xhr.send(formData);
+    });
+  } catch (error) {
+    console.error('Error en uploadImage:', error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+/**
+ * Listar imágenes subidas (requiere autenticación)
+ * @param {string} category - Filtrar por categoría (opcional)
+ * @returns {Promise<{success: boolean, data?: Array, error?: string}>}
+ */
+export async function listUploadedImages(category = null) {
+  try {
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    const url = category
+      ? `${CONFIG_API_URL}/api/upload/images?category=${category}`
+      : `${CONFIG_API_URL}/api/upload/images`;
+
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Error al listar imágenes');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error en listUploadedImages:', error);
+    return {
+      success: false,
+      error: error.message,
+      data: []
+    };
+  }
+}
+
+/**
+ * Eliminar una imagen subida (requiere autenticación)
+ * @param {string} filename - Nombre del archivo a eliminar
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+export async function deleteUploadedImage(filename) {
+  try {
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error('No hay token de autenticación');
+    }
+
+    const response = await fetch(`${CONFIG_API_URL}/api/upload/image/${encodeURIComponent(filename)}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Error al eliminar imagen');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error en deleteUploadedImage:', error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+// Export como objeto para facilitar uso
+export const configApi = {
+  getAllConfig,
+  getGroupedConfig,
+  getConfigValue,
+  getAuthMethods,
+  isPageEnabled,
+  isMaintenanceMode,
+  getMaintenanceMessage,
+  updateConfig,
+  createConfig,
+  deleteConfig,
+  invalidateCache,
+  uploadImage,
+  listUploadedImages,
+  deleteUploadedImage
+};

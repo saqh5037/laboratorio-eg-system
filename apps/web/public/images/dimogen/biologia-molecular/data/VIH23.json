@@ -1,0 +1,38 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "DETECCIÓN DE VIH",
+    "descripcion": "Detecta el ARN del virus de la inmunodeficiencia humana (VIH) en la sangre del paciente. Se emplea como análisis de diagnóstico confirmatorio de una infección activa por el VIH.",
+    "precio": 2424.00,
+    "moneda": "USD",
+    "codigo": "VIH23"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Sangre total con EDTA, Sangre con EDTA K2, Plasma EDTA separado, Suero, Suero sin aditivos",
+    "tiempoEntrega": "3 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-29.png"},
+    "recursos": [{
+      "archivo": "assets/VIH23-vih-virus-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D del virus de inmunodeficiencia humana (VIH) mostrando su envoltura con glicoproteínas gp120 y gp41 características.",
+      "altText": "Virus VIH 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "La prueba de detección de VIH por PCR detecta directamente el ARN viral en sangre, permitiendo diagnóstico en etapas muy tempranas de la infección, incluso durante el período de ventana cuando los anticuerpos aún no son detectables. Es considerada prueba confirmatoria de infección activa.",
+    "paraQuienEsRecomendada": "Confirmación de prueba de anticuerpos reactiva. Sospecha de infección aguda por VIH (síndrome retroviral agudo). Exposición de alto riesgo reciente (período de ventana). Recién nacidos de madres VIH positivas. Diagnóstico en casos indeterminados.",
+    "preparacion": "No requiere ayuno. No hay restricciones especiales.",
+    "interpretacionResultados": {
+      "positivo": "ARN de VIH detectado. Confirma infección activa por VIH. Requiere inicio de tratamiento antirretroviral y estudios complementarios (CD4, carga viral cuantitativa, resistencia).",
+      "negativo": "No se detectó ARN de VIH. Si la exposición fue muy reciente (<10 días), considerar repetir. Un negativo con anticuerpos positivos puede indicar control virológico o resultado falso positivo de serología."
+    },
+    "notasClinicas": "La PCR cualitativa detecta hasta 20-40 copias/mL. Puede ser positiva 10-14 días post-exposición, antes que los anticuerpos. Es esencial para diagnóstico neonatal ya que los bebés tienen anticuerpos maternos hasta los 18 meses."
+  },
+  "metadatos": {"paginaOriginal": 28, "archivoOrigen": "DimogenBiologíaMolecular-29.pdf", "fechaExtraccion": "2025-11-25"}
+}

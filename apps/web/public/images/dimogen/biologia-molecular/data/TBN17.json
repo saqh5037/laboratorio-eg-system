@@ -1,0 +1,39 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "SUBPOBLACIÓN DE CÉLULAS T, B, NK",
+    "descripcion": "Determina los porcentajes y recuentos absolutos de las subpoblaciones de linfocitos para la evaluación inmunológica de individuos normales y pacientes con inmunodeficiencia o sospecha de ella.",
+    "precio": 1818.00,
+    "moneda": "USD",
+    "codigo": "TBN17",
+    "marcadoresIncluidos": ["Linfocitos T (CD3)", "Linfocitos B (CD19)", "Linfocitos NK (CD16 y/o CD56)"]
+  },
+  "especificaciones": {
+    "metodologia": "Citometría de flujo",
+    "tipoMuestra": "Sangre Total EDTA",
+    "tiempoEntrega": "3 Días hábiles",
+    "temperaturaTransporte": "Temperatura ambiente"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-49.png"},
+    "recursos": [{
+      "archivo": "assets/TBN17-celulas-inmunes-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D de células del sistema inmune mostrando linfocitos T, B y células NK con núcleos característicos.",
+      "altText": "Células inmunes T B NK 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "Este panel evalúa los tres tipos principales de linfocitos: T (inmunidad celular adaptativa), B (producción de anticuerpos) y NK (Natural Killer, inmunidad innata antitumoral y antiviral). Proporciona una visión completa del estado inmunológico.",
+    "paraQuienEsRecomendada": "Sospecha de inmunodeficiencia primaria (especialmente en niños). Infecciones recurrentes severas. Evaluación de inmunodeficiencias combinadas. Monitoreo post-trasplante de médula ósea. Leucemias y linfomas (diagnóstico diferencial).",
+    "preparacion": "No requiere ayuno. Evitar ejercicio intenso 24 horas antes. Muestra debe procesarse dentro de 48 horas.",
+    "interpretacionResultados": {
+      "positivo": "Deficiencia de células B (<1%): agammaglobulinemia. Deficiencia de T y B: inmunodeficiencia combinada severa (SCID). NK bajas: susceptibilidad a infecciones virales y tumores.",
+      "negativo": "N/A - es una prueba cuantitativa."
+    },
+    "notasClinicas": "La ausencia de células B sugiere agammaglobulinemia de Bruton. La deficiencia combinada de T y B es una emergencia pediátrica. Las células NK elevadas pueden verse en infecciones virales activas."
+  },
+  "metadatos": {"paginaOriginal": 48, "archivoOrigen": "DimogenBiologíaMolecular-49.pdf", "fechaExtraccion": "2025-11-25"}
+}

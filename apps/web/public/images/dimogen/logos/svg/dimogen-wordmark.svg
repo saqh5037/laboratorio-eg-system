@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 50" width="280" height="50" aria-label="DIMOGEN">
+  <g fill="#0047CB">
+    <!-- D - con abertura a la izquierda -->
+    <path d="M0,5 L0,45 L20,45 C35,45 40,35 40,25 C40,15 35,5 20,5 L0,5 Z M8,12 L18,12 C28,12 32,18 32,25 C32,32 28,38 18,38 L8,38 L8,12 Z"/>
+    <!-- I -->
+    <rect x="48" y="5" width="8" height="40" rx="2"/>
+    <!-- M -->
+    <path d="M64,5 L64,45 L72,45 L72,20 L84,38 L96,20 L96,45 L104,45 L104,5 L94,5 L84,22 L74,5 Z"/>
+    <!-- O -->
+    <circle cx="128" cy="25" r="20" fill="none" stroke="#0047CB" stroke-width="8"/>
+    <!-- G - con barra horizontal -->
+    <path d="M176,25 C176,12 166,5 152,5 C138,5 128,15 128,25 C128,35 138,45 152,45 C164,45 172,40 176,32 L176,28 L156,28 L156,35 L166,35 C163,39 158,41 152,41 C142,41 136,34 136,25 C136,16 142,9 152,9 C161,9 167,14 168,21 L176,21 L176,25 Z" transform="translate(28, 0)"/>
+    <!-- E - con tres barras -->
+    <path d="M188,5 L188,45 L220,45 L220,38 L196,38 L196,28 L216,28 L216,21 L196,21 L196,12 L220,12 L220,5 Z"/>
+    <!-- N -->
+    <path d="M228,5 L228,45 L236,45 L236,18 L260,45 L268,45 L268,5 L260,5 L260,32 L236,5 Z"/>
+  </g>
+  <!-- Registered trademark symbol -->
+  <circle cx="276" cy="10" r="6" fill="none" stroke="#0047CB" stroke-width="1.5"/>
+</svg>

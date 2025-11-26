@@ -37,7 +37,7 @@ export const useFavorites = () => {
   });
 
   // Estructura de una carpeta
-  const createFolder = (name, color = '#7B68A6') => ({
+  const createFolder = (name, color = '#0047CB') => ({
     id: `folder_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     name,
     color,
@@ -61,14 +61,14 @@ export const useFavorites = () => {
           setFolders(JSON.parse(savedFolders));
         } else {
           // Crear carpeta por defecto
-          const defaultFolder = createFolder('General', '#7B68A6');
+          const defaultFolder = createFolder('General', '#0047CB');
           setFolders([defaultFolder]);
           localStorage.setItem(FOLDERS_KEY, JSON.stringify([defaultFolder]));
         }
       } catch (error) {
         console.error('Error cargando favoritos:', error);
         // Crear datos por defecto en caso de error
-        const defaultFolder = createFolder('General', '#7B68A6');
+        const defaultFolder = createFolder('General', '#0047CB');
         setFolders([defaultFolder]);
         setFavorites([]);
       } finally {
@@ -176,7 +176,7 @@ export const useFavorites = () => {
   }, [favorites, saveFavorites]);
 
   // Crear nueva carpeta
-  const createNewFolder = useCallback((name, color = '#7B68A6', description = '') => {
+  const createNewFolder = useCallback((name, color = '#0047CB', description = '') => {
     const newFolder = { ...createFolder(name, color), description };
     const newFolders = [...folders, newFolder];
     saveFolders(newFolders);

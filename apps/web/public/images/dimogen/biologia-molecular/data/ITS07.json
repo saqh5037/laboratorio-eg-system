@@ -1,0 +1,48 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "NEISSERIA GONORRHOEAE",
+    "descripcion": "Detecta el agente bacteriano de las infecciones de transmisión sexual por Neisseria gonorrhoeae.",
+    "precio": 1455.00,
+    "moneda": "USD",
+    "codigo": "ITS07"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Exudado vaginal/uretral",
+    "tiempoEntrega": "1 Día hábil",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {
+      "archivo": "pages/DimogenBiologiaMolecular-14.png",
+      "descripcion": "Página completa del catálogo"
+    },
+    "recursos": [
+      {
+        "archivo": "assets/ITS07-neisseria-celulas-infectadas.jpg",
+        "tipo": "ilustracion-3d",
+        "descripcion": "Ilustración 3D de células infectadas por Neisseria gonorrhoeae. Muestra neutrófilos con diplococos gram-negativos intracelulares característicos de la infección gonocócica, con las bacterias en forma de granos de café enfrentados.",
+        "altText": "Células infectadas por bacteria Neisseria gonorrhoeae",
+        "aptoParaWeb": true
+      }
+    ]
+  },
+  "informacionAdicional": {
+    "queEs": "Neisseria gonorrhoeae es un diplococo gram-negativo que causa la gonorrea, la segunda ITS bacteriana más común. Infecta las mucosas del tracto urogenital, recto, faringe y conjuntiva. En mujeres puede causar cervicitis, EPI e infertilidad. En hombres causa uretritis con secreción purulenta característica. La infección diseminada puede afectar articulaciones y otros órganos.",
+    "paraQuienEsRecomendada": "Personas con síntomas de uretritis, cervicitis o proctitis. Contactos sexuales de casos confirmados. Personas con otras ITS diagnosticadas. Mujeres con EPI. Tamizaje en poblaciones de alto riesgo. Mujeres embarazadas con factores de riesgo.",
+    "preparacion": "No requiere ayuno. Evitar relaciones sexuales 24-48 horas antes. No usar duchas vaginales ni medicamentos vaginales 24 horas antes. No orinar al menos 1 hora antes de la toma de muestra uretral en hombres.",
+    "interpretacionResultados": {
+      "positivo": "Indica infección activa por Neisseria gonorrhoeae. Requiere tratamiento antibiótico dual (ceftriaxona + azitromicina) debido a la creciente resistencia antimicrobiana. Las parejas sexuales deben ser evaluadas y tratadas. Notificación obligatoria a autoridades sanitarias.",
+      "negativo": "No se detectó ADN de Neisseria gonorrhoeae en la muestra. Si existe alta sospecha clínica, considerar evaluar otras causas de los síntomas o repetir la prueba."
+    },
+    "frecuenciaRecomendada": "Según factores de riesgo y exposición. No hay recomendación de tamizaje universal. Control de curación recomendado en casos de infección faríngea.",
+    "notasClinicas": "La resistencia antimicrobiana es un problema creciente global. La coinfección con Chlamydia trachomatis es frecuente. El período de incubación es de 2-5 días. La infección asintomática es más común en mujeres (hasta 50%) y en infecciones rectales y faríngeas. La gonorrea no tratada aumenta el riesgo de transmisión y adquisición de VIH."
+  },
+  "metadatos": {
+    "paginaOriginal": 13,
+    "archivoOrigen": "DimogenBiologíaMolecular-14.pdf",
+    "fechaExtraccion": "2025-11-25"
+  }
+}

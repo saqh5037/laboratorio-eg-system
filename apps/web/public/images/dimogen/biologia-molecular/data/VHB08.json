@@ -1,0 +1,39 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "CARGA VIRAL DE HEPATITIS B",
+    "descripcion": "Cuantifica el número de copias del virus por mililitro presentes en la sangre del paciente. Las concentraciones virales de VHB se han utilizado como ayuda en la evaluación y la monitorización de la respuesta al tratamiento.",
+    "precio": 2424.00,
+    "moneda": "USD",
+    "codigo": "VHB08"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Sangre total con EDTA, Sangre con EDTA K2, Plasma EDTA separado",
+    "tiempoEntrega": "3 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-32.png"},
+    "recursos": [{
+      "archivo": "assets/VHB08-hepatitis-b-virus-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D detallada del virus de hepatitis B mostrando múltiples partículas virales con su estructura característica.",
+      "altText": "Partículas de virus Hepatitis B 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "La carga viral de VHB cuantifica el ADN viral en sangre, expresado en UI/mL o copias/mL. Es el marcador principal para evaluar la actividad de replicación viral y la respuesta al tratamiento antiviral en hepatitis B crónica.",
+    "paraQuienEsRecomendada": "Monitoreo de pacientes con hepatitis B crónica. Evaluación inicial para decisión de tratamiento. Seguimiento durante tratamiento antiviral. Evaluación de riesgo de transmisión perinatal.",
+    "preparacion": "No requiere ayuno. No hay restricciones especiales.",
+    "interpretacionResultados": {
+      "positivo": "Se reporta en UI/mL. >20,000 UI/mL: alta replicación, mayor riesgo de progresión. 2,000-20,000: replicación moderada. <2,000: baja replicación. Indetectable: supresión viral.",
+      "negativo": "Carga viral indetectable indica supresión viral efectiva durante tratamiento o infección resuelta."
+    },
+    "frecuenciaRecomendada": "Al diagnóstico, cada 3-6 meses en tratamiento, anualmente en pacientes no tratados estables.",
+    "notasClinicas": "Una carga viral >20,000 UI/mL con ALT elevada generalmente indica necesidad de tratamiento. El objetivo terapéutico es lograr carga viral indetectable."
+  },
+  "metadatos": {"paginaOriginal": 31, "archivoOrigen": "DimogenBiologíaMolecular-32.pdf", "fechaExtraccion": "2025-11-25"}
+}

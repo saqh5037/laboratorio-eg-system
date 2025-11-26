@@ -1,0 +1,38 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "INFLUENZA A/B",
+    "descripcion": "Detecta el ARN de los virus de influenza tipo A y B. Se utiliza como análisis de diagnóstico confirmatorio para Influenza.",
+    "precio": 1212.00,
+    "moneda": "USD",
+    "codigo": "FLU07"
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Exudado nasofaríngeo",
+    "tiempoEntrega": "1 Día hábil",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-21.png"},
+    "recursos": [{
+      "archivo": "assets/FLU07-influenza-virus-3d.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D del virus de la influenza mostrando la estructura característica con hemaglutinina (roja) y neuraminidasa en la superficie de la envoltura viral.",
+      "altText": "Modelo 3D del virus de influenza",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "La influenza es una infección viral respiratoria aguda causada por los virus influenza A y B. Influenza A es más variable y causa pandemias, mientras que B es más estable y causa epidemias estacionales. Los síntomas incluyen fiebre, tos, dolor muscular y malestar general.",
+    "paraQuienEsRecomendada": "Personas con síntomas gripales durante temporada de influenza. Pacientes hospitalizados con infección respiratoria. Adultos mayores y grupos de riesgo con síntomas respiratorios. Diagnóstico diferencial con COVID-19.",
+    "preparacion": "No requiere ayuno. No usar sprays nasales 24 horas antes.",
+    "interpretacionResultados": {
+      "positivo": "Indica infección activa por virus influenza. El tipo (A o B) se reporta. El tratamiento antiviral (oseltamivir) es más efectivo si se inicia en las primeras 48 horas de síntomas.",
+      "negativo": "No se detectó ARN de influenza A ni B. Considerar otros virus respiratorios como causa de los síntomas."
+    },
+    "notasClinicas": "La vacunación anual reduce el riesgo de infección y complicaciones. La influenza puede causar complicaciones graves en grupos de riesgo."
+  },
+  "metadatos": {"paginaOriginal": 20, "archivoOrigen": "DimogenBiologíaMolecular-21.pdf", "fechaExtraccion": "2025-11-25"}
+}

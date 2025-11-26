@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useCompanyInfo } from '../../hooks/useCompanyInfo';
 import { useAdminAuth } from '../../hooks/useAdminAuth';
+import { useLab } from '../../contexts/LabContext';
 import {
   Building2, Mail, Phone, MapPin, Clock, Share2, Search, Globe,
   Smartphone, Save, RefreshCw, AlertCircle, CheckCircle, Loader2, Image, Upload, Trash2
@@ -11,6 +12,7 @@ const CONFIG_API_URL = import.meta.env.VITE_CONFIG_API_URL || 'http://localhost:
 const CompanyInfoManager = () => {
   const { companyInfo, loading, error, updateCompanyInfo, fetchCompanyInfo } = useCompanyInfo();
   const { token } = useAdminAuth();
+  const { activeLab } = useLab();
 
   const [formData, setFormData] = useState({});
   const [saving, setSaving] = useState(false);
@@ -99,7 +101,11 @@ const CompanyInfoManager = () => {
       formDataUpload.append('file', file);
       formDataUpload.append('type', logoType);
 
-      const response = await fetch(`${CONFIG_API_URL}/api/company/logos/upload`, {
+      const uploadUrl = activeLab
+        ? `${CONFIG_API_URL}/api/company/logos/upload?lab=${activeLab}`
+        : `${CONFIG_API_URL}/api/company/logos/upload`;
+
+      const response = await fetch(uploadUrl, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -185,7 +191,11 @@ const CompanyInfoManager = () => {
       const updates = {};
       updates[field] = '';
 
-      const response = await fetch(`${CONFIG_API_URL}/api/company/logos`, {
+      const patchUrl = activeLab
+        ? `${CONFIG_API_URL}/api/company/logos?lab=${activeLab}`
+        : `${CONFIG_API_URL}/api/company/logos`;
+
+      const response = await fetch(patchUrl, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -202,7 +212,11 @@ const CompanyInfoManager = () => {
       // Si es un archivo local, eliminarlo del filesystem
       if (filename) {
         try {
-          const deleteResponse = await fetch(`${CONFIG_API_URL}/api/company/logos/${encodeURIComponent(filename)}`, {
+          const deleteUrl = activeLab
+            ? `${CONFIG_API_URL}/api/company/logos/${encodeURIComponent(filename)}?lab=${activeLab}`
+            : `${CONFIG_API_URL}/api/company/logos/${encodeURIComponent(filename)}`;
+
+          const deleteResponse = await fetch(deleteUrl, {
             method: 'DELETE',
             headers: {
               'Authorization': `Bearer ${token}`

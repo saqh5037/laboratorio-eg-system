@@ -1,0 +1,39 @@
+{
+  "categoria": "Biología Molecular",
+  "subcategoria": "Pruebas",
+  "prueba": {
+    "titulo": "PANEL DE TROMBOSIS",
+    "descripcion": "Detecta los polimorfismos de un solo nucleótido (SNPs) asociados a trombofilias: Factor V (R506Q, H1299R, Y1702C), Factor II (G20210A) y MTHFR (C677T, A1298C).",
+    "precio": 2508.00,
+    "moneda": "USD",
+    "codigo": "PTR24",
+    "mutacionesIncluidas": ["Factor V Leiden (R506Q)", "Factor V H1299R", "Factor V Y1702C", "Factor II G20210A (Protrombina)", "MTHFR C677T", "MTHFR A1298C"]
+  },
+  "especificaciones": {
+    "metodologia": "PCR en tiempo real",
+    "tipoMuestra": "Sangre total con EDTA",
+    "tiempoEntrega": "5 Días hábiles",
+    "temperaturaTransporte": "Refrigeración de 2° a 8°C"
+  },
+  "imagenes": {
+    "paginaCompleta": {"archivo": "pages/DimogenBiologiaMolecular-50.png"},
+    "recursos": [{
+      "archivo": "assets/PTR24-globulos-rojos-coagulacion.jpg",
+      "tipo": "ilustracion-3d",
+      "descripcion": "Ilustración 3D de glóbulos rojos en el torrente sanguíneo, representando el sistema de coagulación y riesgo trombótico.",
+      "altText": "Glóbulos rojos y coagulación 3D",
+      "aptoParaWeb": true
+    }]
+  },
+  "informacionAdicional": {
+    "queEs": "El Panel de Trombosis detecta las mutaciones genéticas más comunes asociadas a trombofilias hereditarias. Factor V Leiden es la causa más frecuente de trombofilia hereditaria. La mutación de protrombina G20210A es la segunda más común. Las variantes de MTHFR se asocian con hiperhomocisteinemia.",
+    "paraQuienEsRecomendada": "Trombosis venosa profunda o embolismo pulmonar, especialmente en <50 años. Trombosis en sitios inusuales. Historia familiar de trombosis. Pérdidas fetales recurrentes. Antes de iniciar anticonceptivos hormonales con historia familiar positiva. Mujeres con complicaciones del embarazo.",
+    "preparacion": "No requiere ayuno. No hay restricciones especiales. El resultado es de por vida (genético).",
+    "interpretacionResultados": {
+      "positivo": "Heterocigoto: portador de una copia del alelo mutado, riesgo moderadamente aumentado. Homocigoto: dos copias mutadas, riesgo significativamente aumentado. Factor V Leiden homocigoto aumenta riesgo de TVP 50-80 veces.",
+      "negativo": "Ausencia de las mutaciones analizadas. No descarta otras causas de trombofilia (deficiencia de proteína C, S, antitrombina)."
+    },
+    "notasClinicas": "El estudio genético no debe realizarse durante evento trombótico agudo ni durante anticoagulación (para pruebas funcionales). Las variantes MTHFR aisladas tienen relevancia clínica limitada si la homocisteína es normal."
+  },
+  "metadatos": {"paginaOriginal": 49, "archivoOrigen": "DimogenBiologíaMolecular-50.pdf", "fechaExtraccion": "2025-11-25"}
+}

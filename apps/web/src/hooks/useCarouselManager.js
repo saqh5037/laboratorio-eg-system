@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useLab } from '../contexts/LabContext';
 import {
   getAllSlides,
   getCarouselStats,
@@ -24,10 +25,13 @@ import {
  * - Toggle de activación
  * - Estadísticas en tiempo real
  * - Manejo de estados de carga y errores
+ * - Soporte multi-laboratorio (lab-aware)
  *
  * @returns {Object} - Estado y funciones para gestionar el carrusel
  */
 export function useCarouselManager() {
+  // Obtener laboratorio activo del contexto
+  const { activeLab } = useLab();
   // ============================================
   // ESTADO
   // ============================================
@@ -56,7 +60,7 @@ export function useCarouselManager() {
     try {
       setLoading(true);
       setError(null);
-      const response = await getAllSlides();
+      const response = await getAllSlides(activeLab);
       setSlides(response.data);
       return response.data;
     } catch (err) {
@@ -66,21 +70,21 @@ export function useCarouselManager() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [activeLab]);
 
   /**
    * Cargar estadísticas del carrusel
    */
   const fetchStats = useCallback(async () => {
     try {
-      const response = await getCarouselStats();
+      const response = await getCarouselStats(activeLab);
       setStats(response.data);
       return response.data;
     } catch (err) {
       console.error('Error fetching stats:', err);
       return null;
     }
-  }, []);
+  }, [activeLab]);
 
   /**
    * Cargar archivos subidos
@@ -145,7 +149,7 @@ export function useCarouselManager() {
         throw new Error(validation.errors.join(', '));
       }
 
-      const response = await createSlide(slideData);
+      const response = await createSlide(slideData, activeLab);
 
       // Actualizar lista de slides
       await fetchSlides();
@@ -159,7 +163,7 @@ export function useCarouselManager() {
     } finally {
       setSavingSlide(false);
     }
-  }, [fetchSlides, fetchStats]);
+  }, [activeLab, fetchSlides, fetchStats]);
 
   /**
    * Actualizar slide existente
@@ -175,7 +179,7 @@ export function useCarouselManager() {
         throw new Error(validation.errors.join(', '));
       }
 
-      const response = await updateSlide(id, slideData);
+      const response = await updateSlide(id, slideData, activeLab);
 
       // Actualizar lista de slides
       await fetchSlides();
@@ -188,7 +192,7 @@ export function useCarouselManager() {
     } finally {
       setSavingSlide(false);
     }
-  }, [fetchSlides]);
+  }, [activeLab, fetchSlides]);
 
   /**
    * Eliminar slide
@@ -197,7 +201,7 @@ export function useCarouselManager() {
     try {
       setError(null);
 
-      const response = await deleteSlide(id);
+      const response = await deleteSlide(id, activeLab);
 
       // Actualizar lista de slides
       await fetchSlides();
@@ -209,7 +213,7 @@ export function useCarouselManager() {
       setError(errorMsg);
       return { success: false, error: errorMsg };
     }
-  }, [fetchSlides, fetchStats]);
+  }, [activeLab, fetchSlides, fetchStats]);
 
   /**
    * Toggle estado activo/inactivo de un slide
@@ -218,7 +222,7 @@ export function useCarouselManager() {
     try {
       setError(null);
 
-      const response = await toggleSlideActive(id, isActive);
+      const response = await toggleSlideActive(id, isActive, activeLab);
 
       // Actualizar slide en el estado local (optimistic update)
       setSlides(prevSlides =>
@@ -238,7 +242,7 @@ export function useCarouselManager() {
       await fetchSlides();
       return { success: false, error: errorMsg };
     }
-  }, [fetchSlides, fetchStats]);
+  }, [activeLab, fetchSlides, fetchStats]);
 
   /**
    * Reordenar slide a nueva posición
@@ -247,7 +251,7 @@ export function useCarouselManager() {
     try {
       setError(null);
 
-      const response = await reorderSlide(id, newPosition);
+      const response = await reorderSlide(id, newPosition, activeLab);
 
       // Refrescar slides para mostrar nuevo orden
       await fetchSlides();
@@ -258,7 +262,7 @@ export function useCarouselManager() {
       setError(errorMsg);
       return { success: false, error: errorMsg };
     }
-  }, [fetchSlides]);
+  }, [activeLab, fetchSlides]);
 
   // ============================================
   // UPLOAD DE IMÁGENES
@@ -350,6 +354,9 @@ export function useCarouselManager() {
   // ============================================
 
   return {
+    // Lab activo
+    activeLab,
+
     // Datos
     slides,
     stats,
